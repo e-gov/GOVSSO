@@ -1,0 +1,45 @@
+<aside>
+  <p id='heading'>
+    <a href='{{ site.baseurl }}'>
+      GOVSSO
+    </a>
+  </p>
+  <ul>
+    {% assign id_count = '' %}
+    {% for nav in site.data.Menu %}
+      {% if nav.categories != null %}
+        {% assign id_count = id_count | append: 'x' %}
+        <li{% if nav.title == page.title %} class="active"{% endif %}>
+          <a href="{{ site.baseurl }}{{ nav.url }}">{{ nav.title }}</a>
+          <span id="{{ id_count.size }}" class="button"> ▼ </span>
+          <ol id="submenu{{ id_count.size }}" class='submenu'>
+          {% for subcategory in nav.categories %}
+            <li{% if subcategory.title == page.title %} class="active"{% endif %}>
+              <a href="{{ site.baseurl }}{{ subcategory.url }}">
+                {{ subcategory.title }}
+              </a>
+            </li>
+            {% if subcategory.categories != null %}
+              <ol class='submenu2'>
+              {% for subitem in subcategory.categories %}
+                <li{% if subitem.title == page.title %} class="active"{% endif %}>
+                  <a href="{{ site.baseurl }}{{ subitem.url }}">
+                    {{ subitem.title }}
+                  </a>
+                </li>
+              {% endfor %}
+              </ol>
+            {% endif %}
+          {% endfor %}
+          </ol>
+        </li>
+      {% else %}
+          <li{% if subitem.title == page.title %} class="active"{% endif %}>
+          <a href="{{ site.baseurl }}{{ nav.url }}">
+            {{ nav.title }}
+          </a>
+          </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</aside>

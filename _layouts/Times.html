@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ site.baseurl }}/css/Times.css">
+  <link rel="stylesheet" href="{{ site.baseurl }}/css/Github.css">
+
+</head>
+
+<body onload='init()'>
+
+  {% include Menu.html %}
+  
+  <article>
+    {{ content }}
+
+    {% include Footer.html %}
+  </article>
+
+</body>
+
+</html>

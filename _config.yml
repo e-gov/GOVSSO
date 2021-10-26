@@ -1,0 +1,15 @@
+title: State single sign on service
+repo: "https://github.com/e-gov/GOVSSO"
+baseurl: "https://e-gov.github.io/GOVSSO"
+
+
+
+defaults:
+  -
+    scope:
+      path: ""
+    values:
+      layout: "Times"
+      sidebar: "false"
+
+  
