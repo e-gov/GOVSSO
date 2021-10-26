@@ -6,6 +6,6 @@ permalink: /
 
 
 
-# <img src='img/LOVID.png' style='width: 80px;'> State single sign on service (GOVSSO)
+# <img src='img/LOVID.png' style='width: 80px;'> State Single Sign-On Service (GOVSSO)
 
 Here comes introductory text

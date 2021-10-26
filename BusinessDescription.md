@@ -2,6 +2,6 @@
 permalink: BusinessDescription
 ---
 
-# State single sign on service (GOVSSO)
+# State Single Sign-On Service (GOVSSO) description
 
 Description
