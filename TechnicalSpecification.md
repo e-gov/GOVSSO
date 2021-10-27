@@ -227,7 +227,7 @@ An authentication request is a HTTP GET request by which the user is redirected 
 ````
 GET https://govsso.ria.ee/oauth2/auth?
  
-redirect_uri=https%3A%2F%2Feteenindus.asutus.ee%2FCallback&
+redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback&
 scope=openid&
 state=hkMVY7vjuN7xyLl5&|
 response_type=code&
@@ -245,7 +245,7 @@ acr_values=substantial
 |---------------|------------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol).<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration authorization_endpoint` parameter. |
 | client_id | yes |   |  Application identifier. The application identifier is issued to the institution by RIA upon registration of the client application as a user of the authentication service. |
-| redirect_uri | yes | `redirect_uri=https%3A%2F%2F eteenus.asutus.ee%2Ftagasi`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata (see `client_id` parameter). |
+| redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata (see `client_id` parameter). |
 | scope | yes | `scope=openid` |  The authentication scope. Space delimited list of requested scopes.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request.<br> In the default `scope` of openid GOVSSO will issue identity tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA identity tokens. At this moment email is only available when authentication was performed with Estonian national id-card card type authentication device.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
 | state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Read more about formation and verification of state under 'Protection against false request attacks'. |
 | response_type | yes |  `response_type=code` |  Determines the manner of communication of the authentication result to the server. The method of authorization code is supported (authorization flow of the OpenID Connect protocol) and it is referred to the code value. |
@@ -264,7 +264,7 @@ The state value will also be returned to the client application, making it possi
 
 ***Example GOVSSO authentication redirect***
 ````
-HTTP GET https://eteenus.asutus.ee/tagasi?
+HTTP GET https://client.example.com/callback?
  
 code=71ed5797c3d957817d31&
 state=hkMVY7vjuN7xyLl5
@@ -275,7 +275,7 @@ state=hkMVY7vjuN7xyLl5
 
 | Identity token element (claim)   | example           |     explanation       |
 |----------------------------------|------------------ |-----------------------|
-| protocol, host, port and path	 | `https://eteenus.asutus.ee/tagasi` |  Matches the `redirect_uri` value sent in the authentication request. |
+| protocol, host, port and path	 | `https://client.example.com/callback` |  Matches the `redirect_uri` value sent in the authentication request. |
 | code | `code=71ed579...` |  The authorization code is a single ‘permission note’ to receive the identity token. |
 | state | `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks. The security code received in the authentication request is mirrored back. Read more about forming and verifying `state` from ‘Protection against false request attacks’. |
 
@@ -289,7 +289,7 @@ TARA relies on the OpenID Connect standard on error messages (References: OIDC-C
 
 ***Example GOVSSO authentication error***
 ````
-HTTP GET https://eteenus.asutus.ee/tagasi?
+HTTP GET https://client.example.com/callback?
  
 error=invalid_scope&
 error_description=Required+scope+%3Copenid%3E+not+provided.+GOVSSO+does+not+allow+this+request+to+be+processed&
@@ -316,7 +316,7 @@ Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
  
 grant_type=authorization_code&
 code=SplxlOBeZQQYbYS6WxSbIA&
-redirect_uri=https%3A%2F%2eteenus.asutus.ee%2Ftagasi
+redirect_uri=https%3A%2F%2client.example.com%2Fcallback
 ````
 (for better readability, the body of the HTTP POST request is divided over several lines)
 
@@ -331,7 +331,7 @@ The body of the HTTP POST request must be presented in a serialized format based
 | protocol, host, port and path | query |  `https://govsso.ria.ee/oauth2/token` |  GOVSSO server token endpoint URL. Published in GOVSSO discovery endpoint `token_endpoint` parameter value. |
 | grant_type | body |  `grant_type=authorization_code` |  The `authorization_code` value required based on the protocol. |
 | code | body |  `code=SplxlOBeZQQYbYS6WxSbIA` |  The authorization code received from the authentication service. |
-| redirect_uri | body |  `redirect_uri=https%3A%2F%2eteenus.asutus.ee%2Ftagasi` |  The redirect URL sent in the authentication request. |
+| redirect_uri | body |  `redirect_uri=https%3A%2F%2client.example.com%2Fcallback` |  The redirect URL sent in the authentication request. |
 
 **Response**
 
@@ -402,7 +402,7 @@ The process of acquiring a new authentication token is similar to initial user a
 ````
 GET https://govsso.ria.ee/oauth2/auth?
  
-redirect_uri=https%3A%2F%2eteenus.asutus.ee%2Ftagasi&
+redirect_uri=https%3A%2F%2client.example.com%2Fcallback&
 scope=openid&
 state=hkMVY7vjuN7xyLl5&|
 response_type=code&
@@ -419,7 +419,7 @@ id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo...TvE
 |---------------|------------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol), References: [OAUTH]).<br><br> The URL is provided from OIDC server public discovery service: `https://tara-sso-demo.eesti.ee/.well-known/openid-configuration authorization_endpoint` parameter. |
 | client_id | yes |   |  Application identifier. The application identifier is issued to the institution by RIA upon registration of the client application as a user of the authentication service. |
-| redirect_uri | yes | `redirect_uri=https%3A%2F%2F eteenus.asutus.ee%2Ftagasi`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata. |
+| redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata. |
 | scope | yes | `scope=openid` |  The authentication scope. Space delimited list of requested scopes.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request.<br> In the default scope of `openid` GOVSSO will issue identity tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA identity tokens. At this moment email is only available when authentication was performed with Estonian national id-card card type authentication device.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
 | state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Read more about formation and verification of state under 'Protection against false request attacks'. |
 | response_type | yes |  `response_type=code` |  Determines the manner of communication of the authentication result to the server. The method of authorization code is supported (authorization flow of the OpenID Connect protocol) and it is referred to the code value. |
@@ -439,7 +439,7 @@ The state value will also be returned to the client application, making it possi
 
 ***Example GOVSSO session update redirect***
 ````
-HTTP GET https://eteenus.asutus.ee/tagasi?
+HTTP GET https://client.example.com/callback?
  
 code=71ed5797c3d957817d31&
 state=hkMVY7vjuN7xyLl5
@@ -448,7 +448,7 @@ state=hkMVY7vjuN7xyLl5
 
 | URL element   |    example       |    explanation    |
 |---------------|------------------|------------------ |
-| protocol, host, port and path |  `https://eteenus.asutus.ee/tagasi` |  Matches the `redirect_uri` value sent in the authentication request. |
+| protocol, host, port and path |  `https://client.example.com/callback` |  Matches the `redirect_uri` value sent in the authentication request. |
 | code |  `code=71ed579...` |  The authorization code is a single ‘permission note’ to receive the identity token. |
 | state |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks. The security code received in the authentication request is mirrored back. Read more about forming and verifying `state` from ‘Protection against false request attacks’. |
 
@@ -462,7 +462,7 @@ TARA relies on the OpenID Connect standard on error messages (References: OIDC-C
 
 ***Example GOVSSO session update error***
 ````
-HTTP GET https://eteenus.asutus.ee/tagasi?
+HTTP GET https://client.example.com/callback?
  
 error=authentication_required&
 error_description=Authenticated+subject+does+not+match+provided+id_token_hint&
@@ -481,7 +481,7 @@ GET https://tara-sso-demo.eesti.ee/oauth2/sessions/logout?
  
  
 id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs
-post_logout_redirect_uri=https%3A%2F%2Feteenus.asutus.ee%2Ftagasi&
+post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback&
 state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&
 ui_locales=et
 ````
@@ -490,7 +490,7 @@ ui_locales=et
 | URL element   | compulsory       |    example        |     explanation       |
 |---------------|------------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/sessions/logout` |  `/oauth2/auth` is the OpenID Connect-based logout endpoint of the GOVSSO service. Described in OIDC session management specification (References, OIDC-SESSION "2.1.  OpenID Provider Discovery Metadata" )<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration end_session_endpoint` parameter. |
-| post_logout_redirect_uri | yes | `redirect_uri=https%3A%2F%2Feteenus.asutus.ee%2Ftagasi` |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the identity token (token audience must belong to a registered GOVSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GOVSSO. In GOVSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
+| post_logout_redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback` |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the identity token (token audience must belong to a registered GOVSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GOVSSO. In GOVSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
 | id_token_hint | yes |  `id_token_hint=eyJhbGciOiJSU...TvE` |  ID Token previously issued by GOVSSO being passed as a hint about the user's current or past authenticated session with the client application. If the user identified by the ID Token is not logged in or is logged in by the request, then GOVSSO returns a positive response; otherwise, it WILL return an error. **`id_token_hint` encryption is not supported.** |
 | state | no |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Read more about formation and verification of state under 'Protection against false request attacks'.<br> If included in the logout request, the TARA passes this value back to the RP using the state query parameter when redirecting the user agent back to the client application.<br> Using the state parameter is not mandatory for login callbacks. It is expected that the user was already logged out of the client application before calling GOVSSO logout endpoint. |
 | ui_locales | no |  `ui_locales=et	` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language.<br> If the user was logged into a single client application, then no GUI prompt will be displayed to the user. |
@@ -501,7 +501,7 @@ After successful logout request, GOVSSO will redirect the user agent back to the
 
 ***Example GOVSSO logout redirect***
 ````
-GET https://eteenus.asutus.ee/tagasi?state=hkMVY7vjuN7xyLl5
+GET https://client.example.com/callback?state=hkMVY7vjuN7xyLl5
 ````
 **Error response**
 
@@ -522,7 +522,7 @@ Client applications must perform logout token validation to check if the receive
 ***Example GOVSSO back-channel logout request***
 ````
 POST /back-channel-logout HTTP/1.1
-Host: eteenus.asutus.ee
+Host: client.example.com
 Content-Type: application/x-www-form-urlencoded
  
 logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
@@ -531,7 +531,7 @@ logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
 
 | Parameter   | compulsory     |    example        |     explanation       |
 |-------------|----------------|------------------ |-----------------------|
-| protocol, host, port and path | yes |  `https://eteenus.asutus.ee:443/back-channel-logout` |  Client application must authorize access to GOVSSO to an internal URL and port. Access to the port should be limited based on IP address. The port must be protected with TLS. GOVSSO must trust the logout endpoint server certificate. |
+| protocol, host, port and path | yes |  `https://client.example.com:443/back-channel-logout` |  Client application must authorize access to GOVSSO to an internal URL and port. Access to the port should be limited based on IP address. The port must be protected with TLS. GOVSSO must trust the logout endpoint server certificate. |
 | logout_token | yes |  `logout_token=eyJhbGciOiJSUz...qgp1dg` |  GOVSSO sends a JWT token similar to an ID token to client applications called a Logout Token to request that they log out. Logout token will give the client application exact information about the subject and the session (see the sid claim in ID Token) that should be logged out. The token is signed by GOVSSO with the same secret key that is used for singing issued ID Tokens. |
 
 ## Security operations
