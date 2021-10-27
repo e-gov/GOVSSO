@@ -271,13 +271,15 @@ state=hkMVY7vjuN7xyLl5
 ````
 (for better readability, the parts of the HTTP request are divided onto several lines)
 
-***Response parameters***
+***Request parameters***
 
 | Identity token element (claim)   | example           |     explanation       |
 |----------------------------------|------------------ |-----------------------|
 | protocol, host, port and path	 | `https://client.example.com/callback` |  Matches the `redirect_uri` value sent in the authentication request. |
 | code | `code=71ed579...` |  The authorization code is a single ‘permission note’ to receive the identity token. |
 | state | `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks. The security code received in the authentication request is mirrored back. Read more about forming and verifying `state` from ‘Protection against false request attacks’. |
+
+Request might contain other URL parameters, that client application must ignore.
 
 **Error response**
 
@@ -383,6 +385,8 @@ Pragma: no-cache
 | expires_in |  The validity period of the OAuth 2.0 access token. Not used in GOVSSO. |
 | id_token |  Identity token, encapsulated in JWS Compact Serialization form (References: JWS-COMPACT_SERIALIZATION). The identity token itself is issued in JSON Web Token (References: JWT) format .|
 
+Response body might contain other fields, that client application must ignore.
+
 **Error response**
 
 In case the token endpoint encounters an error and can not issue valid tokens, an error response is generated according to OIDC Core specification (References: OIDC-CORE)
@@ -421,7 +425,7 @@ id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo...TvE
 | client_id | yes |   |  Application identifier. The application identifier is issued to the institution by RIA upon registration of the client application as a user of the authentication service. |
 | redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata. |
 | scope | yes | `scope=openid` |  The authentication scope. Space delimited list of requested scopes.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request.<br> In the default scope of `openid` GOVSSO will issue identity tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA identity tokens. At this moment email is only available when authentication was performed with Estonian national id-card card type authentication device.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
-| state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Read more about formation and verification of state under 'Protection against false request attacks'. |
+| state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Length of `state` parameter must be minimally 8 characters. Read more about formation and verification of state under 'Protection against false request attacks'. |
 | response_type | yes |  `response_type=code` |  Determines the manner of communication of the authentication result to the server. The method of authorization code is supported (authorization flow of the OpenID Connect protocol) and it is referred to the code value. |
 | ui_locales | no |  `ui_locales=et` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language. The client can select the desired language. This will also set the GUI language for TARA service views. |
 | nonce | no |  `nonce=fsdsfwrerhtry3qeewq` |  A unique parameter which helps to prevent replay attacks based on the OIDC protocol (References, [Core], subsection 3.1.2.1. Authentication Request). The nonce parameter is not compulsory. |
@@ -444,7 +448,7 @@ HTTP GET https://client.example.com/callback?
 code=71ed5797c3d957817d31&
 state=hkMVY7vjuN7xyLl5
 ````
-***Response parameters***
+***Request parameters***
 
 | URL element   |    example       |    explanation    |
 |---------------|------------------|------------------ |
@@ -492,7 +496,7 @@ ui_locales=et
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/sessions/logout` |  `/oauth2/auth` is the OpenID Connect-based logout endpoint of the GOVSSO service. Described in OIDC session management specification (References, OIDC-SESSION "2.1.  OpenID Provider Discovery Metadata" )<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration end_session_endpoint` parameter. |
 | post_logout_redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback` |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the identity token (token audience must belong to a registered GOVSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GOVSSO. In GOVSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
 | id_token_hint | yes |  `id_token_hint=eyJhbGciOiJSU...TvE` |  ID Token previously issued by GOVSSO being passed as a hint about the user's current or past authenticated session with the client application. If the user identified by the ID Token is not logged in or is logged in by the request, then GOVSSO returns a positive response; otherwise, it WILL return an error. **`id_token_hint` encryption is not supported.** |
-| state | no |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Read more about formation and verification of state under 'Protection against false request attacks'.<br> If included in the logout request, the TARA passes this value back to the RP using the state query parameter when redirecting the user agent back to the client application.<br> Using the state parameter is not mandatory for login callbacks. It is expected that the user was already logged out of the client application before calling GOVSSO logout endpoint. |
+| state | no |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Length of `state` parameter must be minimally 8 characters. Read more about formation and verification of state under 'Protection against false request attacks'.<br> If included in the logout request, the TARA passes this value back to the RP using the state query parameter when redirecting the user agent back to the client application.<br> Using the state parameter is not mandatory for login callbacks. It is expected that the user was already logged out of the client application before calling GOVSSO logout endpoint. |
 | ui_locales | no |  `ui_locales=et	` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language.<br> If the user was logged into a single client application, then no GUI prompt will be displayed to the user. |
 
 **Response**
@@ -628,7 +632,7 @@ The client application must implement protective measures against false request 
 The `state` security code is used to combat falsification of the redirect request following the authentication request. The client application must perform the following steps:
 
 1. Generate a nonce word, for example of the length of 16 characters: `XoD2LIie4KZRgmyc` (referred to as `R`).
-2. Calculate from the `R` nonce word the `H = hash(R)` hash, for example by using the SHA256 hash algorithm and by converting the result to the Base64 format: `vCg0HahTdjiYZsI+yxsuhm/0BJNDgvVkT6BAFNU394A=`.
+2. Calculate from the `R` nonce word the `H = hash(R)` hash, for example by using the SHA256 hash algorithm and by converting the result to the Base64 format: `vCg0HahTdjiYZsI+yxsuhm/0BJNDgvVkT6BAFNU394A=`. Length of `state` parameter must be minimally 8 characters.
 3. Directly before sending the authentication request set a cookie to client service domain, for example:
    `Set-Cookie CLIENTSERVICE=XoD2LIie4KZRgmyc; HttpOnly`,
    where `CLIENTSERVICE` is a freely selected cookie name. The HttpOnly attribute must be applied to the cookie.
