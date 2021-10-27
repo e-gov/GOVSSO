@@ -160,7 +160,7 @@ The identity token is issued in JSON Web Token (References: JWT).
 | aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GOVSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified upon directing the user to the authentication process). <br><br> String or array of strings. A single aud value is present in GOVSSO tokens. |
 | exp | `"exp": 1591709871` |  The expiration time of the identity token (in Unix _epoch_ format). |
 | iat | `"iat": 1591709811` |  The time of issue of the identity token (in Unix _epoch_ format). |
-| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service id token (References: TARA "4.3.1 Identity token"). |
+| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service id token (References: TARA "4.3.1 Identity token"). NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | profile_attributes |  |  The data of the authenticated user, including the eIDAS attributes. Values are taken directly from identity tokens that are issued by TARA authentication service. |
 | profile_attributes.date_of_birth | `"date_of_birth": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
 | profile_attributes.given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it consists special characters). |
@@ -381,7 +381,7 @@ Pragma: no-cache
 | access_token |  OAuth 2.0 access token. With the access token the client application can request authenticated user’s data from userinfo endpoint.<br> **Not used in GOVSSO because GOVSSO session management is purely identity token dependent. All user data is already available in the ID token of the user.** |
 | token_type |  OAuth 2.0 access token type with `bearer` value. Not used in GOVSSO. |
 | expires_in |  The validity period of the OAuth 2.0 access token. Not used in GOVSSO. |
-| id_token |  Identity token, in Base64 format. The identity token is issued in JSON Web Token (References: JWT) |
+| id_token |  Identity token, encapsulated in JWS Compact Serialization form (References: JWS-COMPACT_SERIALIZATION). The identity token itself is issued in JSON Web Token (References: JWT) format .|
 
 **Error response**
 
@@ -623,23 +623,22 @@ When an application session was terminated internally by GOVSSO, the logout toke
 
 ### Protection against false request attacks
 
-The client application must implement protective measures against false request attacks (cross-site request forgery, CSRF). This can be achieved by using `state` and `nonce` security codes. Using `state` is compulsory; using `nonce` is optional. The procedure of using state is described below.
+The client application must implement protective measures against false request attacks (cross-site request forgery, CSRF). This can be achieved by using `state` and `nonce` security codes. Using `state` is compulsory; using `nonce` is optional. The procedure of using state parameter with client side cookie (in this case the client application do not need to store the state itself) is given below.
 
 The `state` security code is used to combat falsification of the redirect request following the authentication request. The client application must perform the following steps:
 
 1. Generate a nonce word, for example of the length of 16 characters: `XoD2LIie4KZRgmyc` (referred to as `R`).
 2. Calculate from the `R` nonce word the `H = hash(R)` hash, for example by using the SHA256 hash algorithm and by converting the result to the Base64 format: `vCg0HahTdjiYZsI+yxsuhm/0BJNDgvVkT6BAFNU394A=`.
-3. Add an order to set a cookie to the authentication request, for example:
-   `Set-Cookie ETEENUS=XoD2LIie4KZRgmyc; HttpOnly`,
-   where `ETEENUS` is a freely selected cookie name. The HttpOnly attribute must be applied to the cookie.
-4. Set the following value for the state parameter calculated based on section 2:
+3. Directly before sending the authentication request set a cookie to client service domain, for example:
+   `Set-Cookie CLIENTSERVICE=XoD2LIie4KZRgmyc; HttpOnly`,
+   where `CLIENTSERVICE` is a freely selected cookie name. The HttpOnly attribute must be applied to the cookie.
+4. On making the authentication request set the following value for the state parameter calculated based on section 2:
    `GET ... state=vCg0HahTdjiYZsI+yxsuhm/0BJNDgvVkT6BAFNU394A=`
-   Thus, two elements are sent in an authentication request: a nonce word for including in the cookie and the hash value calculated from the nonce word in the `state` parameter. The client application is not required to remember the nonce word or the hash value.
-
+ 
 In the course of processing the redirect request, the client application must:
 
-1. Take the `ETEENUS` value of the cookie received with the request.
-2. Calculate the hash based on the cookie value.
+1. Take the `CLIENTSERVICE` value of the cookie received with the request (with callback request two values are received: cookie with the nonce and the nonce hash in `state` parameter).
+2. Calculate the hash based on the cookie value and convert it to Base64.
 3. Verify that the hash matches the `state` value mirrored back in the redirect request.
 
 The redirect request may only be accepted if the checks described above are successful.
@@ -676,6 +675,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 9. [OIDC-BASIC] OpenID Connect Basic Client Implementer’s Guide 1.0 - [https://openid.net/specs/openid-connect-basic-1_0.html](https://openid.net/specs/openid-connect-basic-1_0.html)
 10. [OIDC-DISCOVERY] OpenID Connect Discovery - [https://openid.net/specs/openid-connect-discovery-1_0.html](https://openid.net/specs/openid-connect-discovery-1_0.html)
 11. [JWK] JSON Web Key - [https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)
+12. [JWS-COMPACT-SERIALIZATION] JWS Compact Serialization Overview - [https://tools.ietf.org/html/rfc7515#section-3.1](https://tools.ietf.org/html/rfc7515#section-3.1)
 
 ## Change history
 
