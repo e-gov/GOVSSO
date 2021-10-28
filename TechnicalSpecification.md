@@ -9,7 +9,7 @@ v0.01, 26.10.2021
 - TOC
 {:toc}
 - 
-## Overview
+## 1 Overview
 
 This document describes the technical characteristics of the State Single Sign-On (GOVSSO) service protocol and includes advice for implementing client application interfaces. GOVSSO protocol was designed following the best practices of OpenID Connect protocol and is heavily influenced of the current TARA service protocol (References: TARA). As a result, a large part of this document is identical to TARA service technical specification.
 
@@ -17,7 +17,7 @@ GOVSSO service will provide the same authentication means and similar flow as pr
 
 The terminology in this document follows the terminology used in TARA technical specification (References: TARA).
 
-## OpenID Connect compliance
+## 2 OpenID Connect compliance
 
 GOVSSO protocol has been designed to follow the OpenID Connect protocol standard as closely as possible. The intent is to create a protocol that is compatible with a wide range of OpenID Foundation certified OIDC client applications and standard libraries. OIDC is by itself a very diverse protocol, providing multiple different workflows for a wide array of use-cases. To limit the scope of the development required to implement GOVSSO service and client applications, the full scope of OIDC protocol will not be supported. This chapter describes the main customizations that are done to GOVSSO as compared to the full OIDC protocol:
 
@@ -31,7 +31,7 @@ GOVSSO protocol has been designed to follow the OpenID Connect protocol standard
 - Central logout is supported according to OIDC Back-Channel logout specification (References, OIDC-BACK).
 - Client applications must always prove knowledge of previous identity token to check session status or end session in GOVSSO. Different from OIDC standard protocol, the `id_token_hint` parameter is usually described as a mandatory parameter in GOVSSO requests.
 
-## SSO session
+## 3 SSO session
 
 GOVSSO will create an SSO session for each successful user authentication and stores it in its internal session storage. The SSO session is used to store user personal information and various parameters about the authentication request (for example authentication time, authentication level of assurance, authentication method used). The authentication information and parameters are not allowed to change during the authentication session.
 
@@ -45,9 +45,9 @@ SSO session expires when no new authentication requests or session update reques
 
 The SSO session may also be terminated before the end of its expiry time by the user. When the user initiates a logout from one client application the client application must inform GOVSSO of the logout event. The user is then given an option to terminate the SSO session and log out of all client applications related to the same SSO session.
 
-## GOVSSO process flows
+## 4 GOVSSO process flows
 
-### Authentication process
+### 4.1 Authentication process
 
 In order to log a user into a client application, the client application must acquire an identity token from GOVSSO. The identity token will contain relevant user personal information as well as information of the SSO session. If the SSO session does not exist prior to the authentication request, a new session is created. If the session already exists but its level of assurance is lower than requested in the new request, then the previous SSO session will be terminated and a new SSO session will be created.
 
@@ -67,7 +67,7 @@ In order to log a user into a client application, the client application must ac
 10. The client application will use the authorization code to acquire a GOVSSO identity token. This is done in client application backend by sending an identity token request to GOVSSO.
 11. GOVSSO will respond to the client application with a GOVSSO identity token. GOVSSO will also internally update the SSO session expiration time to `currentTime + 15 minutes`. The client application now has the user authentication information and can display the protected page.
 
-### SSO session update process
+### 4.2 SSO session update process
 
 Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive. In GOVSSO protocol this is done by acquiring a new token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will a `prompt` parameter to the request (`prompt=none`).
 
@@ -87,7 +87,7 @@ If the SSO session update request fails for any reason, then the client applicat
 6. Using the authorization code, the client application makes an identity token request to GOVSSO. GOVSSO responds with a new identity token and a directive for the user agent to update SSO session cookie expiration date to `currentTime + 15 minutes`.
 7. Client application stores identity token with into its session storage and shows protected content to user.
 
-### Logout process
+### 4.3 Logout process
 
 It is expected that client applications terminate GOVSSO session as soon as the user has finished using client application(s). If a user has requested to log out of a client application, then information about this event must be sent to GOVSSO as well. GOVSSO will either terminate the SSO session automatically (if only one other client application is linked to the same SSO session) or display a logout consent form. The consent form allows user to log out of all client applications at once or just the single application.
 
@@ -105,7 +105,7 @@ After a successful logout the user agent is redirected back to the client applic
 8. If no client applications remain linked to SSO session, GOVSSO will terminate the session. User has been logged out of all client applications.
 9. User agent is redirected back to the `redirect_uri` of the client application which initiated the logout procedure.
 
-### Back-channel logout notifications
+### 4.4 Back-channel logout notifications
 
 Each GOVSSO client application must declare support to the OIDC Back-Channel logout specification. Each client must provide a back-channel logout endpoint URL as part of their registration information. GOVSSO will send an out-of-band POST request to client application back-channel logout endpoint every time an SSO session ends.
 
@@ -115,9 +115,9 @@ If the logout succeeded, the RP MUST respond with HTTP 200 OK.
 
 Access to the back-channel logout endpoint should be restricted. Only GOVSSO needs to have access to given endpoint.
 
-## Tokens
+## 5 Tokens
 
-### Identity token
+### 5.1 Identity token
 
 In GOVSSO protocol the identity token is a used as a certificate of the fact of authentication was performed. The identity token has a concrete issuance and expiration date between which it is to be considered valid.
 
@@ -175,9 +175,9 @@ The identity token is issued in JSON Web Token (References: JWT).
 | sid | `"sid": "f5ab396c-1490-4042-b073-ae8e003c7258"` |  Session ID - String identifier for a GOVSSO session. To and RP, This represents a session of a User Agent or device for a logged-in End-User. Different sid values are used to identify distinct sessions at GOVSSO. |
 | auth_time | `"auth_time": 1591709810` |  The time of successful authentication of the user in GOVSSO. In the Unix _epoch_ format. |
 
-Identitiy token may consist other OpenID Connect protocol based fields that are not supported in GOVSSO.
+Identity token may consist other OpenID Connect protocol based fields that are not supported in GOVSSO.
 
-### Logout token
+### 5.2 Logout token
 
 GOVSSO sends a JWT similar to an ID Token to client applications called a Logout Token to request that they log out a GOVSSO session or user. The token issuer is GOVSSO and the audience is the client application. Upon receiving a logout token the client application is expected to validate the token to make sure that it is a valid logout request. In case the token is valid the client application session (session between client application and user agent) must be ended.
 
@@ -215,9 +215,9 @@ OIDC logout tokens can be encrypted but GOVSSO logout tokens are not encrypted.
 | iat | yes |  `"iat": 1591958452` |  Issued at time, as specified ID token (Chapter ID Token "Identity token claims"). |
 | jti | yes |  `"jti": "c0cfc91a-cdf5-4706-ad26-847b3a3fb937"` |  Unique identifier for the token, as specified in Section 9 of OIDC-CORE. |
 
-## Requests
+## 6 Requests
 
-### Authentication request
+### 6.1 Authentication request
 
 **Request**
 
@@ -303,7 +303,7 @@ state=hkMVY7vjuN7xyLl5
 
 The user may also return to the e-service without choosing an authentication method and completing the authentication process (via ‘Back to the service provider’ link). This option is provided for the cases in which the user has clicked ‘Log in’ in the client application but does not actually wish to log in. In the application for subscribing to the service, the institution must notify RIA of the URL to which the user should be redirected in the case of clicking ‘Back to the service provider’. NB! The OpenID Connect protocol-based redirect URL and the URL described here have different meanings.
 
-### Identity token request
+### 6.2 Identity token request
 
 **Request**
 
@@ -391,7 +391,7 @@ Response body might contain other fields, that client application must ignore.
 
 In case the token endpoint encounters an error and can not issue valid tokens, an error response is generated according to OIDC Core specification (References: OIDC-CORE)
 
-### SSO session update request
+### 6.3 SSO session update request
 
 **Request**
 
@@ -473,7 +473,7 @@ error_description=Authenticated+subject+does+not+match+provided+id_token_hint&
 state=hkMVY7vjuN7xyLl5
 ````
 
-### SSO logout request
+### 6.4 SSO logout request
 
 **Request**
 
@@ -511,7 +511,7 @@ GET https://client.example.com/callback?state=hkMVY7vjuN7xyLl5
 
 If the logout request processing is unsuccessful (for example the client and post_logout_redirect_uri do not match or a technical error in GOVSSO prevents user logout), the user agent will be redirected to GOVSSO error URL. According to OIDC the logout request does not provide means to redirect the user back to client application with an error message. Therefore, the user logout flow will end in GOVSSO instead of the client application. GOVSSO should display some form of request correlation id to aid customer support.
 
-### Back-channel logout request
+### 6.5 Back-channel logout request
 
 **Request**
 
@@ -538,9 +538,9 @@ logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
 | protocol, host, port and path | yes |  `https://client.example.com:443/back-channel-logout` |  Client application must authorize access to GOVSSO to an internal URL and port. Access to the port should be limited based on IP address. The port must be protected with TLS. GOVSSO must trust the logout endpoint server certificate. |
 | logout_token | yes |  `logout_token=eyJhbGciOiJSUz...qgp1dg` |  GOVSSO sends a JWT token similar to an ID token to client applications called a Logout Token to request that they log out. Logout token will give the client application exact information about the subject and the session (see the sid claim in ID Token) that should be logged out. The token is signed by GOVSSO with the same secret key that is used for singing issued ID Tokens. |
 
-## Security operations
+## 7 Security operations
 
-### Verification of the identity and logout tokens
+### 7.1 Verification of the identity and logout tokens
 
 The client application must always verify the identity token and logout token. The client application must implement all the verifications based on OpenID Connect and OAuth 2.0 protocols. (References: OIDC-CORE, OIDC-BACK)
 
@@ -627,7 +627,7 @@ For example, if the client application wants to use only authentication methods 
 
 In case the level of assurance in the authentication request using acr_values parameter is not specified, the identity token must be equal to a level of assurance `substantial` or `high`.
 
-### Creating a session
+### 7.2 Creating a session
 
 After a successful verification of the identity token, the client application will create a session with the user (‘log in the user’). The client application is responsible for creating and holding the sessions. The methods for doing this are not included in the scope of the GOVSSO authentication service.
 
@@ -639,7 +639,7 @@ Logout tokens usually contain the same `sid` claim. When a logout token is recei
 
 When an application session was terminated internally by GOVSSO, the logout token may instead contain only a `sub` claim. In this case the client application is expected to terminate all session that contain id tokens with matching sub value (force the user to log out on all user agents).
 
-### Protection against false request attacks
+### 7.3 Protection against false request attacks
 
 The client application must implement protective measures against false request attacks (cross-site request forgery, CSRF). This can be achieved by using `state` and `nonce` security codes. Using `state` is compulsory; using `nonce` is optional. The procedure of using state parameter with client side cookie (in this case the client application do not need to store the state itself) is given below.
 
@@ -665,11 +665,11 @@ The key element of the process described above is connection of the `state` valu
 
 Further information: unfortunately, this topic is not presented clearly in the OpenID Connect protocol (References: OIDC-CORE). Some information can be found from an unofficial document (References: OIDC-BASIC section "2.1.1.1 Request Parameters").
 
-### Logging
+### 7.4 Logging
 
 Logging must enable the reconstruction of the course of the communication between GOVSSO and the client application for each occasion of using GOVSSO. For this purpose, all following requests and responses must be logged by GOVSSO as well as by the client application: authentication_request, authentication_redirect, token_request, session_update_request, session_update_redirect, logout_request, logout_redirect, backchannel_logout. As the volumes of data transferred are not large, the URL as well as the identity token must be logged in full. The retention periods of the logs should be determined based on the importance of the client application. We advise using 1 … 7 years. In case of any issue, please submit an excerpt from the log (Which requests were sent to GOVSSO? Which responses were received?). Correlation of TARA and GOVSSO logs will be done on GOVSSO service provider side.
 
-## GOVSSO endpoints
+## 8 GOVSSO endpoints
 
 | Endpoint   |    description       |
 |------------|----------------------|
@@ -680,7 +680,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 | token |  GOVSSO endpoint to obtain an Access Token, an ID Token (References: OIDC-CORE "3.1.3.  Token Endpoint"). Access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
 | logout |  GOVSSO client application initiated logout endpoint. (References: OIDC-SESSION "5. RP-Initiated Logout"). |
 
-## References
+## 9 References
 
 1. [OIDC-CORE] OpenID Connect Core 1.0 - [https://openid.net/specs/openid-connect-core-1_0.html](https://openid.net/specs/openid-connect-core-1_0.html)
 2. [OIDC-SESSION] OpenID Connect Session - [https://openid.net/specs/openid-connect-session-1_0.html](https://openid.net/specs/openid-connect-session-1_0.html)
