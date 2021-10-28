@@ -7,8 +7,8 @@ permalink: TechnicalSpecification
 v0.01, 26.10.2021
 
 - TOC
+
 {:toc}
-- 
 ## 1 Overview
 
 This document describes the technical characteristics of the State Single Sign-On (GOVSSO) service protocol and includes advice for implementing client application interfaces. GOVSSO protocol was designed following the best practices of OpenID Connect protocol and is heavily influenced of the current TARA service protocol [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. As a result, a large part of this document is identical to TARA service technical specification.
@@ -60,7 +60,7 @@ In order to log a user into a client application, the client application must ac
     1. If SSO session exists and its level of assurance is equal or higher than requested the process will continue from step 8.
     2. Otherwise GOVSSO will automatically terminate the existing session and the process continues from step 5.
 5. SSO session does not exist, therefore, GOVSSO needs the user to be authenticated with TARA service. GOVSSO constructs a valid TARA authentication request and redirects user agent to it.
-6. User is securely authenticated in TARA service. The detailed authentication process is described in TARA technical specification [[https://e-gov.github.io/TARA-Doku/TechnicalSpecification](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. Once the user has been authenticated TARA will redirect the user agent back to GOVSSO with the TARA authorization code.
+6. User is securely authenticated in TARA service. The detailed authentication process is described in TARA technical specification [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. Once the user has been authenticated TARA will redirect the user agent back to GOVSSO with the TARA authorization code.
 7. GOVSSO uses the authorization code to acquire a user identity token from TARA service. This request happens in GOVSSO backend system. GOVSSO will store the user identification information in its session storage.
 8. GOVSSO will optionally display a user consent form. This form is displayed only when a previous SSO session was used for authentication. Meaning that in step 4a a valid existing session was found.
 9. GOVSSO will construct its own authorization code and redirects the user agent back to client application URL.
@@ -160,12 +160,12 @@ The identity token is issued in JSON Web Token [[JWT](https://tools.ietf.org/htm
 | aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GOVSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified upon directing the user to the authentication process). <br><br> String or array of strings. A single aud value is present in GOVSSO tokens. |
 | exp | `"exp": 1591709871` |  The expiration time of the identity token (in Unix _epoch_ format). |
 | iat | `"iat": 1591709811` |  The time of issue of the identity token (in Unix _epoch_ format). |
-| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service id token [[https://e-gov.github.io/TARA-Doku/TechnicalSpecification](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.|
+| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service id token [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | profile_attributes |  |  The data of the authenticated user, including the eIDAS attributes. Values are taken directly from identity tokens that are issued by TARA authentication service. |
 | profile_attributes.date_of_birth | `"date_of_birth": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
 | profile_attributes.given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it consists special characters). |
 | profile_attributes.family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user (the test name was selected because it includes special characters). |
-| amr | `"amr": "mID"` |  Authentication method reference.  The authentication method used for user authentication. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - cross-border<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[https://e-gov.github.io/TARA-Doku/TechnicalSpecification](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
+| amr | `"amr": "mID"` |  Authentication method reference.  The authentication method used for user authentication. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - cross-border<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
 | state | `"state": "1OnH3qwltWy81fKqcmjYTqnco9yVQ2gGZXws/DBLNvQ="` |  Security element. The authentication request’s `state` parameter value. |
 | nonce | `"nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM"` |  Security element. The authentication request’s `nonce` parameter value. Value is present only in case the `nonce` parameter was sent in the authentication request. |
 | acr | `"acr": "high"` |  Authentication Context Class Reference. Signals the level of assurance of the authentication device that was used. Possible values: `low`, `substantial`, `high`. The element is not used if the level of authentication is not applicable or is unknown. |
