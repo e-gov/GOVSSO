@@ -11,11 +11,11 @@ v0.01, 26.10.2021
 - 
 ## 1 Overview
 
-This document describes the technical characteristics of the State Single Sign-On (GOVSSO) service protocol and includes advice for implementing client application interfaces. GOVSSO protocol was designed following the best practices of OpenID Connect protocol and is heavily influenced of the current TARA service protocol (References: TARA). As a result, a large part of this document is identical to TARA service technical specification.
+This document describes the technical characteristics of the State Single Sign-On (GOVSSO) service protocol and includes advice for implementing client application interfaces. GOVSSO protocol was designed following the best practices of OpenID Connect protocol and is heavily influenced of the current TARA service protocol [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. As a result, a large part of this document is identical to TARA service technical specification.
 
 GOVSSO service will provide the same authentication means and similar flow as provided by TARA service. The actual authentication of users is still done in TARA service. GOVSSO will add an authentication session management functionality on top of the existing service. For the client application perspective GOVSSO will be a separate OIDC provider next to the existing TARA service.
 
-The terminology in this document follows the terminology used in TARA technical specification (References: TARA).
+The terminology in this document follows the terminology used in TARA technical specification [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)].
 
 ## 2 OpenID Connect compliance
 
@@ -28,7 +28,7 @@ GOVSSO protocol has been designed to follow the OpenID Connect protocol standard
 - Available authentication methods are provided based on the requested minimum authentication level of assurance.
 - GOVSSO supports only a single default scope that will return person authentication data: given name, family name, date_of_birth, email, person identifier. The - scope remains the same during the entire GOVSSO authentication session.
 - Single-sign-on (SSO) is supported. Client applications are expected to perform session status checks to keep the authentication session alive.
-- Central logout is supported according to OIDC Back-Channel logout specification (References, OIDC-BACK).
+- Central logout is supported according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)].
 - Client applications must always prove knowledge of previous identity token to check session status or end session in GOVSSO. Different from OIDC standard protocol, the `id_token_hint` parameter is usually described as a mandatory parameter in GOVSSO requests.
 
 ## 3 SSO session
@@ -60,7 +60,7 @@ In order to log a user into a client application, the client application must ac
     1. If SSO session exists and its level of assurance is equal or higher than requested the process will continue from step 8.
     2. Otherwise GOVSSO will automatically terminate the existing session and the process continues from step 5.
 5. SSO session does not exist, therefore, GOVSSO needs the user to be authenticated with TARA service. GOVSSO constructs a valid TARA authentication request and redirects user agent to it.
-6. User is securely authenticated in TARA service. The detailed authentication process is described in TARA technical specification (References: TARA). Once the user has been authenticated TARA will redirect the user agent back to GOVSSO with the TARA authorization code.
+6. User is securely authenticated in TARA service. The detailed authentication process is described in TARA technical specification [[https://e-gov.github.io/TARA-Doku/TechnicalSpecification](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. Once the user has been authenticated TARA will redirect the user agent back to GOVSSO with the TARA authorization code.
 7. GOVSSO uses the authorization code to acquire a user identity token from TARA service. This request happens in GOVSSO backend system. GOVSSO will store the user identification information in its session storage.
 8. GOVSSO will optionally display a user consent form. This form is displayed only when a previous SSO session was used for authentication. Meaning that in step 4a a valid existing session was found.
 9. GOVSSO will construct its own authorization code and redirects the user agent back to client application URL.
@@ -109,7 +109,7 @@ After a successful logout the user agent is redirected back to the client applic
 
 Each GOVSSO client application must declare support to the OIDC Back-Channel logout specification. Each client must provide a back-channel logout endpoint URL as part of their registration information. GOVSSO will send an out-of-band POST request to client application back-channel logout endpoint every time an SSO session ends.
 
-The logout request contains a logout token. The logout token must be validated according to OIDC Back-Channel logout specification (References: OIDC-BACK "2.6.  Logout Token Validation").  After receiving a valid logout token from the GOVSSO, the client application locates the session(s) identified by the `iss` and `sub` Claims and/or the `sid` Claim. The client application then clears any state associated with the identified session(s). If the identified user is already logged out at the client application when the logout request is received, the logout is considered to have succeeded.
+The logout request contains a logout token. The logout token must be validated according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6.  Logout Token Validation".  After receiving a valid logout token from the GOVSSO, the client application locates the session(s) identified by the `iss` and `sub` Claims and/or the `sid` Claim. The client application then clears any state associated with the identified session(s). If the identified user is already logged out at the client application when the logout request is received, the logout is considered to have succeeded.
 
 If the logout succeeded, the RP MUST respond with HTTP 200 OK.
 
@@ -121,7 +121,7 @@ Access to the back-channel logout endpoint should be restricted. Only GOVSSO nee
 
 In GOVSSO protocol the identity token is a used as a certificate of the fact of authentication was performed. The identity token has a concrete issuance and expiration date between which it is to be considered valid.
 
-The identity token is issued in JSON Web Token (References: JWT).
+The identity token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)].
 
 **Example GOVSSO identity token:**
 
@@ -155,21 +155,21 @@ The identity token is issued in JSON Web Token (References: JWT).
 
 | Identity token element (claim)   | example           |     explanation       |
 |----------------------------------|------------------ |-----------------------|
-| jti | `"jti"="663a35d8-92ec-4a8d-95e7-fc6ca90ebda2"` |  Identity token unique identifier, (References: JWT "4.1.7.  jti (JWT ID) Claim"). |
+| jti | `"jti"="663a35d8-92ec-4a8d-95e7-fc6ca90ebda2"` |  Identity token unique identifier ([[JWT](https://tools.ietf.org/html/rfc7519)] "4.1.7.  jti (JWT ID) Claim"). |
 | iss | `"iss":"https://govsso.ria.ee/"` |  Issuer of the identity token (GOVSSO). |
 | aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GOVSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified upon directing the user to the authentication process). <br><br> String or array of strings. A single aud value is present in GOVSSO tokens. |
 | exp | `"exp": 1591709871` |  The expiration time of the identity token (in Unix _epoch_ format). |
 | iat | `"iat": 1591709811` |  The time of issue of the identity token (in Unix _epoch_ format). |
-| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service id token (References: TARA "4.3.1 Identity token"). NB! in case of eIDAS authentication the maximum length is 256 characters.|
+| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service id token [[https://e-gov.github.io/TARA-Doku/TechnicalSpecification](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | profile_attributes |  |  The data of the authenticated user, including the eIDAS attributes. Values are taken directly from identity tokens that are issued by TARA authentication service. |
 | profile_attributes.date_of_birth | `"date_of_birth": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
 | profile_attributes.given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it consists special characters). |
 | profile_attributes.family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user (the test name was selected because it includes special characters). |
-| amr | `"amr": "mID"` |  Authentication method reference.  The authentication method used for user authentication. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - cross-border<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future (References: TARA "4.1 Authentication request"). |
+| amr | `"amr": "mID"` |  Authentication method reference.  The authentication method used for user authentication. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - cross-border<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[https://e-gov.github.io/TARA-Doku/TechnicalSpecification](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
 | state | `"state": "1OnH3qwltWy81fKqcmjYTqnco9yVQ2gGZXws/DBLNvQ="` |  Security element. The authentication request’s `state` parameter value. |
 | nonce | `"nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM"` |  Security element. The authentication request’s `nonce` parameter value. Value is present only in case the `nonce` parameter was sent in the authentication request. |
 | acr | `"acr": "high"` |  Authentication Context Class Reference. Signals the level of assurance of the authentication device that was used. Possible values: `low`, `substantial`, `high`. The element is not used if the level of authentication is not applicable or is unknown. |
-| at_hash | `"at_hash": "AKIDtvBT2JS_02tkl_DvuA"` |  The access token hash calculated as described in OIDC specification (References: OIDC-CORE). |
+| at_hash | `"at_hash": "AKIDtvBT2JS_02tkl_DvuA"` |  The access token hash calculated as described in OIDC specification [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
 | email | `"email": "60001018800@eesti.ee"` |  The user’s e-mail address.<br><br> Only issued if an Estonian ID card is used for authenticating the user in TARA service. Is read by TARA from the SAN extension of the user’s authentication certificate (from the RFC822 type `Subject Alternative Name` field) |
 | email_verified | `"email_verified" : false` |  Signals if the e-mail address of the user has been verified. TARA always issues a value false. It means that TARA does not verify or issue information on whether or not the user has redirected their eesti.ee e-mail address. GOVSSO will return the same value that is returned in TARA issued identity token. |
 | sid | `"sid": "f5ab396c-1490-4042-b073-ae8e003c7258"` |  Session ID - String identifier for a GOVSSO session. To and RP, This represents a session of a User Agent or device for a logged-in End-User. Different sid values are used to identify distinct sessions at GOVSSO. |
@@ -213,7 +213,7 @@ OIDC logout tokens can be encrypted but GOVSSO logout tokens are not encrypted.
 | events | yes | `"events": {`<br> `"http://schemas.openid.net/event/backchannel-logout": {}`<br> `}` |  Claim whose value is a JSON object containing the member name `http://schemas.openid.net/event/backchannel-logout.` This declares that the JWT is a Logout Token. The corresponding member value MUST be a JSON object and SHOULD be the empty JSON object `{}`. |
 | aud | yes |  `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` | Audience(s), as specified in ID token (Chapter ID Token "Identity token claims"). |
 | iat | yes |  `"iat": 1591958452` |  Issued at time, as specified ID token (Chapter ID Token "Identity token claims"). |
-| jti | yes |  `"jti": "c0cfc91a-cdf5-4706-ad26-847b3a3fb937"` |  Unique identifier for the token, as specified in Section 9 of OIDC-CORE. |
+| jti | yes |  `"jti": "c0cfc91a-cdf5-4706-ad26-847b3a3fb937"` |  Unique identifier for the token, as specified in Section 9 of [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
 
 ## 6 Requests
 
@@ -245,12 +245,12 @@ acr_values=substantial
 |---------------|------------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol).<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration authorization_endpoint` parameter. |
 | client_id | yes |   |  Application identifier. The application identifier is issued to the institution by RIA upon registration of the client application as a user of the authentication service. |
-| redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata (see `client_id` parameter). |
+| redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[URLENC](https://en.wikipedia.org/wiki/Percent-encoding)].<br> It is not permitted [[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint" to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata (see `client_id` parameter). |
 | scope | yes | `scope=openid` |  The authentication scope. Space delimited list of requested scopes.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request.<br> In the default `scope` of openid GOVSSO will issue identity tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA identity tokens. At this moment email is only available when authentication was performed with Estonian national id-card card type authentication device.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
 | state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Read more about formation and verification of state under 'Protection against false request attacks'. |
 | response_type | yes |  `response_type=code` |  Determines the manner of communication of the authentication result to the server. The method of authorization code is supported (authorization flow of the OpenID Connect protocol) and it is referred to the code value. |
 | ui_locales | no |  `ui_locales=et` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language. The client can select the desired language. This will also set the GUI language for TARA service views. |
-| nonce | no |  `nonce=fsdsfwrerhtry3qeewq` |  A unique parameter which helps to prevent replay attacks based on the OIDC protocol (References, [Core], subsection 3.1.2.1. Authentication Request). The nonce parameter is not compulsory. |
+| nonce | no |  `nonce=fsdsfwrerhtry3qeewq` |  A unique parameter which helps to prevent replay attacks based on the OIDC protocol ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1. Authentication Request"). The nonce parameter is not compulsory. |
 | acr_values | no |  `acr_values=substantial` |  The minimum required level of authentication based on the eIDAS LoA (level of assurance). It is permitted to apply one value of the following: `low`, `substantial`, `high`. `substantial` is used by default if the value has not been selected.<br><br> GOVSSO will store the authentication level of assurance (LoA) in the SSO session object as an Authentication Context Class Reference (`acr`) claim. The value is returned by TARA in the person identity token. Upon each GOVSSO authentication request, the server will check that the requested level of assurance (`acr_values` parameter value) is lower or equal to the `acr` claim value of the GOVSSO session. If the SSO session acr level of assurance is lower than requested, the previous GOVSSO session is automatically terminated and a new authentication is requested from TARA. After successful authentication a new SSO session is created. |
 | prompt | no |  `prompt=consent` |  Required parameter signalling GOVSSO that user consent should be asked before returning information to the client application. If GOVSSO cannot obtain consent, it will return an error, typically `consent_required`. |
 
@@ -285,7 +285,7 @@ Request might contain other URL parameters, that client application must ignore.
 
 If GOVSSO is unable to process an authentication request – there is an error in the request, TARA was unable to authenticate user or another error has occurred – GOVSSO transfers an error message (URL parameter `error`) and the description of the error (URL parameter `error_description`) in the redirect request.
 
-TARA relies on the OpenID Connect standard on error messages (References: OIDC-CORE "3.1.2.6. Authentication Error Response" and OAUTH "4.1.2.1. Error Response"). The error messages are always displayed in English.
+TARA relies on the OpenID Connect standard error messages [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.6. Authentication Error Response" and [[OAUTH](https://tools.ietf.org/html/rfc6749)] "4.1.2.1. Error Response". The error messages are always displayed in English.
 
 `state` is also returned but no authorization code (`code`) is sent.
 
@@ -383,13 +383,13 @@ Pragma: no-cache
 | access_token |  OAuth 2.0 access token. With the access token the client application can request authenticated user’s data from userinfo endpoint.<br> **Not used in GOVSSO because GOVSSO session management is purely identity token dependent. All user data is already available in the ID token of the user.** |
 | token_type |  OAuth 2.0 access token type with `bearer` value. Not used in GOVSSO. |
 | expires_in |  The validity period of the OAuth 2.0 access token. Not used in GOVSSO. |
-| id_token |  Identity token, encapsulated in JWS Compact Serialization form (References: JWS-COMPACT_SERIALIZATION). The identity token itself is issued in JSON Web Token (References: JWT) format .|
+| id_token |  Identity token, encapsulated in JWS Compact Serialization form ([[JWS](https://tools.ietf.org/html/rfc7515)] chapter 3.1). The identity token itself is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)] format .|
 
 Response body might contain other fields, that client application must ignore.
 
 **Error response**
 
-In case the token endpoint encounters an error and can not issue valid tokens, an error response is generated according to OIDC Core specification (References: OIDC-CORE)
+In case the token endpoint encounters an error and can not issue valid tokens, an error response is generated according to OIDC Core specification [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)].
 
 ### 6.3 SSO session update request
 
@@ -421,16 +421,16 @@ id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo...TvE
 
 | URL element   | compulsory       |    example        |     explanation       |
 |---------------|------------------|------------------ |-----------------------|
-| protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol), References: [OAUTH]).<br><br> The URL is provided from OIDC server public discovery service: `https://tara-sso-demo.eesti.ee/.well-known/openid-configuration authorization_endpoint` parameter. |
+| protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol [[OAUTH](https://tools.ietf.org/html/rfc6749)]).<br><br> The URL is provided from OIDC server public discovery service: `https://tara-sso-demo.eesti.ee/.well-known/openid-configuration authorization_endpoint` parameter. |
 | client_id | yes |   |  Application identifier. The application identifier is issued to the institution by RIA upon registration of the client application as a user of the authentication service. |
-| redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata. |
+| redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[URLENC](https://en.wikipedia.org/wiki/Percent-encoding)].<br> It is not permitted ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata. |
 | scope | yes | `scope=openid` |  The authentication scope. Space delimited list of requested scopes.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request.<br> In the default scope of `openid` GOVSSO will issue identity tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA identity tokens. At this moment email is only available when authentication was performed with Estonian national id-card card type authentication device.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
 | state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Length of `state` parameter must be minimally 8 characters. Read more about formation and verification of state under 'Protection against false request attacks'. |
 | response_type | yes |  `response_type=code` |  Determines the manner of communication of the authentication result to the server. The method of authorization code is supported (authorization flow of the OpenID Connect protocol) and it is referred to the code value. |
 | ui_locales | no |  `ui_locales=et` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language. The client can select the desired language. This will also set the GUI language for TARA service views. |
-| nonce | no |  `nonce=fsdsfwrerhtry3qeewq` |  A unique parameter which helps to prevent replay attacks based on the OIDC protocol (References, [Core], subsection 3.1.2.1. Authentication Request). The nonce parameter is not compulsory. |
+| nonce | no |  `nonce=fsdsfwrerhtry3qeewq` |  A unique parameter which helps to prevent replay attacks based on the OIDC protocol [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1. Authentication Request". The nonce parameter is not compulsory. |
 | acr_values | no |  `acr_values=substantial` |  The minimum required level of authentication based on the eIDAS LoA (level of assurance). It is permitted to apply one value of the following: `low`, `substantial`, `high`. `substantial` is used by default if the value has not been selected.<br><br> GOVSSO will store the authentication level of assurance (LoA) in the SSO session object as an Authentication Context Class Reference (`acr`) claim. The value is returned by TARA in the person identity token. Upon each GOVSSO authentication request, the server will check that the requested level of assurance (`acr_values` parameter value) is lower or equal to the `acr` claim value of the GOVSSO session. If the SSO session acr level of assurance is lower than requested, the previous GOVSSO session is automatically terminated and a new authentication is requested from TARA. After successful authentication a new SSO session is created. |
-| prompt | yes |  `prompt=none` |  Signals GOVSSO server that it MUST NOT display any authentication or consent view to the user. An error is returned if user is not already authenticated in GOVSSO or the client application does not have pre-configured consent for the requested scope, acr_values or does not fulfill other conditions for processing the request. The error code will typically be login_required, interaction_required, or another code defined in OIDC standard (References, [Technical specification#OIDC] Section 3.1.2.6.). |
+| prompt | yes |  `prompt=none` |  Signals GOVSSO server that it MUST NOT display any authentication or consent view to the user. An error is returned if user is not already authenticated in GOVSSO or the client application does not have pre-configured consent for the requested scope, acr_values or does not fulfill other conditions for processing the request. The error code will typically be login_required, interaction_required, or another code defined in OIDC standard ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.6. Authentication Error Response"). |
 | id_token_hint | yes |  `id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo...TvE` |  ID Token previously issued by GOVSSO being passed as a hint about the user's current or past authenticated session with the client application. If the user identified by the ID Token is logged in or is logged in by the request, then GOVSSO returns a positive response; otherwise, it WILL return an error. **Encryption of the id_token_hint parameter is not supported in GOVSSO.** |
 
 **Response**
@@ -460,7 +460,7 @@ state=hkMVY7vjuN7xyLl5
 
 If GOVSSO is unable to process an session update request – there is an error in the request or another error has occurred – GOVSSO transfers an error message (URL parameter `error`) and the description of the error (URL parameter `error_description`) in the redirect request.
 
-TARA relies on the OpenID Connect standard on error messages (References: OIDC-CORE "3.1.2.6. Authentication Error Response" and Technical specification#OAUTH "4.1.2.1. Error Response"). The error messages are always displayed in English.
+TARA relies on the OpenID Connect standard on error messages [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.6. Authentication Error Response" and [[OAUTH](https://tools.ietf.org/html/rfc6749)] "4.1.2.1. Error Response". The error messages are always displayed in English.
 
 `state` is also redirected but no authorization code (`code`) is sent. E.g.:
 
@@ -493,8 +493,8 @@ ui_locales=et
 
 | URL element   | compulsory       |    example        |     explanation       |
 |---------------|------------------|------------------ |-----------------------|
-| protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/sessions/logout` |  `/oauth2/auth` is the OpenID Connect-based logout endpoint of the GOVSSO service. Described in OIDC session management specification (References, OIDC-SESSION "2.1.  OpenID Provider Discovery Metadata" )<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration end_session_endpoint` parameter. |
-| post_logout_redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback` |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary (References: URLENC).<br> It is not permitted (References: OAUTH "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; References: URI "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the identity token (token audience must belong to a registered GOVSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GOVSSO. In GOVSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
+| protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/sessions/logout` |  `/oauth2/auth` is the OpenID Connect-based logout endpoint of the GOVSSO service. Described in OIDC session management specification [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "2.1.  OpenID Provider Discovery Metadata" <br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration end_session_endpoint` parameter. |
+| post_logout_redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback` |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[https://en.wikipedia.org/wiki/Percent-encoding](https://en.wikipedia.org/wiki/Percent-encoding).<br> It is not permitted ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment".<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the identity token (token audience must belong to a registered GOVSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GOVSSO. In GOVSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
 | id_token_hint | yes |  `id_token_hint=eyJhbGciOiJSU...TvE` |  ID Token previously issued by GOVSSO being passed as a hint about the user's current or past authenticated session with the client application. If the user identified by the ID Token is not logged in or is logged in by the request, then GOVSSO returns a positive response; otherwise, it WILL return an error. **`id_token_hint` encryption is not supported.** |
 | state | no |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Length of `state` parameter must be minimally 8 characters. Read more about formation and verification of state under 'Protection against false request attacks'.<br> If included in the logout request, the TARA passes this value back to the RP using the state query parameter when redirecting the user agent back to the client application.<br> Using the state parameter is not mandatory for login callbacks. It is expected that the user was already logged out of the client application before calling GOVSSO logout endpoint. |
 | ui_locales | no |  `ui_locales=et	` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language.<br> If the user was logged into a single client application, then no GUI prompt will be displayed to the user. |
@@ -515,13 +515,13 @@ If the logout request processing is unsuccessful (for example the client and pos
 
 **Request**
 
-All GOVSSO clients are expected to support OIDC Back-channel logout functionality. According to back-channel logout specification (References: OIDC-BACK) GOVSSO server will send an out-of-band logout request to each client application when the user has requested to end the GOVSSO session. GOVSSO will include a logout token with each request so that the client applications can verify the logout event.
+All GOVSSO clients are expected to support OIDC Back-channel logout functionality. According to back-channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] GOVSSO server will send an out-of-band logout request to each client application when the user has requested to end the GOVSSO session. GOVSSO will include a logout token with each request so that the client applications can verify the logout event.
 
-Relying Parties supporting back-channel-based logout register a back-channel logout URI with GOVSSO as part of their client registration (References: OIDC-BACK "2.2.  Indicating RP Support for Back-Channel Logout").
+Relying Parties supporting back-channel-based logout register a back-channel logout URI with GOVSSO as part of their client registration [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.2.  Indicating RP Support for Back-Channel Logout".
 
-The back-channel logout URI must be an absolute URI as defined by Section 4.3 of [URI]. The back-channel logout includes an `application/x-www-form-urlencoded` formatted query component. The back-channel logout URI will not include a fragment component.
+The back-channel logout URI must be an absolute URI as defined by Section 4.3 of  [[URI](https://tools.ietf.org/html/rfc3986)]. The back-channel logout includes an `application/x-www-form-urlencoded` formatted query component. The back-channel logout URI will not include a fragment component.
 
-Client applications must perform logout token validation to check if the received request is a valid GOVSSO logout request. Validation must be performed according to OIDC protocol OIDC-BACK "2.6. Logout Token Validation". If at any point token validation fails, the client application is expected to respond with a HTTP status code 400 Bad Request. If a session with a matching session ID is not found but the logout token is otherwise valid, then the client application should respond with HTTP status code 200 OK.
+Client applications must perform logout token validation to check if the received request is a valid GOVSSO logout request. Validation must be performed according to OIDC protocol [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6. Logout Token Validation". If at any point token validation fails, the client application is expected to respond with a HTTP status code 400 Bad Request. If a session with a matching session ID is not found but the logout token is otherwise valid, then the client application should respond with HTTP status code 200 OK.
 
 ***Example GOVSSO back-channel logout request***
 ````
@@ -542,7 +542,7 @@ logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
 
 ### 7.1 Verification of the identity and logout tokens
 
-The client application must always verify the identity token and logout token. The client application must implement all the verifications based on OpenID Connect and OAuth 2.0 protocols. (References: OIDC-CORE, OIDC-BACK)
+The client application must always verify the identity token and logout token. The client application must implement all the verifications based on OpenID Connect and OAuth 2.0 protocols [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] and [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)].
 
 The client must verify token’s:
 
@@ -663,7 +663,7 @@ The redirect request may only be accepted if the checks described above are succ
 
 The key element of the process described above is connection of the `state` value with the session. This is achieved by using a cookie. (This is a temporary authentication session. The work session will be created by the client application after the successful completion of the authentication).
 
-Further information: unfortunately, this topic is not presented clearly in the OpenID Connect protocol (References: OIDC-CORE). Some information can be found from an unofficial document (References: OIDC-BASIC section "2.1.1.1 Request Parameters").
+Further information: unfortunately, this topic is not presented clearly in the OpenID Connect protocol [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. Some information can be found from an unofficial document [[OIDC-BASIC](https://openid.net/specs/openid-connect-basic-1_0.html)] "2.1.1.1 Request Parameters".
 
 ### 7.4 Logging
 
@@ -673,27 +673,12 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Endpoint   |    description       |
 |------------|----------------------|
-| server discovery |  Public endpoint for GOVSSO server OpenID Connect configuration information. Usually provided as standard endpoint for OIDC implementations that support service discovery. (References: OIDC-DISCOVERY "4.1 OpenID Provider Configuration Request"). |
-| public signature key of the service |  JSON Web Key Set document for GOVSSO service. Publishes at minimum the public key that client applications must use to validate id token and logout token signatures. (References: JWK). |
+| server discovery |  Public endpoint for GOVSSO server OpenID Connect configuration information. Usually provided as standard endpoint for OIDC implementations that support service discovery [[OIDC-DISCOVERY](https://openid.net/specs/openid-connect-discovery-1_0.html)] "4.1 OpenID Provider Configuration Request". |
+| public signature key of the service |  JSON Web Key Set document for GOVSSO service. Publishes at minimum the public key that client applications must use to validate id token and logout token signatures [[JWK](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)]. |
 | registration of the client application |  Dynamic registration is not supported, static registration via `help@ria.ee`. |
-| authorization |  OAuth 2.0 authorization endpoint. Used for GOVSSO session update requests and authentication requests. (References: OAUTH "3.1.  Authorization Endpoint"). |
-| token |  GOVSSO endpoint to obtain an Access Token, an ID Token (References: OIDC-CORE "3.1.3.  Token Endpoint"). Access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
-| logout |  GOVSSO client application initiated logout endpoint. (References: OIDC-SESSION "5. RP-Initiated Logout"). |
-
-## 9 References
-
-1. [OIDC-CORE] OpenID Connect Core 1.0 - [https://openid.net/specs/openid-connect-core-1_0.html](https://openid.net/specs/openid-connect-core-1_0.html)
-2. [OIDC-SESSION] OpenID Connect Session - [https://openid.net/specs/openid-connect-session-1_0.html](https://openid.net/specs/openid-connect-session-1_0.html)
-3. [OIDC-BACK] OpenID Connect Back-Channel Logout - [https://openid.net/specs/openid-connect-backchannel-1_0.html](https://openid.net/specs/openid-connect-backchannel-1_0.html)
-4. [OAUTH] The OAuth 2.0 Authorization Framework - [https://tools.ietf.org/html/rfc6749](https://tools.ietf.org/html/rfc6749)
-5. [URI] Uniform Resource Identifier (URI): Generic Syntax - [https://tools.ietf.org/html/rfc3986](https://tools.ietf.org/html/rfc3986)
-6. [JWT] JSON Web Token - [https://tools.ietf.org/html/rfc7519](https://tools.ietf.org/html/rfc7519)
-7. [TARA] TARA technical documentation - [https://e-gov.github.io/TARA-Doku/TechnicalSpecification](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)
-8. [URLENC] Percent-encoding - [https://en.wikipedia.org/wiki/Percent-encoding](https://en.wikipedia.org/wiki/Percent-encoding)
-9. [OIDC-BASIC] OpenID Connect Basic Client Implementer’s Guide 1.0 - [https://openid.net/specs/openid-connect-basic-1_0.html](https://openid.net/specs/openid-connect-basic-1_0.html)
-10. [OIDC-DISCOVERY] OpenID Connect Discovery - [https://openid.net/specs/openid-connect-discovery-1_0.html](https://openid.net/specs/openid-connect-discovery-1_0.html)
-11. [JWK] JSON Web Key - [https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)
-12. [JWS-COMPACT-SERIALIZATION] JWS Compact Serialization Overview - [https://tools.ietf.org/html/rfc7515#section-3.1](https://tools.ietf.org/html/rfc7515#section-3.1)
+| authorization |  OAuth 2.0 authorization endpoint. Used for GOVSSO session update requests and authentication requests. [[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.  Authorization Endpoint". |
+| token |  GOVSSO endpoint to obtain an Access Token, an ID Token [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". Access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
+| logout |  GOVSSO client application initiated logout endpoint. [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "5. RP-Initiated Logout". |
 
 ## Change history
 
