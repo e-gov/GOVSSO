@@ -557,15 +557,29 @@ For more detailed information about the identity token verifications can be foun
 
 **Verifying the signature**
 
-The identity token is signed by the GOVSSO authentication service. The logout tokens are signed by GOVSSO back-channel logout service. The signature meets the JWT standard. GOVSSO uses the same key for signing both the identity and logout tokens.
+The identity token and logout tokens are signed by the GOVSSO authentication service. The signature meets the JWT standard. GOVSSO uses the same key for signing both the identity and logout tokens.
 
-GOVSSO uses the RS256 signature algorithm. The client application must, at least, be able to verify the signature given by using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. A situation in which the GOVSSO signature algorithm is needed is, in principle, possible – if a security failure is detected in RS256).
+GOVSSO uses the RS256 signature algorithm. The client application must, at least, be able to verify the signature given by using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. The change of algorithm is considered unlikely, but possible in case a security vulnerability is detected in the `RS256`.
 
 For the signature verification the public signature key of GOVSSO must be used. The public signature key is published at the public signature key endpoint (see chapter “Endpoints”).
 
-The public signature key is stable - the public signature key will be changed every 2-3 years or accordingly to the security recommendations.
+The public signature key is stable - the public signature key will be changed  according to security recommendations. However, the key can be changed without prior notice for security reasons. Key exchange is carried out based on [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html#RotateSigKeys) standard.
 
-The public signature key has an identifier (kid). The key identifier is aligned with the best practices of OpenID Connect and OAuth 2.0 that enables the key exchange without the service interruption.
+The public signature key has an identifier (`kid`). The key identifier is aligned with the best practices of [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html#Signing) and OAuth 2.0 that enables the key exchange without the service interruption.
+
+We recommend buffering the GOVSSO public key (together with `kid` value) in order to decrease the amount of requests made to GOVSSO server. However, it is allowed to request the key on each validation.
+
+For signature validation following checks needs to be performed on client application:
+
+1) Read the `kid` value from the JWT header.
+
+2a) If the client application do not buffer the public key, make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header.
+
+2b) If client application buffers the public key (it needs to be buffered together with `kid` value), it needs to compare the `kid` value from JWT header with buffered `kid` value. If they match, buffered key can be used. If not client application needs to make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header and buffer it.
+
+3) Validate the signature using the key corresponding to `kid` value from the JWT header.
+
+NB! "Hardcoding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GOVSSO is already using the new key until the new key is taken use in client application.
 
 **Trust of the public signature key endpoint**
 
