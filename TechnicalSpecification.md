@@ -2,18 +2,22 @@
 permalink: TechnicalSpecification
 ---
 
+This documentation is in DRAFT state and can be changed during the development of GOVSSO. Changes in API may take place until finalization of this document. 
+{: .adv}
+
 # Technical specification
 {: .no_toc}
 v0.01, 26.10.2021
 
 - TOC
-
 {:toc}
+
 ## 1 Overview
 
-This document describes the technical characteristics of the State Single Sign-On (GOVSSO) service protocol and includes advice for implementing client application interfaces. GOVSSO protocol was designed following the best practices of OpenID Connect protocol and is heavily influenced of the current TARA service protocol [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. As a result, a large part of this document is identical to TARA service technical specification.
+This document describes the technical characteristics of the State Single Sign-On (GOVSSO) service protocol and includes advice for implementing client application interfaces. 
 
-GOVSSO service will provide the same authentication means and similar flow as provided by TARA service. The actual authentication of users is still done in TARA service. GOVSSO will add an authentication session management functionality on top of the existing service. For the client application perspective GOVSSO will be a separate OIDC provider next to the existing TARA service.
+GOVSSO protocol was designed following the best practices of OpenID Connect protocol and is heavily influenced of the current TARA service protocol [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)].
+GOVSSO will provide, in addition to user authentication (which is provided by TARA), user session management functionality.
 
 The terminology in this document follows primarily terminology used in OpenID Connect protocol ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]). In non OpenID Connect specific cases [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] terminology is followed.
 
@@ -21,25 +25,25 @@ The terminology in this document follows primarily terminology used in OpenID Co
 
 GOVSSO protocol has been designed to follow the OpenID Connect protocol standard as closely as possible. The intent is to create a protocol that is compatible with a wide range of OpenID Foundation certified OIDC client applications and standard libraries. OIDC is by itself a very diverse protocol, providing multiple different workflows for a wide array of use-cases. To limit the scope of the development required to implement GOVSSO service and client applications, the full scope of OIDC protocol will not be supported. This chapter describes the main customizations that are done to GOVSSO as compared to the full OIDC protocol:
 
-- The service supports only the authorization code flow of OIDC. The authorization code flow is deemed the most secure option and is thus appropriate for public services.
-- All information about an authenticated user is transferred to the application in an ID Token.
-- The eIDAS assurance level is also transferred to the application (in the `acr` claim, using custom claim values `high`, `substantial`, `low`).
-- The requested minimum authentication level of assurance is selected by the client application in the beginning of GOVSSO session (on initial authentication).
-- Available authentication methods are provided based on the requested minimum authentication level of assurance.
+- The service supports only the authorization code flow of OIDC ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.  Authentication using the Authorization Code Flow"). The authorization code flow is deemed the most secure option and is thus appropriate for public services.
+- All information about an authenticated user is transferred to the application with ID Token ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token and 3.1.3.6.  ID Token").
+- The eIDAS level of assurance (loa) is returned in the `acr` claim in ID Token, using custom claim values `high`, `substantial`, `low`. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token"
+- The requested minimum authentication level of assurance is selected by the client application in the beginning of GOVSSO session (on initial authentication). [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "5.5.1.1.  Requesting the "acr" Claim".
+- Available authentication methods for the user are provided based on the requested minimum authentication level of assurance.
 - GOVSSO supports only a single default scope that will return person authentication data: given name, family name, date_of_birth, email, person identifier. The - scope remains the same during the entire GOVSSO authentication session.
 - Single-sign-on (SSO) is supported. Client applications are expected to perform session status checks to keep the authentication session alive.
 - Central logout is supported according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)].
-- Client applications must always prove knowledge of previous ID Token to check session status or end session in GOVSSO. Different from OIDC standard protocol, the `id_token_hint` parameter is usually described as a mandatory parameter in GOVSSO requests.
+- Client applications must always prove knowledge of previous ID Token to check session status or end session in GOVSSO. Different from OIDC standard protocol, the `id_token_hint` parameter is a mandatory parameter in GOVSSO requests. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request"
 
 ## 3 SSO session
 
-GOVSSO will create an SSO session for each successful user authentication and stores it in its internal session storage. The SSO session is used to store user personal information and various parameters about the authentication request (for example authentication time, authentication level of assurance, authentication method used). The authentication information and parameters are not allowed to change during the authentication session.
+GOVSSO will create a SSO session for each successful user authentication and stores it in its internal session storage. The SSO session is used to store user personal information and various parameters about the authentication request (for example authentication time, authentication level of assurance, authentication method used). The authentication information and parameters are not allowed to change during the authentication session.
 
 The SSO session is linked to the user agent via a session cookie. The user is allowed to create a single SSO session per user agent but may create concurrent sessions across multiple user agents.
 
-SSO session has a limited validity period of 15 minutes. During the SSO session validity period the user is not required to re-authenticate themselves while logging into different client applications. Instead they are given the option of using the authentication information stored in SSO session. GOVSSO issues ID Tokens as proof of an active SSO session. The ID Token contains the user personal information as well as the session information. All issued ID Tokens are linked to an SSO session via a session id (`sid`) claim and have the same validity period as the SSO session.
+SSO session has a limited validity period of 15 minutes. During the SSO session validity period the user is not required to re-authenticate while logging into different client applications. Instead, they are given the option to use the authentication information stored in SSO session. GOVSSO issues ID Tokens as proof of an active SSO session. The ID Token contains the user personal information as well as the session information. All issued ID Tokens are linked to an SSO session via a session id (`sid`) claim and have the same validity period as the SSO session.
 
-The SSO session validity period is extended every time a new client application authentication request is received, or an existing authenticated client application performs an SSO session update request. Every time an SSO session update request occurs, the session validity period is updated to `currentTime + 15 minutes`. This means that all client applications are contributing to keep the SSO session valid for the duration the user is still using the client applications.
+The SSO session validity period is extended by 15 minutes every time a new client application authentication request is received, or an existing authenticated client application performs a SSO session update request. This means that all client applications are contributing to keep the SSO session valid for the duration the user is still using the client applications.
 
 SSO session expires when no new authentication requests or session update requests have been received in the last 15 minutes. This is a safety feature assuring that user SSO session is not kept alive too long after the user has finished using the client applications.
 
@@ -322,7 +326,7 @@ redirect_uri=https%3A%2F%2client.example.com%2Fcallback
 ````
 (for better readability, the body of the HTTP POST request is divided over several lines)
 
-The client secret code must be provided in the ID Token request. For this purpose, the request must include the Authorization request header with the value formed of the word Basic, a space, and a string <client_id>:<client_secret> encoded in the Base64 format (see RFC 2617 HTTP Authentication: Basic and Digest Access Authentication, Section 2 Basic Authentication Scheme).
+The client secret code must be provided in the ID Token request. For this purpose, the request must include the Authorization request header with the value formed of the word Basic, a space, and a string `<client_id>:<client_secret>` encoded in the Base64 format (see RFC 2617 HTTP Authentication: Basic and Digest Access Authentication, Section 2 Basic Authentication Scheme).
 
 The body of the HTTP POST request must be presented in a serialized format based on the OpenID Connect protocol.
 
@@ -637,7 +641,7 @@ The client application session expiration time should be slightly shorter than G
 
 Logout tokens usually contain the same `sid` claim. When a logout token is received the client application must find all application sessions that contain ID Tokens with the same `sid` claim value and terminate them (force the user to log out on the same user agent).
 
-When an application session was terminated internally by GOVSSO, the logout token may instead contain only a `sub` claim. In this case the client application is expected to terminate all session that contain id tokens with matching sub value (force the user to log out on all user agents).
+When an application session was terminated internally by GOVSSO, the logout token may instead contain only a `sub` claim. In this case the client application is expected to terminate all session that contain ID Tokens with matching sub value (force the user to log out on all user agents).
 
 ### 7.3 Protection against false request attacks
 
