@@ -16,3 +16,4 @@ permalink: References
 10. [OIDC-DISCOVERY] OpenID Connect Discovery - [https://openid.net/specs/openid-connect-discovery-1_0.html](https://openid.net/specs/openid-connect-discovery-1_0.html)
 11. [JWK] JSON Web Key - [https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)
 12. [JWS] JSON Web Signature (JWS) - [https://tools.ietf.org/html/rfc7515](https://tools.ietf.org/html/rfc7515)
+13. [HTTP-AUTH] HTTP Authentication: Basic and Digest Access Authentication - [https://datatracker.ietf.org/doc/html/rfc2617](https://datatracker.ietf.org/doc/html/rfc2617)
