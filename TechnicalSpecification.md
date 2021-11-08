@@ -671,14 +671,13 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 ## 8 GOVSSO endpoints
 
-| Endpoint   |    description       |
-|------------|----------------------|
-| server discovery |  Public endpoint for GOVSSO server OpenID Connect configuration information. Usually provided as standard endpoint for OIDC implementations that support service discovery [[OIDC-DISCOVERY](https://openid.net/specs/openid-connect-discovery-1_0.html)] "4.1 OpenID Provider Configuration Request". |
-| public signature key of the service |  JSON Web Key Set document for GOVSSO service. Publishes at minimum the public key that client applications must use to validate ID Token and Logout Token signatures [[JWK](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)]. |
-| registration of the client application |  Dynamic registration is not supported, static registration via `help@ria.ee`. |
-| authorization |  OAuth 2.0 authorization endpoint. Used for GOVSSO session update requests and authentication requests. [[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.  Authorization Endpoint". |
-| token |  GOVSSO endpoint to obtain an Access Token, an ID Token [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". Access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
-| logout |  GOVSSO client application initiated logout endpoint. [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "5. RP-Initiated Logout". |
+| Endpoint description | Endpoint | Comment |
+|----------------------|----------|---------|
+| server discovery | /.well-known/openid-configuration |Public endpoint for GOVSSO server OpenID Connect configuration information. Usually provided as standard endpoint for OIDC implementations that support service discovery [[OIDC-DISCOVERY](https://openid.net/specs/openid-connect-discovery-1_0.html)] "4.1 OpenID Provider Configuration Request". |
+| key info | /jwks |  JSON Web Key Set document for GOVSSO service. Publishes at minimum the public key that client applications must use to validate ID Token and Logout Token signatures [[JWK](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)]. |
+| authorization | /auth |  OAuth 2.0 authorization endpoint. Used for GOVSSO session update requests and authentication requests. [[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.  Authorization Endpoint". |
+| token | /token | GOVSSO endpoint to obtain ID Token [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". In addition access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
+| logout | /sessions/logout | GOVSSO client application initiated logout endpoint. [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "5. RP-Initiated Logout". |
 
 ## Change history
 
