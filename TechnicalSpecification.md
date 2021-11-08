@@ -546,7 +546,7 @@ logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
 
 ### 7.1 Verification of the ID Token and Logout Token
 
-The client application must always verify the ID Token and Logout Token. The client application must implement all the verifications based on OpenID Connect and OAuth 2.0 protocols [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] and [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)].
+The client application must always verify the ID Token and Logout Token. The client application must implement all the verifications based on OpenID Connect ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] and [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]) and OAuth 2.0 protocols ([OAUTH](https://tools.ietf.org/html/rfc6749)).
 
 The client must verify token’s:
 
@@ -557,109 +557,105 @@ The client must verify token’s:
 - authentication method (in case of ID Token)
 - eIDAS level of assurance of (in case of ID Token)
 
-For more detailed information about the ID Token verifications can be found from OpenID Connect and OAuth 2.0 protocol specifications.
 
 **Verifying the signature**
 
-The ID Token and Logout Tokens are signed by the GOVSSO authentication service. The signature meets the JWT standard. GOVSSO uses the same key for signing both the ID Token and Logout Token.
+The ID Token and Logout Tokens are signed by the GOVSSO authentication service. The signature meets the JWT standard ([JWT](https://tools.ietf.org/html/rfc7519)). GOVSSO uses the same key for signing ID Token and Logout Token.
 
-GOVSSO uses the RS256 signature algorithm. The client application must, at least, be able to verify the signature given by using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. The change of algorithm is considered unlikely, but possible in case a security vulnerability is detected in the `RS256`.
+`RS256` signature algorithm is used, the client application must be able to verify the signature using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. The change of algorithm is considered unlikely, but possible in case a security vulnerability is detected in the `RS256`.
 
-For the signature verification the public signature key of GOVSSO must be used. The public signature key is published at the public signature key endpoint (see chapter “Endpoints”).
+For the signature verification the GOVSSO public signature key must be used. The public signature key is published at the public signature key endpoint (see chapter “8. GOVSSO endpoints”).
 
-The public signature key is stable - the public signature key will be changed  according to security recommendations. However, the key can be changed without prior notice for security reasons. Key exchange is carried out based on [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html#RotateSigKeys) standard.
+The public signature key is stable - the public signature key will be changed according to security recommendations. However, the key can be changed without prior notice for security reasons. Key exchange is carried out based on [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html) standard.
 
-The public signature key has an identifier (`kid`). The key identifier is aligned with the best practices of [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html#Signing) and OAuth 2.0 that enables the key exchange without the service interruption.
+The public signature key has an identifier (`kid`). The key identifier is aligned with the best practices of [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html#Signing) and OAuth 2.0 ([OAUTH](https://tools.ietf.org/html/rfc6749)) that enables the key exchange without the service interruption.
 
 We recommend buffering the GOVSSO public key (together with `kid` value) in order to decrease the amount of requests made to GOVSSO server. However, it is allowed to request the key on each validation.
 
 For signature validation following checks needs to be performed on client application:
 
-1) Read the `kid` value from the JWT header.
-
-2a) If the client application do not buffer the public key, make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header.
-
-2b) If client application buffers the public key (it needs to be buffered together with `kid` value), it needs to compare the `kid` value from JWT header with buffered `kid` value. If they match, buffered key can be used. If not client application needs to make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header and buffer it.
-
-3) Validate the signature using the key corresponding to `kid` value from the JWT header.
+1. Read the `kid` value from the JWT header. 
+2. a. If the client application do not buffer the public key, make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header. <br>
+b. If client application buffers the public key (it needs to be buffered together with `kid` value), it needs to compare the `kid` value from JWT header with buffered `kid` value. If they match, buffered key can be used. If not client application needs to make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header and buffer it. 
+3. Validate the signature using the key corresponding to `kid` value from the JWT header.
 
 NB! "Hardcoding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GOVSSO is already using the new key until the new key is taken use in client application.
 
 **Trust of the public signature key endpoint**
 
-The client application makes HTTPS requests to GOVSSO server towards to the ID Token and public signature key endpoints. The client application must verify GOVSSO server’s certificate.
+HTTPS must be used on requests to GOVSSO server. The client application must verify GOVSSO server’s certificate.
 
 **Verifying the issuer of tokens**
 
-The iss value of the ID Token element must be https://govsso-demo.ria.ee/ (for GOVSSO test environment) or https://govsso.ria.ee/ (for GOVSSO production environment).
+The `iss` value of the ID Token element must be `https://govsso-demo.ria.ee/` (for GOVSSO test environment) or `https://govsso.ria.ee/` (for GOVSSO production environment).
 
 **Verifying the addressee of the tokens**
 
-The client application must verify whether the certificate received was issued for them. For this purpose, it must be made sure that the `aud` value of the ID Token element matches the `client ID` issued upon registration of the client application.
+The client application must verify whether the token received was issued for them. For this purpose, it must be made sure that the `aud` value of the ID Token element matches the `client_id` issued upon registration of the client application.
 
 **Verifying the validity of the tokens**
 
-***ID Token**
+***ID Token***
 
-The verification is done using elements in the ID Token: `iat`, `exp`. The client application uses its own clock to verify the validity. The following details should be verified:
+The verification is done using `iat` and `exp` elements in the ID Token. The client application uses its own clock to verify the validity. The following details should be verified:
 
-1) that token issuing time has reached:
+* that token issuing time has been reached:
 
 `iat` <= (current time + permitted difference between clocks)
 
-2) that the “expired” time has not been reached:
+* that the “expired” time has not been reached:
 
 `exp` > (current time - permitted difference between clocks)
 
-The application must choose the permitted difference between clocks value. These checks are required for preventing attacks and confusion.
+The application must choose the permitted difference between clocks value.
 
 ***Logout Token***
 
 The verification is done using the `iat` claim value of the Logout Token. The following details should be verified:
 
-1) that the token was not issued too far away from current time
+* that token issuing time has been reached 
 
 `iat` <= (current time + permitted difference between clocks)
 
-The application must choose the permitted difference between clocks value. These checks are required for preventing attacks and confusion.
+The application must choose the permitted difference between clocks value.
 
 **Verifying the eIDAS level of assurance**
 
 In order to prevent access to cross-border authentication tools with a lower security level, it must be verified that the authentication level in the `acr` claim of ID Token is not lower than the minimum level of assurance allowed.
 
-For example, if the client application wants to use only authentication methods with eIDAS level of assurance high and has specified the value in the `acr_values` parameter, then only ID Tokens with `acr` claim with value high can be accepted.
+For example, if the client application wants to use only authentication methods with eIDAS level of assurance `high` and has specified the value in the `acr_values` parameter, then only ID Tokens with `acr` claim with value `high` can be accepted.
 
-In case the level of assurance in the authentication request using acr_values parameter is not specified, the ID Token must be equal to a level of assurance `substantial` or `high`.
+In case the level of assurance in the authentication request using `acr_values` parameter is not specified, the ID Token must be equal to a level of assurance `substantial` or `high`.
 
 ### 7.2 Creating a session
 
-After a successful verification of the ID Token, the client application will create a session with the user (‘log in the user’). The client application is responsible for creating and holding the sessions. The methods for doing this are not included in the scope of the GOVSSO authentication service.
+After a successful verification of the ID Token, the client application will create a session with the user. The client application is responsible for creating and holding the sessions. The methods for doing this are not included in the scope of the GOVSSO authentication service.
 
 All tokens issued to the client application will contain a `sid` claim. This claim can be used to link client application session to SSO session. Client applications must store the latest ID Token issued for each session. The previous token is required to create session update requests and logout requests.
 
-The client application session expiration time should be slightly shorter than GOVSSO ID Token expiration date. This way the client application is forced to always request a new ID Token before the last ID Token expires. GOVSSO server will reject requests that contain ID Tokens that were issued too far away from current time.
+The client application session expiration time should be slightly shorter than GOVSSO ID Token expiration time. This way the client application is forced to always request a new ID Token before the last ID Token expires. GOVSSO server will reject requests that contain ID Tokens that have expired.
 
 Logout Tokens usually contain the same `sid` claim. When a Logout Token is received the client application must find all application sessions that contain ID Tokens with the same `sid` claim value and terminate them (force the user to log out on the same user agent).
 
-When an application session was terminated internally by GOVSSO, the Logout Token may instead contain only a `sub` claim. In this case the client application is expected to terminate all session that contain ID Tokens with matching sub value (force the user to log out on all user agents).
+When application session was terminated internally by GOVSSO, the Logout Token may instead contain only a `sub` claim. In this case the client application is expected to terminate all session that contain ID Tokens with matching `sub` value (force the user to log out on all user agents).
 
 ### 7.3 Protection against false request attacks
 
-The client application must implement protective measures against false request attacks (cross-site request forgery, CSRF). This can be achieved by using `state` and `nonce` security codes. Using `state` is compulsory; using `nonce` is optional. The procedure of using state parameter with client side cookie (in this case the client application do not need to store the state itself) is given below.
+The client application must implement protective measures against false request attacks (cross-site request forgery, CSRF). This can be achieved by using `state` and `nonce` security codes. Using `state` is compulsory; using `nonce` is optional. The procedure of using `state` parameter with client side cookie (in this case the client application do not need to store the state itself) is given below.
 
 The `state` security code is used to combat falsification of the redirect request following the authentication request. The client application must perform the following steps:
 
-1. Generate a nonce word, for example of the length of 16 characters: `XoD2LIie4KZRgmyc` (referred to as `R`).
-2. Calculate from the `R` nonce word the `H = hash(R)` hash, for example by using the SHA256 hash algorithm and by converting the result to the Base64 format: `vCg0HahTdjiYZsI+yxsuhm/0BJNDgvVkT6BAFNU394A=`. Length of `state` parameter must be minimally 8 characters.
-3. Directly before sending the authentication request set a cookie to client service domain, for example:
+1. Generate random nonce (not to confuse with `nonce` parameter) word `R`, for example of the length of 16 characters: `XoD2LIie4KZRgmyc`.
+2. Calculate hash `H` from the `R` (`H = hash(R)`), for example by using the SHA256 hash algorithm and by converting the result to the Base64 format: `vCg0HahTdjiYZsI+yxsuhm/0BJNDgvVkT6BAFNU394A=`. Length of `state` parameter must be minimally 8 characters.
+3. Directly before sending the authentication request set a cookie to client service domain with the value `R`, for example:
    `Set-Cookie CLIENTSERVICE=XoD2LIie4KZRgmyc; HttpOnly`,
    where `CLIENTSERVICE` is a freely selected cookie name. The HttpOnly attribute must be applied to the cookie.
-4. On making the authentication request set the following value for the state parameter calculated based on section 2:
+4. On making the authentication request set the value `H` for the `state` parameter:
    `GET ... state=vCg0HahTdjiYZsI+yxsuhm/0BJNDgvVkT6BAFNU394A=`
  
 In the course of processing the redirect request, the client application must:
 
-1. Take the `CLIENTSERVICE` value of the cookie received with the request (with callback request two values are received: cookie with the nonce and the nonce hash in `state` parameter).
+1. Take the `CLIENTSERVICE` value of the cookie received with the request (with callback request two values are received: cookie with the nonce word `R` and the nonce hash `H` in `state` parameter).
 2. Calculate the hash based on the cookie value and convert it to Base64.
 3. Verify that the hash matches the `state` value mirrored back in the redirect request.
 
@@ -667,11 +663,11 @@ The redirect request may only be accepted if the checks described above are succ
 
 The key element of the process described above is connection of the `state` value with the session. This is achieved by using a cookie. (This is a temporary authentication session. The work session will be created by the client application after the successful completion of the authentication).
 
-Further information: unfortunately, this topic is not presented clearly in the OpenID Connect protocol [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. Some information can be found from an unofficial document [[OIDC-BASIC](https://openid.net/specs/openid-connect-basic-1_0.html)] "2.1.1.1 Request Parameters".
+Unfortunately, this topic is not presented clearly in the OpenID Connect protocol [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)].
 
 ### 7.4 Logging
 
-Logging must enable the reconstruction of the course of the communication between GOVSSO and the client application for each occasion of using GOVSSO. For this purpose, all following requests and responses must be logged by GOVSSO as well as by the client application: authentication_request, authentication_redirect, token_request, session_update_request, session_update_redirect, logout_request, logout_redirect, backchannel_logout. As the volumes of data transferred are not large, the URL as well as the ID Token must be logged in full. The retention periods of the logs should be determined based on the importance of the client application. We advise using 1 … 7 years. In case of any issue, please submit an excerpt from the log (Which requests were sent to GOVSSO? Which responses were received?). Correlation of TARA and GOVSSO logs will be done on GOVSSO service provider side.
+Logging must enable the reconstruction of the course of the communication between GOVSSO and the client application for each occasion of using GOVSSO. For this purpose, all following requests and responses must be logged by GOVSSO as well as by the client application: authentication_request, authentication_redirect, token_request, session_update_request, session_update_redirect, logout_request, logout_redirect, backchannel_logout. As the volumes of data transferred are not large, the URL as well as the ID Token must be logged in full. The retention periods of the logs should be determined based on the importance of the client application. We advise using 1 … 7 years. In case of any issue, please submit an excerpt from the log (Which requests were sent to GOVSSO? Which responses were received?).
 
 ## 8 GOVSSO endpoints
 
