@@ -316,7 +316,7 @@ The ID Token request is a HTTP POST request which is used by the client applicat
 ***Example GOVSSO token request***
 ````
 POST /oauth2/token HTTP/1.1
-Host: govsso.eesti.ee
+Host: govsso.ria.ee
 Content-Type: application/x-www-form-urlencoded
 Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
  
@@ -425,7 +425,7 @@ id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo...TvE
 
 | URL element   | compulsory       |    example        |     explanation       |
 |---------------|------------------|------------------ |-----------------------|
-| protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol [[OAUTH](https://tools.ietf.org/html/rfc6749)]).<br><br> The URL is provided from OIDC server public discovery service: `https://tara-sso-demo.eesti.ee/.well-known/openid-configuration authorization_endpoint` parameter. |
+| protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol [[OAUTH](https://tools.ietf.org/html/rfc6749)]).<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration` `authorization_endpoint` parameter. |
 | client_id | yes |   |  Application identifier. The application identifier is issued to the institution by RIA upon registration of the client application as a user of the authentication service. |
 | redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[URLENC](https://en.wikipedia.org/wiki/Percent-encoding)].<br> It is not permitted ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata. |
 | scope | yes | `scope=openid` |  The authentication scope.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request. Scope values are case sensitive. Only openid is allowed, other values cause an error with code `invalid_scope` to be returned<br> In the default scope of `openid` GOVSSO will issue ID Tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA ID Tokens. At this moment email is only available when authentication was performed with Estonian national id-card.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
@@ -485,7 +485,7 @@ A client application can notify the GOVSSO that the user has logged out of clien
 
 ***Example GOVSSO logout request***
 ````
-GET https://tara-sso-demo.eesti.ee/oauth2/sessions/logout?
+GET https://govsso.ria.ee/oauth2/sessions/logout?
  
  
 id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs

@@ -4,6 +4,6 @@ permalink: Help
 
 # Help
 
-Contact Information System Authority: `help@ria.ee`
+Contact Information System Authority: help@ria.ee
 
-Please take also look in [FAQ](Faq).
+Please also look in [FAQ](Faq).
