@@ -113,7 +113,7 @@ After a successful logout the user agent is redirected back to the client applic
 
 Each GOVSSO client application must declare support to the OIDC Back-Channel logout specification ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]). Each client must provide a back-channel logout endpoint URL as part of their registration information. GOVSSO will send an out-of-band POST request to client application back-channel logout endpoint every time an SSO session ends.
 
-The logout request contains a Logout Token. The Logout Token must be validated according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6.  Logout Token Validation".  After receiving a valid Logout Token from the GOVSSO, the client application locates the session(s) identified by the `iss` and `sub` Claims and/or the `sid` Claim. The client application then clears any state associated with the identified session(s). If the identified user is already logged out at the client application when the logout request is received, the logout is considered to have succeeded.
+The logout request contains a Logout Token. The Logout Token must be validated according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6.  Logout Token Validation".  After receiving a valid Logout Token from the GOVSSO, the client application locates the session identified by the `sid` Claim. The client application then clears any state associated with the identified session. If the identified user is already logged out at the client application when the logout request is received, the logout is considered to have succeeded.
 
 If the logout succeeded, the RP MUST respond with HTTP 200 OK.
 
@@ -178,7 +178,7 @@ GOVSSO sends a JWT similar to an ID Token to client applications called a Logout
 
 Issued Logout Tokens are linked to ID Tokens via the `sid` claim. Each client application is expected to internally keep track of the ID Token `sid` claim and client application session relations. Meaning that each application session during which GOVSSO authentication was used, must hold the `sub` and `sid` values of ID Tokens that were issued during that application session.
 
-A Logout Token contains a `sub` claim, a `sid` claim, or both. If a `sid` claim is present, the client application must log out all client application sessions that contain the same `sid` value. If only a `sub` claim is present, then all client application sessions with the same `sub` value must be logged out. Logout Tokens with only a `sub` value are issued only if the logout was initiated by GOVSSO server (not a client application).
+A Logout Token contains a `sid` claim. The client application must log out all client application sessions that contain the same `sid` value.
 
 OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
 
@@ -192,7 +192,6 @@ OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
   "events": {
     "http://schemas.openid.net/event/backchannel-logout": {}
   },
-  "sub": "EE60001018800",
   "iat": 1591958452,
   "iss": "https://govsso.ria.ee/",
   "jti": "c0cfc91a-cdf5-4706-ad26-847b3a3fb937",
@@ -204,11 +203,11 @@ OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
 | Logout Token element (claim)   | compulsory       |    example        |     explanation       |
 |--------------------------------|------------------|------------------ |-----------------------|
 | iss | yes |  `"iss": "https://govsso.ria.ee/"` |  Issuer Identifier, as specified in  [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
-| sub | no |  `"sub": "EE60001018800"` | The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service ID Token [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.  |
 | events | yes | `"events": {`<br> `"http://schemas.openid.net/event/backchannel-logout": {}`<br> `}` |  Claim whose value is a JSON object containing the member name `http://schemas.openid.net/event/backchannel-logout.` This declares that the JWT is a Logout Token. The corresponding member value MUST be a JSON object and SHOULD be the empty JSON object `{}`. [OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html) "2.4.  Logout Token"|
 | aud | yes |  `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` | Audience(s), as specified in [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
 | iat | yes |  `"iat": 1591958452` |  Issued at time, as specified IN [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
 | jti | yes |  `"jti": "c0cfc91a-cdf5-4706-ad26-847b3a3fb937"` |  Unique identifier for the token, as specified in [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
+| sid | yes | `"sid": "f5ab396c-1490-4042-b073-ae8e003c7258"` |  Session ID - String identifier for a GOVSSO session. This represents a session of a User Agent. Different sid values are used to identify distinct sessions at GOVSSO. |
 
 ## 6 Requests
 
@@ -529,7 +528,7 @@ logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
 | Parameter   | compulsory     |    example        |     explanation       |
 |-------------|----------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://client.example.com:443/back-channel-logout` |  Client application must authorize access to GOVSSO to an internal URL and port. Access to the port should be limited based on IP address. The port must be protected with TLS. GOVSSO must trust the logout endpoint server certificate. |
-| logout_token | yes |  `logout_token=eyJhbGciOiJSUz...qgp1dg` |  GOVSSO sends a JWT token similar to an ID Token to client applications called a Logout Token to request that they log out. Logout Token will give the client application exact information about the subject and the session (see the sid claim in ID Token) that should be logged out. The token is signed by GOVSSO with the same secret key that is used for singing issued ID Tokens. |
+| logout_token | yes |  `logout_token=eyJhbGciOiJSUz...qgp1dg` |  GOVSSO sends a JWT token similar to an ID Token to client applications called a Logout Token to request that they log out. Logout Token will give the client application exact information about the session (see the sid claim in ID Token) that should be logged out. The token is signed by GOVSSO with the same secret key that is used for singing issued ID Tokens. |
 
 ## 7 Security operations
 
