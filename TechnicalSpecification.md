@@ -83,7 +83,7 @@ If the SSO session update request fails for any reason, then the client applicat
 
 1. User wants to access protected content in client application.
 2. Client application verifies whether user has active client application session and that client application session storage contains a valid (not expired) GOVSSO ID Token.
-3. Client application finds that user ID Token is about to expire and redirects user agent to GOVSSO with a valid SSO session update request. The request must include `id_token_hint` and `prompt=none` parameters.
+3. Client application finds that user ID Token is about to expire in 2 minutes from now and redirects user agent to GOVSSO with a valid SSO session update request. The request must include `id_token_hint` and `prompt=none` parameters.
 4. GOVSSO validates the request
     1. Verifies that an SSO session is still active for user agent
     2. Verifies that the SSO session subject matches the subject in the received ID Token.
