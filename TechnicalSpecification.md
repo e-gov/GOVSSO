@@ -30,7 +30,7 @@ GOVSSO protocol has been designed to follow the OpenID Connect protocol standard
 - The eIDAS level of assurance (loa) is returned in the `acr` claim in ID Token, using custom claim values `high`, `substantial`, `low`. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token"
 - The requested minimum authentication level of assurance is selected by the client application in the beginning of GOVSSO session (on initial authentication). [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "5.5.1.1.  Requesting the "acr" Claim".
 - Available authentication methods for the user are provided based on the requested minimum authentication level of assurance.
-- GOVSSO supports only a single default scope that will return person authentication data: given name, family name, date_of_birth, email, person identifier. The - scope remains the same during the entire GOVSSO authentication session.
+- GOVSSO supports only a single default scope that will return person authentication data: given name, family name, birthdate, person identifier. The scope remains the same during the entire GOVSSO authentication session.
 - Single-sign-on (SSO) is supported. Client applications are expected to perform session status checks to keep the authentication session alive.
 - Central logout is supported according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)].
 - Client applications must always prove knowledge of previous ID Token to check session status or end session in GOVSSO. Different from OIDC standard protocol, the `id_token_hint` parameter is a mandatory parameter in GOVSSO requests. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request"
@@ -139,20 +139,18 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
   "exp": 1591709871,
   "iat": 1591709811,
   "sub": "EE60001018800",
-  "profile_attributes": {
-    "date_of_birth": "2000-01-01",
-    "family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER",
-    "given_name": "MARY ÄNN"
-  },
-  "amr": "mID",
+  "birthdate": "2000-01-01",
+  "family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER",
+  "given_name": "MARY ÄNN",
+  "amr": [
+    "mID"
+  ],
   "acr": "high",
   "at_hash": "AKIDtvBT2JS_02tkl_DvuA",
   "auth_time": 1591709810,
   "nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM",
   "sid": "f5ab396c-1490-4042-b073-ae8e003c7258",
   "state": "1OnH3qwltWy81fKqcmjYTqnco9yVQ2gGZXws/DBLNvQ=",
-  "email": "60001018800@eesti.ee",
-  "email_verified" : false
 }
 ````
 **ID Token claims**
@@ -165,17 +163,14 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
 | exp | `"exp": 1591709871` |  The expiration time of the ID Token (in Unix _epoch_ format). |
 | iat | `"iat": 1591709811` |  The time of issue of the ID Token (in Unix _epoch_ format). |
 | sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service ID Token [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.|
-| profile_attributes |  |  The data of the authenticated user, including the eIDAS attributes. Values are taken directly from ID Tokens that are issued by TARA authentication service. |
-| profile_attributes.date_of_birth | `"date_of_birth": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
-| profile_attributes.given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it consists special characters). |
-| profile_attributes.family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user (the test name was selected because it includes special characters). |
-| amr | `"amr": "mID"` |  Authentication method reference.  The authentication method used for user authentication. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - European cross-border authentication<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
+| birthdate | `"birthdate": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
+| given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it consists special characters). |
+| family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user (the test name was selected because it includes special characters). |
+| amr | `"amr": [ "mID" ]` |  Authentication method reference. The authentication method used for user authentication. A single `amr` value is present in GOVSSO tokens. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - European cross-border authentication<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
 | state | `"state": "1OnH3qwltWy81fKqcmjYTqnco9yVQ2gGZXws/DBLNvQ="` |  Security element. The authentication request’s `state` parameter value. |
 | nonce | `"nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM"` |  Security element. The authentication request’s `nonce` parameter value. Value is present only in case the `nonce` parameter was sent in the authentication request. |
 | acr | `"acr": "high"` |  Authentication Context Class Reference. Signals the level of assurance of the authentication method that was used. Possible values: `low`, `substantial`, `high`. The element is not used if the level of assurance is not applicable or is unknown. |
 | at_hash | `"at_hash": "AKIDtvBT2JS_02tkl_DvuA"` |  The access token hash calculated as described in OIDC specification [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
-| email | `"email": "60001018800@eesti.ee"` |  The user’s e-mail address.<br><br> Only issued if an Estonian ID card is used for authenticating the user in TARA service. Is read by TARA from the SAN extension of the user’s authentication certificate (from the RFC822 type `Subject Alternative Name` field) |
-| email_verified | `"email_verified" : false` |  Signals if the e-mail address of the user has been verified. TARA always issues a value false. It means that TARA does not verify or issue information on whether or not the user has redirected their eesti.ee e-mail address. GOVSSO will return the same value that is returned in TARA issued ID Token. |
 | sid | `"sid": "f5ab396c-1490-4042-b073-ae8e003c7258"` |  Session ID - String identifier for a GOVSSO session. This represents a session of a User Agent. Different sid values are used to identify distinct sessions at GOVSSO. |
 | auth_time | `"auth_time": 1591709810` |  The time of successful authentication of the user in GOVSSO. In the Unix _epoch_ format. |
 
@@ -250,7 +245,7 @@ acr_values=substantial
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol).<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration` as `authorization_endpoint` parameter. |
 | client_id | yes | `client_id=58e7ba35aab5b4f1671a`  |  Client identifier. The client identifier is issued by RIA upon registration of the client application as a user of the authentication service. |
 | redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint"). The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[URLENC](https://en.wikipedia.org/wiki/Percent-encoding)].<br> It is not permitted to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata (see `client_id` parameter). |
-| scope | yes | `scope=openid` |  The authentication scope. Space delimited list of requested scopes.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request.<br> In the default `scope` of openid GOVSSO will issue ID Tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA ID Tokens. At this moment email is only available when authentication was performed with Estonian national id-card card.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
+| scope | yes | `scope=openid` |  The authentication scope. Space delimited list of requested scopes.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request.<br> In the default `scope` of openid GOVSSO will issue ID Tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `birthdate`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA ID Tokens. |
 | state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Read more about formation and verification of state under "7.3 Protection against false request attacks". |
 | response_type | yes |  `response_type=code` |  Determines the manner of communication of the authentication result to the server. Only value `code` is allowed as only authorization code flow is supported by GOVSSO |
 | ui_locales | no |  `ui_locales=et` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language. The client can select the desired language. This will also set the GUI language for TARA service views. |
@@ -428,7 +423,7 @@ id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo...TvE
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/auth` |  `/oauth2/auth` is the OpenID Connect-based authentication endpoint of the GOVSSO service (the concept of ‘authorization’ originates from the OAuth 2.0 standard protocol [[OAUTH](https://tools.ietf.org/html/rfc6749)]).<br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration` `authorization_endpoint` parameter. |
 | client_id | yes |   |  Application identifier. The application identifier is issued to the institution by RIA upon registration of the client application as a user of the authentication service. |
 | redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback`  |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[URLENC](https://en.wikipedia.org/wiki/Percent-encoding)].<br> It is not permitted ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment").<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application registration metadata. |
-| scope | yes | `scope=openid` |  The authentication scope.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request. Scope values are case sensitive. Only openid is allowed, other values cause an error with code `invalid_scope` to be returned<br> In the default scope of `openid` GOVSSO will issue ID Tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `date_of_birth`<br> `email`<br> `email_verified`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA ID Tokens. At this moment email is only available when authentication was performed with Estonian national id-card.<br><br> `email_verified` will always have a value of `false`. This is because TARA will not perform e-mail verification. |
+| scope | yes | `scope=openid` |  The authentication scope.<br><br> `openid` scope is compulsory to signal that this is an OIDC authentication request. Scope values are case sensitive. Only openid is allowed, other values cause an error with code `invalid_scope` to be returned<br> In the default scope of `openid` GOVSSO will issue ID Tokens with the following attributes:<br><br> `sub` (physical person identifier)<br> `given_name`<br> `family_name`<br> `birthdate`<br><br> Presence of given attribute values will depend on the amount of information that is returned within TARA ID Tokens. |
 | state | yes |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Length of `state` parameter must be minimally 8 characters. Read more about formation and verification of state under 'Protection against false request attacks'. |
 | response_type | yes |  `response_type=code` |  Determines the manner of communication of the authentication result to the server. The method of authorization code is supported (authorization flow of the OpenID Connect protocol) and it is referred to the code value. |
 | ui_locales | no |  `ui_locales=et` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language. The client can select the desired language. This will also set the GUI language for TARA service views. |
