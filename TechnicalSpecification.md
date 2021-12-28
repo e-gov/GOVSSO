@@ -7,7 +7,7 @@ This documentation is in DRAFT state and can be changed during the development o
 
 # Technical specification
 {: .no_toc}
-v0.01, 26.10.2021
+v0.1, 28.12.2021
 
 - TOC
 {:toc}
@@ -674,3 +674,4 @@ Logging must enable the reconstruction of the course of the communication betwee
 | Version, Date | Description |
 |---------------|-------------|
 | 0.01, 26.10.2021 | Initial version |
+| 0.1, 28.12.2021 | Preliminary protocol changes |
