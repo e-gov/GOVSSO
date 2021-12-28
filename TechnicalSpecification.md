@@ -469,7 +469,7 @@ state=hkMVY7vjuN7xyLl5
 
 **Request**
 
-A client application can notify the GOVSSO that the user has logged out of client application and might want to log out of GOVSSO as well. In this case, the client application, after having logged the user out of the client application, redirects the user's User Agent to GOVSSO's logout endpoint URL. This URL is normally obtained via the `end_session_endpoint` element of GOVSSO Discovery response or may be learned via other mechanisms.
+A client application must notify the GOVSSO that the user has logged out of client application and might want to log out of GOVSSO as well. In this case, the client application, after having logged the user out of the client application, redirects the user's User Agent to GOVSSO's logout endpoint URL. This URL is normally obtained via the `end_session_endpoint` element of GOVSSO Discovery response or may be learned via other mechanisms.
 
 ***Example GOVSSO logout request***
 ````
