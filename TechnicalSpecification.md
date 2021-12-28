@@ -93,7 +93,7 @@ If the SSO session update request fails for any reason, then the client applicat
 
 ### 4.3 Logout process
 
-It is expected that client applications terminate GOVSSO session as soon as the user has finished using client application(s). If a user has requested to log out of a client application, then information about this event must be sent to GOVSSO as well. GOVSSO will either terminate the SSO session automatically (if only one other client application is linked to the same SSO session) or display a logout consent form. The consent form allows user to log out from all client applications at once or just from single application.
+It is expected that client applications terminate GOVSSO session as soon as the user has finished using client application(s). If a user has requested to log out of a client application, then information about this event must be sent to GOVSSO as well. GOVSSO will either terminate the SSO session automatically (if only one client application is linked to the same SSO session) or display a logout consent form. The consent form allows user to log out from all client applications at once or to continue SSO session.
 
 After a successful logout the user agent is redirected back to the client application. If a technical error occurs or the logout request is invalid (for example `redirect_uri` does not match registered redirect URL in GOVSSO), then the user is redirected to GOVSSO default error page.
 
@@ -104,8 +104,8 @@ After a successful logout the user agent is redirected back to the client applic
 3. Client application redirects user agent to GOVSSO logout URL. The redirect must include the previous ID Token (as `id_token_hint` parameter) and a redirect URI (as `post_logout_redirect_uri` parameter) where the user agent must be redirected to after logout.
 4. GOVSSO validates the logout request. If the ID Token is not linked to the active SSO session of given user agent, then nothing is done, and the user agent is redirected back to the `post_logout_redirect_uri`. GOVSSO will unlink the client application from SSO session in its session store.
 5. If more client applications are linked to the same SSO session, then GOVSSO will show a logout consent page.
-6. User can either select to log out of only the client application that made the logout request or from all client applications that are linked to the same SSO session.
-7. If the user selected to log out from all client applications, GOVSSO will send a back-channel logout request to each linked client application and unlink client applications from GOVSSO session ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]). 
+6. User can either select to log out from all other client applications that are linked to the same SSO session or to continue SSO session with other client applications.
+7. If the user selected to log out from all other client applications, GOVSSO will send a back-channel logout request to each linked client application and unlink client applications from GOVSSO session ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]). 
 8. If no client applications remain linked to SSO session, GOVSSO will terminate the session. User has been logged out of all client applications.
 9. User agent is redirected back to the `post_logout_redirect_uri` of the client application which initiated the logout procedure.
 
