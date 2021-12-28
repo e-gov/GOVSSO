@@ -117,7 +117,9 @@ The logout request contains a Logout Token. The Logout Token must be validated a
 
 If the logout succeeded, the RP MUST respond with HTTP 200 OK.
 
-Access to the back-channel logout endpoint should be restricted. Only GOVSSO needs to have access to given endpoint.
+Access to the back-channel logout endpoint should be restricted to GOVSSO outgoing IP addresses that will be published by RIA.
+
+Back-channel logout endpoint must support TLSv1.2 and/or TLSv1.3 protocol. Back-channel logout endpoint must present a valid TLS certificate that is signed by a certificate authority (CA) that is participating in the Mozilla Root Program.
 
 ## 5 Tokens
 
