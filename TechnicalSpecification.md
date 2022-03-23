@@ -7,7 +7,7 @@ This documentation is in DRAFT state and can be changed during the development o
 
 # Technical specification
 {: .no_toc}
-v0.1, 28.12.2021
+v0.1, 2021-12-28
 
 - TOC
 {:toc}
@@ -49,11 +49,11 @@ SSO session expires when no new authentication requests or session update reques
 
 The SSO session may also be terminated before the end of its expiry time by the user. When the user initiates a logout from one client application the client application must inform GOVSSO of the logout event. The user is then given an option to terminate the SSO session and log out of all client applications related to the same SSO session.
 
-## 4 GOVSSO process flows
+## 4 Process flows
 
 ### 4.1 Authentication process
 
-In order to log a user into a client application, the client application must acquire an ID Token from GOVSSO. The ID Token will contain relevant user personal information as well as information of the SSO session. If the SSO session does not exist prior to the authentication request, a new session is created. If the session already exists but its level of assurance is lower than requested in the new request, then the previous SSO session will be terminated and a new SSO session will be created.
+In order to log a user into a client application, the client application must acquire an ID Token from GOVSSO. The ID Token will contain relevant user personal information as well as information of the SSO session. If the SSO session does not exist prior to the authentication request, a new session is created. If the session already exists but its level of assurance is lower than requested in the new request, then the user will be prompted that upon continuing the previous SSO session will be terminated and a new SSO session will be created.
 
 <p style='text-align:left;'><img src='img/govsso_tech_auth_flow.png' style='width:1000px'></p>
 
@@ -71,11 +71,11 @@ In order to log a user into a client application, the client application must ac
 10. The client application will use the authorization code to acquire a GOVSSO ID Token. This is done in client application backend by sending an ID Token request to GOVSSO.
 11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + 15 minutes`. The client application now has the user authentication information and can display the protected page.
 
-### 4.2 SSO session update process
+### 4.2 Session update process
 
-Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GOVSSO. In GOVSSO protocol this is done by acquiring a new token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will add `prompt` parameter to the request (`prompt=none`). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request".
+Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GOVSSO. In GOVSSO protocol this is done by acquiring a new ID Token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will add `prompt` parameter to the request (`prompt=none`). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request".
 
-SSO Session update request can be made only when the client application knows the previous ID Token and a valid SSO session exists. Client application must prove that it has knowledge of the SSO session context by including the `id_token_hint` parameter to request containing previous ID Token. This is a security measure and helps to assure that GOVSSO and client application have the same knowledge about the authenticated user.
+SSO session update request can be made only when the client application knows the previous ID Token and a valid SSO session exists. Client application must prove that it has knowledge of the SSO session context by including the `id_token_hint` parameter to request containing previous ID Token. This is a security measure and helps to assure that GOVSSO and client application have the same knowledge about the authenticated user.
 
 If the SSO session update request fails for any reason, then the client application must perform a new SSO authentication process to get a new ID Token.
 
@@ -129,7 +129,7 @@ In GOVSSO protocol the ID Token is used as a certificate of the fact that authen
 
 The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)] form.
 
-**Example GOVSSO ID Token:**
+***Example GOVSSO ID Token***
 
 ````
 {
@@ -157,14 +157,14 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
 
 | ID Token element (claim)   | example           |     explanation       |
 |----------------------------|------------------ |-----------------------|
-| jti | `"jti":"663a35d8-92ec-4a8d-95e7-fc6ca90ebda2"` |  ID Token unique identifier ([[JWT](https://tools.ietf.org/html/rfc7519)] "4.1.7.  jti (JWT ID) Claim"). |
-| iss | `"iss":"https://govsso.ria.ee/"` |  Issuer Identifier, as specified in  [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
-| aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GOVSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified in authentication request). <br><br> String or array of strings. A single aud value is present in GOVSSO tokens. |
+| jti | `"jti": "663a35d8-92ec-4a8d-95e7-fc6ca90ebda2"` |  ID Token unique identifier ([[JWT](https://tools.ietf.org/html/rfc7519)] "4.1.7.  jti (JWT ID) Claim"). |
+| iss | `"iss": "https://govsso.ria.ee/"` |  Issuer Identifier, as specified in  [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
+| aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GOVSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified in authentication request). <br><br> String or array of strings. A single `aud` value is present in GOVSSO tokens. |
 | exp | `"exp": 1591709871` |  The expiration time of the ID Token (in Unix _epoch_ format). |
 | iat | `"iat": 1591709811` |  The time of issue of the ID Token (in Unix _epoch_ format). |
 | sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service ID Token [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | birthdate | `"birthdate": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
-| given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it consists special characters). |
+| given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it includes special characters). |
 | family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user (the test name was selected because it includes special characters). |
 | amr | `"amr": [ "mID" ]` |  Authentication method reference. The authentication method used for user authentication. A single `amr` value is present in GOVSSO tokens. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - European cross-border authentication<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
 | nonce | `"nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM"` |  Security element. The authentication request’s `nonce` parameter value. Value is present only in case the `nonce` parameter was sent in the authentication request. |
@@ -184,7 +184,7 @@ A Logout Token contains a `sid` claim. The client application must log out all c
 
 OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
 
-***Example GOVSSO Logout Token payload***
+***Example GOVSSO Logout Token***
 
 ````
 {
@@ -197,7 +197,7 @@ OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
   "iat": 1591958452,
   "iss": "https://govsso.ria.ee/",
   "jti": "c0cfc91a-cdf5-4706-ad26-847b3a3fb937",
-  "sid": "9038c51d-719f-40e1-9322-a7920a2087c8"
+  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258"
 }
 ````
 ***Logout Token claims***
@@ -258,7 +258,7 @@ The state value will also be returned to the client application, making it possi
 
 ***Example GOVSSO authentication redirect***
 ````
-HTTP GET https://client.example.com/callback?
+GET https://client.example.com/callback?
  
 code=71ed5797c3d957817d31&
 state=hkMVY7vjuN7xyLl5
@@ -285,7 +285,7 @@ GOVSSO relies on the OpenID Connect standard error messages [[OIDC-CORE](https:/
 
 ***Example GOVSSO authentication error***
 ````
-HTTP GET https://client.example.com/callback?
+GET https://client.example.com/callback?
  
 error=invalid_scope&
 error_description=Required+scope+%3Copenid%3E+not+provided.+GOVSSO+does+not+allow+this+request+to+be+processed&
@@ -385,7 +385,7 @@ Response body might contain other fields, that client application must ignore.
 
 In case the token endpoint encounters an error and can not issue valid tokens, an error response is generated according to OIDC Core specification [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)].
 
-### 6.3 SSO session update request
+### 6.3 Session update request
 
 **Request**
 
@@ -474,7 +474,7 @@ state=hkMVY7vjuN7xyLl5
 ````
 (for better readability, the parts of the HTTP request are divided onto several lines)
 
-### 6.4 SSO logout request
+### 6.4 Logout request
 
 **Request**
 
@@ -490,6 +490,8 @@ post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback&
 state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&
 ui_locales=et
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
+
 ***Request parameters***
 
 | URL element   | compulsory       |    example        |     explanation       |
@@ -561,7 +563,7 @@ The ID Token and Logout Tokens are signed by the GOVSSO authentication service. 
 
 `RS256` signature algorithm is used, the client application must be able to verify the signature using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. The change of algorithm is considered unlikely, but possible in case a security vulnerability is detected in the `RS256`.
 
-For the signature verification the GOVSSO public signature key must be used. The public signature key is published at the public signature key endpoint (see chapter “8. GOVSSO endpoints”).
+For the signature verification the GOVSSO public signature key must be used. The public signature key is published at the public signature key endpoint (see chapter [8 Endpoints](#8-endpoints)).
 
 The public signature key is stable - the public signature key will be changed according to security recommendations. However, the key can be changed without prior notice for security reasons. Key exchange is carried out based on [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html) standard.
 
@@ -584,7 +586,7 @@ HTTPS must be used on requests to GOVSSO server. The client application must ver
 
 **Verifying the issuer of tokens**
 
-The `iss` value of the ID Token element must be `https://govsso-demo.ria.ee/` (for GOVSSO test environment) or `https://govsso.ria.ee/` (for GOVSSO production environment).
+The `iss` value of the ID Token element must be `https://govsso-demo.ria.ee/` (for GOVSSO demo environment) or `https://govsso.ria.ee/` (for GOVSSO production environment).
 
 **Verifying the addressee of the tokens**
 
@@ -666,7 +668,7 @@ Unfortunately, this topic is not presented clearly in the OpenID Connect protoco
 
 Logging must enable the reconstruction of the course of the communication between GOVSSO and the client application for each occasion of using GOVSSO. For this purpose, all following requests and responses must be logged by GOVSSO as well as by the client application: authentication_request, authentication_redirect, token_request, session_update_request, session_update_redirect, logout_request, logout_redirect, backchannel_logout. As the volumes of data transferred are not large, the URL as well as the ID Token must be logged in full. The retention periods of the logs should be determined based on the importance of the client application. We advise using 1 … 7 years. In case of any issue, please submit an excerpt from the log (Which requests were sent to GOVSSO? Which responses were received?).
 
-## 8 GOVSSO endpoints
+## 8 Endpoints
 
 | Endpoint description | Endpoint | Comment |
 |----------------------|----------|---------|
@@ -680,5 +682,5 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date | Description |
 |---------------|-------------|
-| 0.01, 26.10.2021 | Initial version |
-| 0.1, 28.12.2021 | Preliminary protocol changes |
+| 0.1, 2021-12-28 | Preliminary protocol changes |
+| 0.01, 2021-10-26 | Initial version |
