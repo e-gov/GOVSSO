@@ -178,9 +178,7 @@ ID Token may consist other OpenID Connect protocol based fields that are not sup
 
 GOVSSO sends a JWT similar to an ID Token to client applications called a Logout Token ([OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html) "2.4.  Logout Token") to request that they log out a GOVSSO session or user. The token issuer is GOVSSO and the audience is the client application. Upon receiving a Logout Token the client application is expected to validate the token to make sure that it is a valid logout request. In case the token is valid the client application session (session between client application and user agent) must be ended.
 
-Issued Logout Tokens are linked to ID Tokens via the `sid` claim. Each client application is expected to internally keep track of the ID Token `sid` claim and client application session relations. Meaning that each application session during which GOVSSO authentication was used, must hold the `sub` and `sid` values of ID Tokens that were issued during that application session.
-
-A Logout Token contains a `sid` claim. The client application must log out all client application sessions that contain the same `sid` value.
+Issued Logout Tokens contain a `sid` claim and are linked to ID Tokens via that `sid` claim. Each client application is expected to internally keep track of the ID Token `sid` claim and client application session relation. Upon receiving and validating the Logout Token, the client application must log out the corresponding client application session that is related to the same `sid` value.
 
 OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
 
