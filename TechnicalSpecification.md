@@ -624,7 +624,7 @@ In order to prevent access to cross-border authentication tools with a lower sec
 
 For example, if the client application wants to use only authentication methods with eIDAS level of assurance `high` and has specified the value in the `acr_values` parameter, then only ID Tokens with `acr` claim with value `high` can be accepted.
 
-In case the level of assurance in the authentication request using `acr_values` parameter is not specified, the ID Token must be equal to a level of assurance `substantial` or `high`.
+In case the level of assurance in the authentication request using `acr_values` parameter is not specified, the ID Token must be equal to a level of assurance `high`.
 
 ### 7.2 Creating a session
 
