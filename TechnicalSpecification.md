@@ -59,7 +59,7 @@ In order to log a user into a client application, the client application must ac
 
 1. User requests protected page from client application.
 2. Client application checks whether the user has been authenticated in the client application.
-3. Since the user is not authenticated in the client application, the client application will construct a GOVSSO authentication request URL and redirects user agent to it.
+3. Since the user is not authenticated in the client application, the client application will construct a GOVSSO authentication request URL and redirects user agent to it. This is specified in [6.1 Authentication request](#61-authentication-request).
 4. GOVSSO checks whether there is a valid SSO session for given user agent.
     1. If SSO session exists and its level of assurance is equal or higher than requested the process will continue from step 8.
     2. Otherwise GOVSSO will automatically terminate the existing session and the process continues from step 5.
@@ -68,7 +68,7 @@ In order to log a user into a client application, the client application must ac
 7. GOVSSO uses the authorization code to acquire ID Token from TARA service (this request happens in GOVSSO backend system). GOVSSO will store the user identification information in its session storage.
 8. GOVSSO will optionally display a user consent form. This form is displayed only when a previous SSO session was used for authentication. Meaning that in step 4.1 a valid existing session was found.
 9. GOVSSO will construct its own authorization code and redirects the user agent back to client application URL.
-10. The client application will use the authorization code to acquire a GOVSSO ID Token. This is done in client application backend by sending an ID Token request to GOVSSO.
+10. The client application will use the authorization code to acquire a GOVSSO ID Token. This is done in client application backend by sending an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request).
 11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + 15 minutes`. The client application now has the user authentication information and can display the protected page.
 
 ### 4.2 Session update process
@@ -83,12 +83,12 @@ If the SSO session update request fails for any reason, then the client applicat
 
 1. User wants to access protected content in client application.
 2. Client application verifies whether user has active client application session and that client application session storage contains a valid (not expired) GOVSSO ID Token.
-3. Client application finds that user ID Token is about to expire in 2 minutes from now and redirects user agent to GOVSSO with a valid SSO session update request. The request must include `id_token_hint` and `prompt=none` parameters.
+3. Client application finds that user ID Token is about to expire in 2 minutes from now and redirects user agent to GOVSSO with a valid SSO session update request. The request must include `id_token_hint` and `prompt=none` parameters. This is specified in [6.3 Session update request](#63-session-update-request).
 4. GOVSSO validates the request
     1. Verifies that an SSO session is still active for user agent
     2. Verifies that the SSO session subject matches the subject in the received ID Token.
 5. If all validations passed, GOVSSO will issue a new authorization code to the client application.
-6. Using the authorization code, the client application makes an ID Token request to GOVSSO. GOVSSO responds with a new ID Token and a directive for the user agent to update SSO session cookie expiration date to `currentTime + 15 minutes`.
+6. Using the authorization code, the client application makes an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request). GOVSSO responds with a new ID Token and a directive for the user agent to update SSO session cookie expiration date to `currentTime + 15 minutes`.
 7. Client application stores ID Token into its session storage and shows protected content to user.
 
 ### 4.3 Logout process
@@ -101,17 +101,17 @@ After a successful logout the user agent is redirected back to the client applic
 
 1. User requested to log out of client application
 2. Client application does its internal application session termination procedures.
-3. Client application redirects user agent to GOVSSO logout URL. The redirect must include the previous ID Token (as `id_token_hint` parameter) and a redirect URI (as `post_logout_redirect_uri` parameter) where the user agent must be redirected to after logout.
+3. Client application redirects user agent to GOVSSO logout URL. The redirect must include the previous ID Token (as `id_token_hint` parameter) and a redirect URI (as `post_logout_redirect_uri` parameter) where the user agent must be redirected to after logout. This is specified in [6.4 Logout request](#64-logout-request).
 4. GOVSSO validates the logout request. If the ID Token is not linked to the active SSO session of given user agent, then nothing is done, and the user agent is redirected back to the `post_logout_redirect_uri`. GOVSSO will unlink the client application from SSO session in its session store.
 5. If more client applications are linked to the same SSO session, then GOVSSO will show a logout consent page.
 6. User can either select to log out from all other client applications that are linked to the same SSO session or to continue SSO session with other client applications.
-7. If the user selected to log out from all other client applications, GOVSSO will send a back-channel logout request to each linked client application and unlink client applications from GOVSSO session ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]). 
+7. If the user selected to log out from all other client applications, GOVSSO will send a back-channel logout request to each linked client application and unlink client applications from GOVSSO session. This is specified in [6.5 Back-channel logout request](#65-back-channel-logout-request).
 8. If no client applications remain linked to SSO session, GOVSSO will terminate the session. User has been logged out of all client applications.
 9. User agent is redirected back to the `post_logout_redirect_uri` of the client application which initiated the logout procedure.
 
 ### 4.4 Back-channel logout notifications
 
-Each GOVSSO client application must declare support to the OIDC Back-Channel logout specification ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]). Each client must provide a back-channel logout endpoint URL as part of their registration information. GOVSSO will send an out-of-band POST request to client application back-channel logout endpoint every time an SSO session ends.
+Each GOVSSO client application must declare support to the OIDC Back-Channel logout specification ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]) whose relevant parts are specified in [6.5 Back-channel logout request](#65-back-channel-logout-request). Each client must provide a back-channel logout endpoint URL as part of their registration information. GOVSSO will send an out-of-band POST request to client application back-channel logout endpoint every time an SSO session ends.
 
 The logout request contains a Logout Token. The Logout Token must be validated according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6.  Logout Token Validation".  After receiving a valid Logout Token from the GOVSSO, the client application locates the session identified by the `sid` Claim. The client application then clears any state associated with the identified session. If the identified user is already logged out at the client application when the logout request is received, the logout is considered to have succeeded.
 
