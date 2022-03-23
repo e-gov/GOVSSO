@@ -7,7 +7,7 @@ This documentation is in DRAFT state and can be changed during the development o
 
 # Technical specification
 {: .no_toc}
-v0.1, 2021-12-28
+v0.2, 2022-03-23
 
 - TOC
 {:toc}
@@ -551,7 +551,6 @@ The client must verify token’s:
 - issuer
 - addressee
 - validity
-- authentication method (in case of ID Token)
 - eIDAS level of assurance of (in case of ID Token)
 
 
@@ -680,5 +679,6 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date | Description |
 |---------------|-------------|
+| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
 | 0.01, 2021-10-26 | Initial version |
