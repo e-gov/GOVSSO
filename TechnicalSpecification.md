@@ -117,7 +117,7 @@ The logout request contains a Logout Token. The Logout Token must be validated a
 
 If the logout succeeded, the RP MUST respond with HTTP 200 OK.
 
-Access to the back-channel logout endpoint should be restricted to GOVSSO outgoing IP addresses that will be published by RIA.
+Access to client application's back-channel logout endpoint should be restricted to GOVSSO outgoing IP address specified in [9 Environments](#9-environments). For example, client application can serve users at `https://client.example.com/` and may provide back-channel logout endpoint on the same domain and port, for example `https://client.example.com/aaa/bbb/back-channel-logout`, but should filter requests to this endpoint by GOVSSO IP address. 
 
 Back-channel logout endpoint must support TLSv1.2 and/or TLSv1.3 protocol. Back-channel logout endpoint must present a valid TLS certificate that is signed by a certificate authority (CA) that is participating in the Mozilla Root Program.
 
@@ -680,10 +680,17 @@ Logging must enable the reconstruction of the course of the communication betwee
 | token | `/oauth2/token` | GOVSSO endpoint to obtain ID Token [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". In addition access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
 | logout | `/oauth2/sessions/logout` | GOVSSO client application initiated logout endpoint. [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "5. RP-Initiated Logout". |
 
+## 9 Environments
+
+| Environment | OpenID Connect Issuer URL | Originating IP address of GOVSSO back-channel logout requests (from GOVSSO to client application) |
+|-------------|---------------------------|---------------------------------------------------------------------------------------------------|
+| Demo | `https://govsso-demo.ria.ee/` | 195.80.127.38 (govsso-demo.ria.ee) |
+| Production | `https://govsso.ria.ee/` | To be specified. |
+
 ## Change history
 
 | Version, Date | Description |
 |---------------|-------------|
-| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore. |
+| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore. Specify originating IP addresses of GOVSSO back-channel logout requests. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
 | 0.01, 2021-10-26 | Initial version |
