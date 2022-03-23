@@ -4,7 +4,7 @@ permalink: Example
 
 # Example software for GOVSSO client
 
-Currently there is one example in Java for integrating with GOVSSO. The example can be found [here](https://github.com/e-gov/TARA-SSO-POC/tree/master/sso-poc-environment/sso-client).
+Currently there is one example in Java for integrating with GOVSSO. The example can be found [here](https://github.com/e-gov/GOVSSO-Client/).
 
 Keep in mind that this is proof of concent implementation, not reference implementation!
 {: .adv}
