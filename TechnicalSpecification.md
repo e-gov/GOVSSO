@@ -142,15 +142,15 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
   "iat": 1591709811,
   "sub": "EE60001018800",
   "birthdate": "2000-01-01",
-  "family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER",
   "given_name": "MARY ÄNN",
+  "family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER",
   "amr": [
     "mID"
   ],
+  "nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM",
   "acr": "high",
   "at_hash": "AKIDtvBT2JS_02tkl_DvuA",
-  "nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM",
-  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258",
+  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258"
 }
 ````
 **ID Token claims**
