@@ -508,6 +508,9 @@ After successful logout request, GOVSSO will redirect the user agent back to the
 ````
 GET https://client.example.com/callback?state=hkMVY7vjuN7xyLl5
 ````
+
+Request might contain other URL parameters, that client application must ignore.
+
 **Error response**
 
 If the logout request processing is unsuccessful (for example the client and post_logout_redirect_uri do not match or a technical error in GOVSSO prevents user logout), the user agent will be redirected to GOVSSO error URL. According to OIDC the logout request does not provide means to redirect the user back to client application with an error message. Therefore, the user logout flow will end in GOVSSO instead of the client application. GOVSSO should display some form of request correlation id to aid customer support.
@@ -538,6 +541,8 @@ logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
 |-------------|----------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://client.example.com:443/back-channel-logout` |  Client application must authorize access to GOVSSO to an internal URL and port. Access to the port should be limited based on IP address. The port must be protected with TLS. GOVSSO must trust the logout endpoint server certificate. |
 | logout_token | yes |  `logout_token=eyJhbGciOiJSUz...qgp1dg` |  GOVSSO sends a JWT token similar to an ID Token to client applications called a Logout Token to request that they log out. Logout Token will give the client application exact information about the session (see the sid claim in ID Token) that should be logged out. The token is signed by GOVSSO with the same secret key that is used for singing issued ID Tokens. |
+
+Request might contain other URL parameters or body parameters, that client application must ignore.
 
 ## 7 Security operations
 
@@ -679,6 +684,6 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date | Description |
 |---------------|-------------|
-| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request. |
+| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
 | 0.01, 2021-10-26 | Initial version |
