@@ -69,7 +69,7 @@ In order to log a user into a client application, the client application must ac
 8. GOVSSO will optionally display a user consent form. This form is displayed only when a previous SSO session was used for authentication. Meaning that in step 4.1 a valid existing session was found.
 9. GOVSSO will construct its own authorization code and redirects the user agent back to client application URL.
 10. The client application will use the authorization code to acquire a GOVSSO ID Token. This is done in client application backend by sending an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request).
-11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + 15 minutes`. The client application now has the user authentication information and can display the protected page.
+11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + 15 minutes`. The client application now has the user authentication information and can display the protected page. Client application signals it's UI that next session update request should be scheduled at ID Token's `exp` minus 2 minutes.
 
 ### 4.2 Session update process
 
@@ -77,19 +77,22 @@ Once the user has been authenticated and an SSO session created, the client appl
 
 SSO session update request can be made only when the client application knows the previous ID Token and a valid SSO session exists. Client application must prove that it has knowledge of the SSO session context by including the `id_token_hint` parameter to request containing previous ID Token. This is a security measure and helps to assure that GOVSSO and client application have the same knowledge about the authenticated user.
 
+SSO session update request must be a background request in the user agent. User's activity on client application page must not be disturbed, for example redirecting the entire page must be avoided.
+
 If the SSO session update request fails for any reason, then the client application must perform a new SSO authentication process to get a new ID Token.
 
 <p style='text-align:left;'><img src='img/govsso_session_update_flow.png' style='width:700px'></p>
 
-1. User wants to access protected content in client application.
-2. Client application verifies whether user has active client application session and that client application session storage contains a valid (not expired) GOVSSO ID Token.
-3. Client application finds that user ID Token is about to expire in 2 minutes from now and redirects user agent to GOVSSO with a valid SSO session update request. The request must include `id_token_hint` and `prompt=none` parameters. This is specified in [6.3 Session update request](#63-session-update-request).
-4. GOVSSO validates the request
-    1. Verifies that an SSO session is still active for user agent
+1. User is browsing protected content in client application, but latest ID Token is about to expire in 2 minutes from current time. Client application's UI initiates SSO session update request in background with JavaScript. Since client application's UI doesn't know the whole content of the latest ID Token (to include as `id_token_hint` parameter), it doesn't perform the request directly to GOVSSO, but to it's own back-end server.
+2. Client application's back-end server verifies whether user has active client application session and that client application session storage contains a valid (not expired) GOVSSO ID Token. Client application's back-end server composes SSO session update request which must include `id_token_hint` and `prompt=none` parameters. This is specified in [6.3 Session update request](#63-session-update-request).  
+3. User agent's background request is redirected to GOVSSO. 
+4. GOVSSO validates the request.
+    1. Verifies that an SSO session is still active for user agent.
     2. Verifies that the SSO session subject matches the subject in the received ID Token.
-5. If all validations passed, GOVSSO will issue a new authorization code to the client application.
-6. Using the authorization code, the client application makes an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request). GOVSSO responds with a new ID Token and a directive for the user agent to update SSO session cookie expiration date to `currentTime + 15 minutes`.
-7. Client application stores ID Token into its session storage and shows protected content to user.
+   If all validations passed, GOVSSO responds with a new authorization code and a directive for the user agent to update SSO session cookie expiration to `currentTime + 15 minutes`.
+5. User agent's background request is redirected back to client application's back-end server.
+6. Using the authorization code, client application's back-end server makes an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request). GOVSSO responds with a new ID Token (whose `exp` is `currentTime + 15 minutes`).
+7. Client application's back-end server stores new ID Token into its session storage and signals client application's UI that session update request succeeded and the next session update request should be scheduled at new ID Token's `exp` minus 2 minutes.
 
 ### 4.3 Logout process
 
@@ -215,7 +218,7 @@ OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
 
 **Request**
 
-An authentication request is a HTTP GET request by which the user is redirected from the client application to GOVSSO for authentication.
+An authentication request is a HTTP GET request by which the user is redirected from the client application to GOVSSO for authentication. After completing authentication request in user agent (specified in current chapter), client application's back-end server must perform ID Token request specified in [6.2 ID Token request](#62-id-token-request).
 
 ***Example GOVSSO authentication request***
 ````
@@ -299,7 +302,7 @@ The user may also return to the client application without choosing an authentic
 
 **Request**
 
-The ID Token request is a HTTP POST request which is used by the client application to request the ID Token from the GOVSSO service.
+The ID Token request is a HTTP POST request which is used by the client application to request the ID Token from the GOVSSO service. It must be performed by client application's back-end server which knows `client_secret` value.
 
 ***Example GOVSSO token request***
 ````
@@ -389,10 +392,7 @@ In case the token endpoint encounters an error and can not issue valid tokens, a
 
 Client applications must periodically check the SSO authentication session validity on GOVSSO server. Session update requests will also signal GOVSSO server that the user is still active in the client application and the authentication session expiration time can be extended.
 
-The process of acquiring a new authentication token is similar to initial user authentication.
-
-1. The client application redirects user agent to GOVSSO authorization endpoint for an authorization code.
-2. Upon receiving the authorization code, the client application makes a request to the GOVSSO token endpoint.
+The process of acquiring a new authentication token is similar to initial user authentication, but instead of redirecting the user agent to GOVSSO, session update request must be performed in user agent's background. After completing session update request in user agent's background (specified in current chapter), client application's back-end server must perform ID Token request specified in [6.2 ID Token request](#62-id-token-request). 
 
 ***Example GOVSSO session update request***
 ````
@@ -691,6 +691,6 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date | Description |
 |---------------|-------------|
-| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore. Specify originating IP addresses of GOVSSO back-channel logout requests. |
+| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
 | 0.01, 2021-10-26 | Initial version |
