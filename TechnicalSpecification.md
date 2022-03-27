@@ -7,7 +7,7 @@ This documentation is in DRAFT state and can be changed during the development o
 
 # Technical specification
 {: .no_toc}
-v0.2, 2022-03-23
+v0.3, 2022-03-27
 
 - TOC
 {:toc}
@@ -47,6 +47,8 @@ The SSO session validity period is extended by 15 minutes every time a new clien
 
 SSO session expires when no new authentication requests or session update requests have been received in the last 15 minutes. This is a safety feature assuring that user SSO session is not kept alive too long after the user has finished using the client applications.
 
+SSO session validity period is determined by GOVSSO service. It is currently 15 minutes by default, but may change as needed. Client applications must not hard code this value, but instead should use ID Token's `exp` claim if they need to determine when SSO session is going to expire.
+
 The SSO session may also be terminated before the end of its expiry time by the user. When the user initiates a logout from one client application the client application must inform GOVSSO of the logout event. The user is then given an option to terminate the SSO session and log out of all client applications related to the same SSO session.
 
 ## 4 Process flows
@@ -69,7 +71,7 @@ In order to log a user into a client application, the client application must ac
 8. GOVSSO will optionally display a user consent form. This form is displayed only when a previous SSO session was used for authentication. Meaning that in step 4.1 a valid existing session was found.
 9. GOVSSO will construct its own authorization code and redirects the user agent back to client application URL.
 10. The client application will use the authorization code to acquire a GOVSSO ID Token. This is done in client application backend by sending an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request).
-11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + 15 minutes`. The client application now has the user authentication information and can display the protected page. Client application signals it's UI that next session update request should be scheduled at ID Token's `exp` minus 2 minutes.
+11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + N minutes`. The client application now has the user authentication information and can display the protected page. Client application signals it's UI that next session update request should be scheduled at ID Token's `exp` minus 2 minutes.
 
 ### 4.2 Session update process
 
@@ -79,7 +81,9 @@ SSO session update request can be made only when the client application knows th
 
 SSO session update request must be a background request in the user agent. User's activity on client application page must not be disturbed, for example redirecting the entire page must be avoided.
 
-If the SSO session update request fails for any reason, then the client application must perform a new SSO authentication process to get a new ID Token.
+Client application must initiate SSO session update request 2 minutes before ID Token's expiration (`exp` claim value). This leaves a reasonable buffer for slow or problematic network conditions. 
+
+If the SSO session update request returns with an OpenID Connect error code, then client application must terminate it's session and inform the user that they have been logged out. If the SSO session update request is unsuccessful because of a network error, client application may retry the request until latest ID Token's expiration time. Retrying the request after latest ID Token's expiration time is unnecessary because GOVSSO refuses to process it.
 
 <p style='text-align:left;'><img src='img/govsso_session_update_flow.png' style='width:700px'></p>
 
@@ -89,9 +93,9 @@ If the SSO session update request fails for any reason, then the client applicat
 4. GOVSSO validates the request.
     1. Verifies that an SSO session is still active for user agent.
     2. Verifies that the SSO session subject matches the subject in the received ID Token.
-   If all validations passed, GOVSSO responds with a new authorization code and a directive for the user agent to update SSO session cookie expiration to `currentTime + 15 minutes`.
+   If all validations passed, GOVSSO responds with a new authorization code and a directive for the user agent to update SSO session cookie expiration to `currentTime + N minutes`.
 5. User agent's background request is redirected back to client application's back-end server.
-6. Using the authorization code, client application's back-end server makes an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request). GOVSSO responds with a new ID Token (whose `exp` is `currentTime + 15 minutes`).
+6. Using the authorization code, client application's back-end server makes an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request). GOVSSO responds with a new ID Token (whose `exp` is `currentTime + N minutes`).
 7. Client application's back-end server stores new ID Token into its session storage and signals client application's UI that session update request succeeded and the next session update request should be scheduled at new ID Token's `exp` minus 2 minutes.
 
 ### 4.3 Logout process
@@ -690,6 +694,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date | Description |
 |---------------|-------------|
+| 0.3, 2022-03-27 | Clarifications: session update request must be performed 2 minutes before ID Token's expiration (`exp` claim value), 15 minutes must not be hard coded; if session update request returns with an OIDC error code, session must be terminated; if session update request fails with a network error, it may be retried. |
 | 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
 | 0.01, 2021-10-26 | Initial version |
