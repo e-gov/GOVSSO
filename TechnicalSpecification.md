@@ -27,7 +27,7 @@ GOVSSO protocol has been designed to follow the OpenID Connect protocol standard
 
 - The service supports only the authorization code flow of OIDC ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.  Authentication using the Authorization Code Flow"). The authorization code flow is deemed the most secure option and is thus appropriate for public services.
 - All information about an authenticated user is transferred to the application with ID Token ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token and 3.1.3.6.  ID Token").
-- The eIDAS level of assurance (loa) is returned in the `acr` claim in ID Token, using custom claim values `high`, `substantial`, `low`. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token"
+- The eIDAS level of assurance (LoA) is returned within the `acr` claim in ID Token, using custom claim values `high`, `substantial`, `low`. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token"
 - The requested minimum authentication level of assurance is selected by the client application in the beginning of GOVSSO session (on initial authentication). [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "5.5.1.1.  Requesting the "acr" Claim".
 - Available authentication methods for the user are provided based on the requested minimum authentication level of assurance.
 - GOVSSO supports only a single default scope that will return person authentication data: given name, family name, birthdate, person identifier. The scope remains the same during the entire GOVSSO authentication session.
@@ -62,7 +62,7 @@ In order to log a user into a client application, the client application must ac
 3. Since the user is not authenticated in the client application, the client application will construct a GOVSSO authentication request URL and redirects user agent to it. This is specified in [6.1 Authentication request](#61-authentication-request).
 4. GOVSSO checks whether there is a valid SSO session for given user agent.
     1. If SSO session exists and its level of assurance is equal or higher than requested the process will continue from step 8.
-    2. Otherwise GOVSSO will automatically terminate the existing session and the process continues from step 5.
+    2. Otherwise, GOVSSO will automatically terminate the existing session and the process continues from step 5.
 5. SSO session does not exist, therefore, GOVSSO needs the user to be authenticated with TARA service. GOVSSO constructs TARA authentication request and redirects user agent to it.
 6. User is securely authenticated in TARA service. The detailed authentication process is described in TARA technical specification [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. Once the user has been authenticated TARA will redirect the user agent back to GOVSSO with the TARA authorization code.
 7. GOVSSO uses the authorization code to acquire ID Token from TARA service (this request happens in GOVSSO backend system). GOVSSO will store the user identification information in its session storage.
@@ -73,7 +73,7 @@ In order to log a user into a client application, the client application must ac
 
 ### 4.2 Session update process
 
-Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GOVSSO. In GOVSSO protocol this is done by acquiring a new ID Token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will add `prompt` parameter to the request (`prompt=none`). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request".
+Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GOVSSO. In GOVSSO protocol this is done by acquiring a new ID Token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will add `prompt` parameter to the request (`prompt=none`). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request".)
 
 SSO session update request can be made only when the client application knows the previous ID Token and a valid SSO session exists. Client application must prove that it has knowledge of the SSO session context by including the `id_token_hint` parameter to request containing previous ID Token. This is a security measure and helps to assure that GOVSSO and client application have the same knowledge about the authenticated user.
 
@@ -83,7 +83,7 @@ If the SSO session update request fails for any reason, then the client applicat
 
 <p style='text-align:left;'><img src='img/govsso_session_update_flow.png' style='width:700px'></p>
 
-1. User is browsing protected content in client application, but latest ID Token is about to expire in 2 minutes from current time. Client application's UI initiates SSO session update request in background with JavaScript. Since client application's UI doesn't know the whole content of the latest ID Token (to include as `id_token_hint` parameter), it doesn't perform the request directly to GOVSSO, but to it's own back-end server.
+1. User is browsing protected content in client application, but latest ID Token is about to expire in 2 minutes from current time. Client application's UI initiates SSO session update request in background with JavaScript. Since client application's UI doesn't know the whole content of the latest ID Token (to include as `id_token_hint` parameter), it doesn't perform the request directly to GOVSSO, but to its own back-end server.
 2. Client application's back-end server verifies whether user has active client application session and that client application session storage contains a valid (not expired) GOVSSO ID Token. Client application's back-end server composes SSO session update request which must include `id_token_hint` and `prompt=none` parameters. This is specified in [6.3 Session update request](#63-session-update-request).  
 3. User agent's background request is redirected to GOVSSO. 
 4. GOVSSO validates the request.
@@ -482,7 +482,6 @@ A client application must notify the GOVSSO that the user has logged out of clie
 ````
 GET https://govsso.ria.ee/oauth2/sessions/logout?
  
- 
 id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs
 post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback&
 state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&
@@ -580,7 +579,7 @@ For signature validation following checks needs to be performed on client applic
 b. If client application buffers the public key (it needs to be buffered together with `kid` value), it needs to compare the `kid` value from JWT header with buffered `kid` value. If they match, buffered key can be used. If not client application needs to make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header and buffer it. 
 3. Validate the signature using the key corresponding to `kid` value from the JWT header.
 
-NB! "Hardcoding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GOVSSO is already using the new key until the new key is taken use in client application.
+NB! "Hard coding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GOVSSO is already using the new key until the new key is taken use in client application.
 
 **Trust of the public signature key endpoint**
 
