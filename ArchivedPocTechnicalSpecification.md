@@ -1,13 +1,13 @@
 ---
-permalink: SSO tehniline spetsifikatsioon
+permalink: ArchivedPocTechnicalSpecification
 ---
 
-# Riigi SSO teenuse (GOVSSO) tehniline spetsifikatsioon ja protokolli kirjeldus
+This document is retained for archival purposes. Up-to-date technical specification is [here](TechnicalSpecification).
+{: .adv}
 
-Analüüsi käigus koostati GOVSSO OpenID Connect profiili tehniline spetsifikatsioon. Spetsifikatsioon kirjeldab päringute struktuuri ja kohustuslikud päringu kontrolli reeglid.
-Ühtlasi tuuakse välja GOVSSO spetsiifilised protokolli täiendused.
+# Archived, Proof of Concept: Technical Specification
 
-<p style='text-align:left;'><img src='img/sf_logo.png' style='width:250px'></p>
+<img src='img/eu_regional_development_fund_horizontal.jpg' width="350" height="200" alt="European Union European Regional Development Fund"/>
 
 - TOC
 {:toc}

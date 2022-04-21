@@ -1,10 +1,13 @@
 ---
-permalink: SSO projektlahendus
+permalink: ArchivedPocAnalysis
 ---
 
-# Riigi SSO teenuse (GOVSSO) projektlahendus
+This document is retained for archival purposes. Up-to-date service description is [here](BusinessDescription).
+{: .adv}
 
-<p style='text-align:left;'><img src='img/sf_logo.png' style='width:250px'></p>
+# Arhiveeritud, kontseptsioonitõendus: Riigi SSO teenuse (GOVSSO) projektlahendus
+
+<img src='img/eu_regional_development_fund_horizontal.jpg' width="350" height="200" alt="European Union European Regional Development Fund"/>
 
 - TOC
 {:toc}
