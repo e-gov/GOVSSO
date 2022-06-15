@@ -7,7 +7,7 @@ This documentation is in DRAFT state and can be changed during the development o
 
 # Technical specification
 {: .no_toc}
-v0.1, 28.12.2021
+v0.3, 2022-03-27
 
 - TOC
 {:toc}
@@ -27,7 +27,7 @@ GOVSSO protocol has been designed to follow the OpenID Connect protocol standard
 
 - The service supports only the authorization code flow of OIDC ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.  Authentication using the Authorization Code Flow"). The authorization code flow is deemed the most secure option and is thus appropriate for public services.
 - All information about an authenticated user is transferred to the application with ID Token ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token and 3.1.3.6.  ID Token").
-- The eIDAS level of assurance (loa) is returned in the `acr` claim in ID Token, using custom claim values `high`, `substantial`, `low`. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token"
+- The eIDAS level of assurance (LoA) is returned within the `acr` claim in ID Token, using custom claim values `high`, `substantial`, `low`. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "2.  ID Token"
 - The requested minimum authentication level of assurance is selected by the client application in the beginning of GOVSSO session (on initial authentication). [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "5.5.1.1.  Requesting the "acr" Claim".
 - Available authentication methods for the user are provided based on the requested minimum authentication level of assurance.
 - GOVSSO supports only a single default scope that will return person authentication data: given name, family name, birthdate, person identifier. The scope remains the same during the entire GOVSSO authentication session.
@@ -37,59 +37,66 @@ GOVSSO protocol has been designed to follow the OpenID Connect protocol standard
 
 ## 3 SSO session
 
-GOVSSO will create a SSO session for each successful user authentication and stores it in its internal session storage. The SSO session is used to store user personal information and various parameters about the authentication request (for example authentication time, authentication level of assurance, authentication method used). The authentication information and parameters are not allowed to change during the authentication session.
+GOVSSO will create an SSO session for each successful user authentication and stores it in its internal session storage. The SSO session is used to store user personal information and various parameters about the authentication request (for example authentication time, authentication level of assurance, authentication method used). The authentication information and parameters are not allowed to change during the authentication session.
 
 The SSO session is linked to the user agent via a session cookie. The user is allowed to create a single SSO session per user agent but may create concurrent sessions across multiple user agents.
 
 SSO session has a limited validity period of 15 minutes. During the SSO session validity period the user is not required to re-authenticate while logging into different client applications. Instead, they are given the option to use the authentication information stored in SSO session. GOVSSO issues ID Tokens as proof of an active SSO session. The ID Token contains the user personal information as well as the session information. All issued ID Tokens are linked to an SSO session via a session id (`sid`) claim and have the same validity period as the SSO session.
 
-The SSO session validity period is extended by 15 minutes every time a new client application authentication request is received, or an existing authenticated client application performs a SSO session update request. This means that all client applications are contributing to keep the SSO session valid for the duration the user is still using the client applications.
+The SSO session validity period is extended by 15 minutes every time a new client application authentication request is received, or an existing authenticated client application performs an SSO session update request. This means that all client applications are contributing to keep the SSO session valid for the duration the user is still using the client applications.
 
 SSO session expires when no new authentication requests or session update requests have been received in the last 15 minutes. This is a safety feature assuring that user SSO session is not kept alive too long after the user has finished using the client applications.
 
+SSO session validity period is determined by GOVSSO service. It is currently 15 minutes by default, but may change as needed. Client applications must not hard code this value, but instead should use ID Token's `exp` claim if they need to determine when SSO session is going to expire.
+
 The SSO session may also be terminated before the end of its expiry time by the user. When the user initiates a logout from one client application the client application must inform GOVSSO of the logout event. The user is then given an option to terminate the SSO session and log out of all client applications related to the same SSO session.
 
-## 4 GOVSSO process flows
+## 4 Process flows
 
 ### 4.1 Authentication process
 
-In order to log a user into a client application, the client application must acquire an ID Token from GOVSSO. The ID Token will contain relevant user personal information as well as information of the SSO session. If the SSO session does not exist prior to the authentication request, a new session is created. If the session already exists but its level of assurance is lower than requested in the new request, then the previous SSO session will be terminated and a new SSO session will be created.
+In order to log a user into a client application, the client application must acquire an ID Token from GOVSSO. The ID Token will contain relevant user personal information as well as information of the SSO session. If the SSO session does not exist prior to the authentication request, a new session is created. If the session already exists but its level of assurance is lower than requested in the new request, then the user will be prompted that upon continuing the previous SSO session will be terminated and a new SSO session will be created.
 
 <p style='text-align:left;'><img src='img/govsso_tech_auth_flow.png' style='width:1000px'></p>
 
 1. User requests protected page from client application.
 2. Client application checks whether the user has been authenticated in the client application.
-3. Since the user is not authenticated in the client application, the client application will construct a GOVSSO authentication request URL and redirects user agent to it.
+3. Since the user is not authenticated in the client application, the client application will construct a GOVSSO authentication request URL and redirects user agent to it. This is specified in [6.1 Authentication request](#61-authentication-request).
 4. GOVSSO checks whether there is a valid SSO session for given user agent.
     1. If SSO session exists and its level of assurance is equal or higher than requested the process will continue from step 8.
-    2. Otherwise GOVSSO will automatically terminate the existing session and the process continues from step 5.
+    2. Otherwise, GOVSSO will automatically terminate the existing session and the process continues from step 5.
 5. SSO session does not exist, therefore, GOVSSO needs the user to be authenticated with TARA service. GOVSSO constructs TARA authentication request and redirects user agent to it.
 6. User is securely authenticated in TARA service. The detailed authentication process is described in TARA technical specification [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)]. Once the user has been authenticated TARA will redirect the user agent back to GOVSSO with the TARA authorization code.
 7. GOVSSO uses the authorization code to acquire ID Token from TARA service (this request happens in GOVSSO backend system). GOVSSO will store the user identification information in its session storage.
 8. GOVSSO will optionally display a user consent form. This form is displayed only when a previous SSO session was used for authentication. Meaning that in step 4.1 a valid existing session was found.
 9. GOVSSO will construct its own authorization code and redirects the user agent back to client application URL.
-10. The client application will use the authorization code to acquire a GOVSSO ID Token. This is done in client application backend by sending an ID Token request to GOVSSO.
-11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + 15 minutes`. The client application now has the user authentication information and can display the protected page.
+10. The client application will use the authorization code to acquire a GOVSSO ID Token. This is done in client application backend by sending an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request).
+11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + N minutes`. The client application now has the user authentication information and can display the protected page. Client application signals it's UI that next session update request should be scheduled at ID Token's `exp` minus 2 minutes.
 
-### 4.2 SSO session update process
+### 4.2 Session update process
 
-Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GOVSSO. In GOVSSO protocol this is done by acquiring a new token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will add `prompt` parameter to the request (`prompt=none`). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request".
+Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GOVSSO. In GOVSSO protocol this is done by acquiring a new ID Token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will add `prompt` parameter to the request (`prompt=none`). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request".)
 
-SSO Session update request can be made only when the client application knows the previous ID Token and a valid SSO session exists. Client application must prove that it has knowledge of the SSO session context by including the `id_token_hint` parameter to request containing previous ID Token. This is a security measure and helps to assure that GOVSSO and client application have the same knowledge about the authenticated user.
+SSO session update request can be made only when the client application knows the previous ID Token and a valid SSO session exists. Client application must prove that it has knowledge of the SSO session context by including the `id_token_hint` parameter to request containing previous ID Token. This is a security measure and helps to assure that GOVSSO and client application have the same knowledge about the authenticated user.
 
-If the SSO session update request fails for any reason, then the client application must perform a new SSO authentication process to get a new ID Token.
+SSO session update request must be a background request in the user agent. User's activity on client application page must not be disturbed, for example redirecting the entire page must be avoided.
+
+Client application must initiate SSO session update request 2 minutes before ID Token's expiration (`exp` claim value). This leaves a reasonable buffer for slow or problematic network conditions. 
+
+If the SSO session update request returns with an OpenID Connect error code, then client application must terminate it's session and inform the user that they have been logged out. If the SSO session update request is unsuccessful because of a network error, client application may retry the request until latest ID Token's expiration time. Retrying the request after latest ID Token's expiration time is unnecessary because GOVSSO refuses to process it.
 
 <p style='text-align:left;'><img src='img/govsso_session_update_flow.png' style='width:700px'></p>
 
-1. User wants to access protected content in client application.
-2. Client application verifies whether user has active client application session and that client application session storage contains a valid (not expired) GOVSSO ID Token.
-3. Client application finds that user ID Token is about to expire in 2 minutes from now and redirects user agent to GOVSSO with a valid SSO session update request. The request must include `id_token_hint` and `prompt=none` parameters.
-4. GOVSSO validates the request
-    1. Verifies that an SSO session is still active for user agent
+1. User is browsing protected content in client application, but latest ID Token is about to expire in 2 minutes from current time. Client application's UI initiates SSO session update request in background with JavaScript. Since client application's UI doesn't know the whole content of the latest ID Token (to include as `id_token_hint` parameter), it doesn't perform the request directly to GOVSSO, but to its own back-end server.
+2. Client application's back-end server verifies whether user has active client application session and that client application session storage contains a valid (not expired) GOVSSO ID Token. Client application's back-end server composes SSO session update request which must include `id_token_hint` and `prompt=none` parameters. This is specified in [6.3 Session update request](#63-session-update-request).  
+3. User agent's background request is redirected to GOVSSO. 
+4. GOVSSO validates the request.
+    1. Verifies that an SSO session is still active for user agent.
     2. Verifies that the SSO session subject matches the subject in the received ID Token.
-5. If all validations passed, GOVSSO will issue a new authorization code to the client application.
-6. Using the authorization code, the client application makes an ID Token request to GOVSSO. GOVSSO responds with a new ID Token and a directive for the user agent to update SSO session cookie expiration date to `currentTime + 15 minutes`.
-7. Client application stores ID Token into its session storage and shows protected content to user.
+   If all validations passed, GOVSSO responds with a new authorization code and a directive for the user agent to update SSO session cookie expiration to `currentTime + N minutes`.
+5. User agent's background request is redirected back to client application's back-end server.
+6. Using the authorization code, client application's back-end server makes an ID Token request to GOVSSO. This is specified in [6.2 ID Token request](#62-id-token-request). GOVSSO responds with a new ID Token (whose `exp` is `currentTime + N minutes`).
+7. Client application's back-end server stores new ID Token into its session storage and signals client application's UI that session update request succeeded and the next session update request should be scheduled at new ID Token's `exp` minus 2 minutes.
 
 ### 4.3 Logout process
 
@@ -101,23 +108,23 @@ After a successful logout the user agent is redirected back to the client applic
 
 1. User requested to log out of client application
 2. Client application does its internal application session termination procedures.
-3. Client application redirects user agent to GOVSSO logout URL. The redirect must include the previous ID Token (as `id_token_hint` parameter) and a redirect URI (as `post_logout_redirect_uri` parameter) where the user agent must be redirected to after logout.
+3. Client application redirects user agent to GOVSSO logout URL. The redirect must include the previous ID Token (as `id_token_hint` parameter) and a redirect URI (as `post_logout_redirect_uri` parameter) where the user agent must be redirected to after logout. This is specified in [6.4 Logout request](#64-logout-request).
 4. GOVSSO validates the logout request. If the ID Token is not linked to the active SSO session of given user agent, then nothing is done, and the user agent is redirected back to the `post_logout_redirect_uri`. GOVSSO will unlink the client application from SSO session in its session store.
 5. If more client applications are linked to the same SSO session, then GOVSSO will show a logout consent page.
 6. User can either select to log out from all other client applications that are linked to the same SSO session or to continue SSO session with other client applications.
-7. If the user selected to log out from all other client applications, GOVSSO will send a back-channel logout request to each linked client application and unlink client applications from GOVSSO session ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]). 
+7. If the user selected to log out from all other client applications, GOVSSO will send a back-channel logout request to each linked client application and unlink client applications from GOVSSO session. This is specified in [6.5 Back-channel logout request](#65-back-channel-logout-request).
 8. If no client applications remain linked to SSO session, GOVSSO will terminate the session. User has been logged out of all client applications.
 9. User agent is redirected back to the `post_logout_redirect_uri` of the client application which initiated the logout procedure.
 
 ### 4.4 Back-channel logout notifications
 
-Each GOVSSO client application must declare support to the OIDC Back-Channel logout specification ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]). Each client must provide a back-channel logout endpoint URL as part of their registration information. GOVSSO will send an out-of-band POST request to client application back-channel logout endpoint every time an SSO session ends.
+Each GOVSSO client application must declare support to the OIDC Back-Channel logout specification ([[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)]) whose relevant parts are specified in [6.5 Back-channel logout request](#65-back-channel-logout-request). Each client must provide a back-channel logout endpoint URL as part of their registration information. GOVSSO will send an out-of-band POST request to client application back-channel logout endpoint every time an SSO session ends.
 
 The logout request contains a Logout Token. The Logout Token must be validated according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6.  Logout Token Validation".  After receiving a valid Logout Token from the GOVSSO, the client application locates the session identified by the `sid` Claim. The client application then clears any state associated with the identified session. If the identified user is already logged out at the client application when the logout request is received, the logout is considered to have succeeded.
 
 If the logout succeeded, the RP MUST respond with HTTP 200 OK.
 
-Access to the back-channel logout endpoint should be restricted to GOVSSO outgoing IP addresses that will be published by RIA.
+Access to client application's back-channel logout endpoint should be restricted to GOVSSO outgoing IP address specified in [9 Environments](#9-environments). For example, client application can serve users at `https://client.example.com/` and may provide back-channel logout endpoint on the same domain and port, for example `https://client.example.com/aaa/bbb/back-channel-logout`, but should filter requests to this endpoint by GOVSSO IP address. 
 
 Back-channel logout endpoint must support TLSv1.2 and/or TLSv1.3 protocol. Back-channel logout endpoint must present a valid TLS certificate that is signed by a certificate authority (CA) that is participating in the Mozilla Root Program.
 
@@ -129,7 +136,7 @@ In GOVSSO protocol the ID Token is used as a certificate of the fact that authen
 
 The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)] form.
 
-**Example GOVSSO ID Token:**
+***Example GOVSSO ID Token***
 
 ````
 {
@@ -142,29 +149,29 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
   "iat": 1591709811,
   "sub": "EE60001018800",
   "birthdate": "2000-01-01",
-  "family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER",
   "given_name": "MARY ÄNN",
+  "family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER",
   "amr": [
     "mID"
   ],
+  "nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM",
   "acr": "high",
   "at_hash": "AKIDtvBT2JS_02tkl_DvuA",
-  "nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM",
-  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258",
+  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258"
 }
 ````
 **ID Token claims**
 
 | ID Token element (claim)   | example           |     explanation       |
 |----------------------------|------------------ |-----------------------|
-| jti | `"jti":"663a35d8-92ec-4a8d-95e7-fc6ca90ebda2"` |  ID Token unique identifier ([[JWT](https://tools.ietf.org/html/rfc7519)] "4.1.7.  jti (JWT ID) Claim"). |
-| iss | `"iss":"https://govsso.ria.ee/"` |  Issuer Identifier, as specified in  [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
-| aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GOVSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified in authentication request). <br><br> String or array of strings. A single aud value is present in GOVSSO tokens. |
+| jti | `"jti": "663a35d8-92ec-4a8d-95e7-fc6ca90ebda2"` |  ID Token unique identifier ([[JWT](https://tools.ietf.org/html/rfc7519)] "4.1.7.  jti (JWT ID) Claim"). |
+| iss | `"iss": "https://govsso.ria.ee/"` |  Issuer Identifier, as specified in  [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
+| aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GOVSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified in authentication request). <br><br> String or array of strings. A single `aud` value is present in GOVSSO tokens. |
 | exp | `"exp": 1591709871` |  The expiration time of the ID Token (in Unix _epoch_ format). |
 | iat | `"iat": 1591709811` |  The time of issue of the ID Token (in Unix _epoch_ format). |
 | sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service ID Token [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | birthdate | `"birthdate": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
-| given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it consists special characters). |
+| given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it includes special characters). |
 | family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user (the test name was selected because it includes special characters). |
 | amr | `"amr": [ "mID" ]` |  Authentication method reference. The authentication method used for user authentication. A single `amr` value is present in GOVSSO tokens. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - European cross-border authentication<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
 | nonce | `"nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM"` |  Security element. The authentication request’s `nonce` parameter value. Value is present only in case the `nonce` parameter was sent in the authentication request. |
@@ -178,13 +185,11 @@ ID Token may consist other OpenID Connect protocol based fields that are not sup
 
 GOVSSO sends a JWT similar to an ID Token to client applications called a Logout Token ([OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html) "2.4.  Logout Token") to request that they log out a GOVSSO session or user. The token issuer is GOVSSO and the audience is the client application. Upon receiving a Logout Token the client application is expected to validate the token to make sure that it is a valid logout request. In case the token is valid the client application session (session between client application and user agent) must be ended.
 
-Issued Logout Tokens are linked to ID Tokens via the `sid` claim. Each client application is expected to internally keep track of the ID Token `sid` claim and client application session relations. Meaning that each application session during which GOVSSO authentication was used, must hold the `sub` and `sid` values of ID Tokens that were issued during that application session.
-
-A Logout Token contains a `sid` claim. The client application must log out all client application sessions that contain the same `sid` value.
+Issued Logout Tokens contain a `sid` claim and are linked to ID Tokens via that `sid` claim. Each client application is expected to internally keep track of the ID Token `sid` claim and client application session relation. Upon receiving and validating the Logout Token, the client application must log out the corresponding client application session that is related to the same `sid` value.
 
 OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
 
-***Example GOVSSO Logout Token payload***
+***Example GOVSSO Logout Token***
 
 ````
 {
@@ -197,7 +202,7 @@ OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
   "iat": 1591958452,
   "iss": "https://govsso.ria.ee/",
   "jti": "c0cfc91a-cdf5-4706-ad26-847b3a3fb937",
-  "sid": "9038c51d-719f-40e1-9322-a7920a2087c8"
+  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258"
 }
 ````
 ***Logout Token claims***
@@ -217,7 +222,7 @@ OIDC Logout Tokens can be encrypted but GOVSSO Logout Tokens are not encrypted.
 
 **Request**
 
-An authentication request is a HTTP GET request by which the user is redirected from the client application to GOVSSO for authentication.
+An authentication request is an HTTP GET request by which the user is redirected from the client application to GOVSSO for authentication. After completing authentication request in user agent (specified in current chapter), client application's back-end server must perform ID Token request specified in [6.2 ID Token request](#62-id-token-request).
 
 ***Example GOVSSO authentication request***
 ````
@@ -250,15 +255,15 @@ acr_values=substantial
 
 **Response**
 
-GOVSSO server will respond with a HTTP 302 Found message to redirect user agent back to client application URL.
+GOVSSO server will respond with an HTTP 302 Found message to redirect user agent back to client application URL.
 
-The user agent is redirected to the `redirect_uri` included in the authentication request sent by the client application. In the redirect request, an authorization code (`code` parameter) is appended to the `redirect_uri` by GOVSSO. Using the received code the client application can then request ID Token from GOVSSO. Technically, a HTTP status code `302 Found` redirect request is used for redirecting.
+The user agent is redirected to the `redirect_uri` included in the authentication request sent by the client application. In the redirect request, an authorization code (`code` parameter) is appended to the `redirect_uri` by GOVSSO. Using the received code the client application can then request ID Token from GOVSSO. Technically, an HTTP status code `302 Found` redirect request is used for redirecting.
 
 The state value will also be returned to the client application, making it possible to perform CSRF validation on client application side.
 
 ***Example GOVSSO authentication redirect***
 ````
-HTTP GET https://client.example.com/callback?
+GET https://client.example.com/callback?
  
 code=71ed5797c3d957817d31&
 state=hkMVY7vjuN7xyLl5
@@ -285,7 +290,7 @@ GOVSSO relies on the OpenID Connect standard error messages [[OIDC-CORE](https:/
 
 ***Example GOVSSO authentication error***
 ````
-HTTP GET https://client.example.com/callback?
+GET https://client.example.com/callback?
  
 error=invalid_scope&
 error_description=Required+scope+%3Copenid%3E+not+provided.+GOVSSO+does+not+allow+this+request+to+be+processed&
@@ -301,7 +306,7 @@ The user may also return to the client application without choosing an authentic
 
 **Request**
 
-The ID Token request is a HTTP POST request which is used by the client application to request the ID Token from the GOVSSO service.
+The ID Token request is an HTTP POST request which is used by the client application to request the ID Token from the GOVSSO service. It must be performed by client application's back-end server which knows `client_secret` value.
 
 ***Example GOVSSO token request***
 ````
@@ -385,16 +390,13 @@ Response body might contain other fields, that client application must ignore.
 
 In case the token endpoint encounters an error and can not issue valid tokens, an error response is generated according to OIDC Core specification [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)].
 
-### 6.3 SSO session update request
+### 6.3 Session update request
 
 **Request**
 
 Client applications must periodically check the SSO authentication session validity on GOVSSO server. Session update requests will also signal GOVSSO server that the user is still active in the client application and the authentication session expiration time can be extended.
 
-The process of acquiring a new authentication token is similar to initial user authentication.
-
-1. The client application redirects user agent to GOVSSO authorization endpoint for an authorization code.
-2. Upon receiving the authorization code, the client application makes a request to the GOVSSO token endpoint.
+The process of acquiring a new authentication token is similar to initial user authentication, but instead of redirecting the user agent to GOVSSO, session update request must be performed in user agent's background. After completing session update request in user agent's background (specified in current chapter), client application's back-end server must perform ID Token request specified in [6.2 ID Token request](#62-id-token-request). 
 
 ***Example GOVSSO session update request***
 ````
@@ -431,9 +433,9 @@ id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo...TvE
 
 **Response**
 
-GOVSSO server will respond with a HTTP 302 Found message to redirect user agent back to client application URL.
+GOVSSO server will respond with an HTTP 302 Found message to redirect user agent back to client application URL.
 
-The user agent is redirected to the `redirect_uri` included in the authentication request sent by the client application. In the redirect request, an authorization code (`code` parameter) is appended to the `redirect_uri` by GOVSSO. Using the received code the client application can then request ID Token from GOVSSO. Technically, a HTTP status code `302 Found` redirect request is used for redirecting.
+The user agent is redirected to the `redirect_uri` included in the authentication request sent by the client application. In the redirect request, an authorization code (`code` parameter) is appended to the `redirect_uri` by GOVSSO. Using the received code the client application can then request ID Token from GOVSSO. Technically, an HTTP status code `302 Found` redirect request is used for redirecting.
 
 The state value will also be returned to the client application, making it possible to perform CSRF validation on client application side.
 
@@ -458,7 +460,7 @@ Request might contain other URL parameters, that client application must ignore.
 
 **Error response**
 
-If GOVSSO is unable to process an session update request – there is an error in the request or another error has occurred – GOVSSO transfers an error message (URL parameter `error`) and the description of the error (URL parameter `error_description`) in the redirect request.
+If GOVSSO is unable to process a session update request – there is an error in the request or another error has occurred – GOVSSO transfers an error message (URL parameter `error`) and the description of the error (URL parameter `error_description`) in the redirect request.
 
 GOVSSO relies on the OpenID Connect standard error messages [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.6. Authentication Error Response" and [[OAUTH](https://tools.ietf.org/html/rfc6749)] "4.1.2.1. Error Response". The error messages are always displayed in English.
 
@@ -474,7 +476,7 @@ state=hkMVY7vjuN7xyLl5
 ````
 (for better readability, the parts of the HTTP request are divided onto several lines)
 
-### 6.4 SSO logout request
+### 6.4 Logout request
 
 **Request**
 
@@ -484,12 +486,13 @@ A client application must notify the GOVSSO that the user has logged out of clie
 ````
 GET https://govsso.ria.ee/oauth2/sessions/logout?
  
- 
 id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs
 post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback&
 state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&
 ui_locales=et
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
+
 ***Request parameters***
 
 | URL element   | compulsory       |    example        |     explanation       |
@@ -508,6 +511,9 @@ After successful logout request, GOVSSO will redirect the user agent back to the
 ````
 GET https://client.example.com/callback?state=hkMVY7vjuN7xyLl5
 ````
+
+Request might contain other URL parameters, that client application must ignore.
+
 **Error response**
 
 If the logout request processing is unsuccessful (for example the client and post_logout_redirect_uri do not match or a technical error in GOVSSO prevents user logout), the user agent will be redirected to GOVSSO error URL. According to OIDC the logout request does not provide means to redirect the user back to client application with an error message. Therefore, the user logout flow will end in GOVSSO instead of the client application. GOVSSO should display some form of request correlation id to aid customer support.
@@ -522,7 +528,7 @@ Relying Parties supporting back-channel-based logout register a back-channel log
 
 The back-channel logout URI must be an absolute URI as defined by Section 4.3 of  [[URI](https://tools.ietf.org/html/rfc3986)]. The back-channel logout includes an `application/x-www-form-urlencoded` formatted query component. The back-channel logout URI will not include a fragment component.
 
-Client applications must perform Logout Token validation to check if the received request is a valid GOVSSO logout request. Validation must be performed according to OIDC protocol [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6. Logout Token Validation". If at any point token validation fails, the client application is expected to respond with a HTTP status code 400 Bad Request. If a session with a matching session ID is not found but the Logout Token is otherwise valid, then the client application should respond with HTTP status code 200 OK.
+Client applications must perform Logout Token validation to check if the received request is a valid GOVSSO logout request. Validation must be performed according to OIDC protocol [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)] "2.6. Logout Token Validation". If at any point token validation fails, the client application is expected to respond with an HTTP status code 400 Bad Request. If a session with a matching session ID is not found but the Logout Token is otherwise valid, then the client application should respond with HTTP status code 200 OK.
 
 ***Example GOVSSO back-channel logout request***
 ````
@@ -539,6 +545,8 @@ logout_token=eyJhbGciOiJSUzI1NiIsImtpZCI...p-wczlqgp1dg
 | protocol, host, port and path | yes |  `https://client.example.com:443/back-channel-logout` |  Client application must authorize access to GOVSSO to an internal URL and port. Access to the port should be limited based on IP address. The port must be protected with TLS. GOVSSO must trust the logout endpoint server certificate. |
 | logout_token | yes |  `logout_token=eyJhbGciOiJSUz...qgp1dg` |  GOVSSO sends a JWT token similar to an ID Token to client applications called a Logout Token to request that they log out. Logout Token will give the client application exact information about the session (see the sid claim in ID Token) that should be logged out. The token is signed by GOVSSO with the same secret key that is used for singing issued ID Tokens. |
 
+Request might contain other URL parameters or body parameters, that client application must ignore.
+
 ## 7 Security operations
 
 ### 7.1 Verification of the ID Token and Logout Token
@@ -551,7 +559,6 @@ The client must verify token’s:
 - issuer
 - addressee
 - validity
-- authentication method (in case of ID Token)
 - eIDAS level of assurance of (in case of ID Token)
 
 
@@ -561,7 +568,7 @@ The ID Token and Logout Tokens are signed by the GOVSSO authentication service. 
 
 `RS256` signature algorithm is used, the client application must be able to verify the signature using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. The change of algorithm is considered unlikely, but possible in case a security vulnerability is detected in the `RS256`.
 
-For the signature verification the GOVSSO public signature key must be used. The public signature key is published at the public signature key endpoint (see chapter “8. GOVSSO endpoints”).
+For the signature verification the GOVSSO public signature key must be used. The public signature key is published at the public signature key endpoint (see chapter [8 Endpoints](#8-endpoints)).
 
 The public signature key is stable - the public signature key will be changed according to security recommendations. However, the key can be changed without prior notice for security reasons. Key exchange is carried out based on [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html) standard.
 
@@ -576,7 +583,7 @@ For signature validation following checks needs to be performed on client applic
 b. If client application buffers the public key (it needs to be buffered together with `kid` value), it needs to compare the `kid` value from JWT header with buffered `kid` value. If they match, buffered key can be used. If not client application needs to make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header and buffer it. 
 3. Validate the signature using the key corresponding to `kid` value from the JWT header.
 
-NB! "Hardcoding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GOVSSO is already using the new key until the new key is taken use in client application.
+NB! "Hard coding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GOVSSO is already using the new key until the new key is taken use in client application.
 
 **Trust of the public signature key endpoint**
 
@@ -584,7 +591,7 @@ HTTPS must be used on requests to GOVSSO server. The client application must ver
 
 **Verifying the issuer of tokens**
 
-The `iss` value of the ID Token element must be `https://govsso-demo.ria.ee/` (for GOVSSO test environment) or `https://govsso.ria.ee/` (for GOVSSO production environment).
+The `iss` value of the ID Token element must be `https://govsso-demo.ria.ee/` (for GOVSSO demo environment) or `https://govsso.ria.ee/` (for GOVSSO production environment).
 
 **Verifying the addressee of the tokens**
 
@@ -622,7 +629,7 @@ In order to prevent access to cross-border authentication tools with a lower sec
 
 For example, if the client application wants to use only authentication methods with eIDAS level of assurance `high` and has specified the value in the `acr_values` parameter, then only ID Tokens with `acr` claim with value `high` can be accepted.
 
-In case the level of assurance in the authentication request using `acr_values` parameter is not specified, the ID Token must be equal to a level of assurance `substantial` or `high`.
+In case the level of assurance in the authentication request using `acr_values` parameter is not specified, the ID Token must be equal to a level of assurance `high`.
 
 ### 7.2 Creating a session
 
@@ -666,7 +673,7 @@ Unfortunately, this topic is not presented clearly in the OpenID Connect protoco
 
 Logging must enable the reconstruction of the course of the communication between GOVSSO and the client application for each occasion of using GOVSSO. For this purpose, all following requests and responses must be logged by GOVSSO as well as by the client application: authentication_request, authentication_redirect, token_request, session_update_request, session_update_redirect, logout_request, logout_redirect, backchannel_logout. As the volumes of data transferred are not large, the URL as well as the ID Token must be logged in full. The retention periods of the logs should be determined based on the importance of the client application. We advise using 1 … 7 years. In case of any issue, please submit an excerpt from the log (Which requests were sent to GOVSSO? Which responses were received?).
 
-## 8 GOVSSO endpoints
+## 8 Endpoints
 
 | Endpoint description | Endpoint | Comment |
 |----------------------|----------|---------|
@@ -676,9 +683,18 @@ Logging must enable the reconstruction of the course of the communication betwee
 | token | `/oauth2/token` | GOVSSO endpoint to obtain ID Token [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". In addition access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
 | logout | `/oauth2/sessions/logout` | GOVSSO client application initiated logout endpoint. [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "5. RP-Initiated Logout". |
 
+## 9 Environments
+
+| Environment | OpenID Connect Issuer URL | Originating IP address of GOVSSO back-channel logout requests (from GOVSSO to client application) |
+|-------------|---------------------------|---------------------------------------------------------------------------------------------------|
+| Demo | `https://govsso-demo.ria.ee/` | 195.80.127.38 (govsso-demo.ria.ee) |
+| Production | `https://govsso.ria.ee/` | To be specified. |
+
 ## Change history
 
 | Version, Date | Description |
 |---------------|-------------|
-| 0.01, 26.10.2021 | Initial version |
-| 0.1, 28.12.2021 | Preliminary protocol changes |
+| 0.3, 2022-03-27 | Clarifications: session update request must be performed 2 minutes before ID Token's expiration (`exp` claim value), 15 minutes must not be hard coded; if session update request returns with an OIDC error code, session must be terminated; if session update request fails with a network error, it may be retried. |
+| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
+| 0.1, 2021-12-28 | Preliminary protocol changes |
+| 0.01, 2021-10-26 | Initial version |
