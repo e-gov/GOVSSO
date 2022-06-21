@@ -66,7 +66,7 @@ OAuth standardist tulenevat refresh tokenit GOVSSO teenus ei kasuta. Pikendamine
 
 Kuna GOVSSO ja TARA põhinevad OpenID Connect standarditel, siis peaks võimalik olema kasutada juba maailmas olemasolevaid levinud OpenID Connect protokolli toetavaid teeke. Täpsemalt oleneb konkreetsest teegist, milliseid OpenID Connect standardeid või alamosi see toetab.
 
-## Kas on võimalik testida voogu, kus tokenisse ilmuks ka muu acr väärtus peale "high"? Kui jah, siis kuidas millised test autentimisvahendid lisavad ACR'i "low" või "substential"?
+## Kas on võimalik testida voogu, kus tokenisse ilmuks ka muu acr väärtus peale "high"? Kui jah, siis kuidas millised test autentimisvahendid lisavad ACR'i "low" või "substantial"?
 
 Eesti autentimisvahendid (ID-kaart, Mobiil-ID, Smart-ID) on hetkel kõik "high" tasemega. Hetkel saavad "low" ja "substantial" tasemed tulla ainult "EU eID" ehk eIDAS autentimise kaudu. eIDAS riikide eID vahenditega testimise info on olemas TARA dokumentatsioonis https://e-gov.github.io/TARA-Doku/Testimine#eidas.
 
