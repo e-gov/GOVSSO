@@ -23,11 +23,7 @@ Ametlikku teavet GOVSSO ja teiste RIA teenuste kohta leiab [RIA autentimisteenus
 
 ## Liidese arendajale
 
-[Tehniline kirjeldus](TechnicalSpecification)
-
-[GOVSSO näidisklient](Example)
-
-[Sõnastik](Sonastik) · [Viited](References) · [Korduma kippuvad küsimused](Faq)
+[Tehniline kirjeldus](TechnicalSpecification) · [GOVSSO näidisklient](Example) · [Viited](References) · [Korduma kippuvad küsimused](Faq)
 
 ## Riigi SSO teenuse arendajale
 
