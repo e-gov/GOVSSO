@@ -2,7 +2,7 @@
 permalink: References
 ---
 
-## References
+## Viited
 
 1. [OIDC-CORE] OpenID Connect Core 1.0 - [https://openid.net/specs/openid-connect-core-1_0.html](https://openid.net/specs/openid-connect-core-1_0.html)
 2. [OIDC-SESSION] OpenID Connect Session - [https://openid.net/specs/openid-connect-session-1_0.html](https://openid.net/specs/openid-connect-session-1_0.html)
