@@ -6,6 +6,7 @@ permalink: /
 
 
 
-# <img src='img/LOVID.png' style='width: 80px;'> State Single Sign-On Service (GOVSSO)
+# <img src='img/LOVID.png' style='width: 80px;'> Riigi SSO teenus (GOVSSO)
 
-Here comes introductory text
+Riigi SSO teenuse (GOVSSO) dokumentatsioon
+[https://e-gov.github.io/TARA-Doku/](https://e-gov.github.io/GOVSSO/)
