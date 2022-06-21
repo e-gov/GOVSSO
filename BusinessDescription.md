@@ -24,7 +24,7 @@ Valitsussektori asutustele, kes soovivad:
 
 ## Tehnilised tingimused?
 
-E-teenus liidestatakse autentimisteenusega OpenID Connect protokolli kohaselt. Vt lähemalt: [Tehniline kirjeldus](TehnilineKirjeldus).
+E-teenus liidestatakse autentimisteenusega OpenID Connect protokolli kohaselt. Vt lähemalt: [TechnicalSpecification](TechnicalSpecification).
 
 ## Kuidas liituda?
 
@@ -60,6 +60,6 @@ Kontakt: `help@ria.ee`.
 
 Kui pöördute liidestamisel või liidestatud klientrakenduses TARA kasutamise tehnilise probleemiga, siis palume valmis panna väljavõte klientrakenduse logist. Tõrkepõhjuse väljaselgitamiseks vajame teavet, mis päring(ud) TARAsse saadeti ja mis vastuseks saadi.
 
-Samuti tasub heita pilk [eneseabile](Eneseabi).
+Samuti tasub heita pilk [korduma kippuvate küsimuste rubriiki](Faq).
 
-[Tehniline kirjeldus](TehnilineKirjeldus) (liidese arendajale).
+[TechnicalSpecification](TechnicalSpecification) (liidese arendajale).
