@@ -2,7 +2,7 @@
 permalink: BusinessDescription
 ---
 
-# Riigi SSO teenus (GOVSSO)
+# Ärikirjeldus
 
 Riigi SSO teenus (GOVSSO) on Riigi Infosüsteemi Ameti poolt pakutav teenus, millega asutus saab oma e-teenusesse lisada nii siseriiklike kui ka Euroopa Liidu piiriüleste autentimismeetodite toe koos seansihaldusega.
 
