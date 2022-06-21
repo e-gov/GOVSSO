@@ -1,5 +1,5 @@
 ---
-permalink: Abi
+permalink: Faq
 ---
 
 # Korduma kippuvad küsimused
