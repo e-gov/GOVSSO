@@ -8,7 +8,7 @@ Riigi SSO teenus (GOVSSO) on Riigi Infosüsteemi Ameti poolt pakutav teenus, mil
 
 Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.rahandusministeerium.ee/et/riigihaldus) toodud [tabelile»](https://www.rahandusministeerium.ee/sites/default/files/riigihaldus/avaliku_sektori_asutused_asutuse_liikide_loikes_2021.xlsx) (XLSX) (v.a Muu avalik sektor).
 
-Siseriiklikest autentimismeetoditest on toetatud järgmised vahendid:
+Siseriiklikest autentimismeetoditest on toetatud:
 
 - mobiil-ID (ainult Eesti isikukoodiga kasutajad)
 - ID-kaart
@@ -61,5 +61,7 @@ Kontakt: `help@ria.ee`.
 Kui pöördute liidestamisel või liidestatud klientrakenduses TARA kasutamise tehnilise probleemiga, siis palume valmis panna väljavõte klientrakenduse logist. Tõrkepõhjuse väljaselgitamiseks vajame teavet, mis päring(ud) TARAsse saadeti ja mis vastuseks saadi.
 
 Samuti tasub heita pilk [korduma kippuvate küsimuste rubriiki](Faq).
+
+Liitumisega seotud info leiab [siit](Application).
 
 [TechnicalSpecification](TechnicalSpecification) (liidese arendajale).
