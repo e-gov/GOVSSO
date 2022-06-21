@@ -8,13 +8,13 @@ Riigi SSO teenus (GOVSSO) on Riigi Infosüsteemi Ameti poolt pakutav teenus, mil
 
 Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.rahandusministeerium.ee/et/riigihaldus) toodud [tabelile»](https://www.rahandusministeerium.ee/sites/default/files/riigihaldus/avaliku_sektori_asutused_asutuse_liikide_loikes_2021.xlsx) (XLSX) (v.a Muu avalik sektor).
 
-Siseriiklikest autentimismeetoditest pakume autentimist järgmiste vahenditega:
+Siseriiklikest autentimismeetoditest on toetatud järgmised vahendid:
 
 - mobiil-ID (ainult Eesti isikukoodiga kasutajad)
 - ID-kaart
 - smart-ID (ainult Eesti isikukoodiga kasutajad) *Palume pöörata e-teenuste osutajatel tähelepanu asjaolule, et Smart-IDga isiku tuvastamisel ei ole võimalik eristada Eesti residente mitte residentidest (näiteks nagu seda võimaldab e-residentide sertifikaat).*
 
-Samuti pakume piiriülest autentimist [Euroopa Liidu teavitatud eID vahenditega](https://ec.europa.eu/cefdigital/wiki/display/EIDCOMMUNITY/Overview+of+pre-notified+and+notified+eID+schemes+under+eIDAS) läbi eIDAS-Node taristu.
+Samuti on toetatud piiriülene autentimine [Euroopa Liidu teavitatud eID vahenditega](https://ec.europa.eu/cefdigital/wiki/display/EIDCOMMUNITY/Overview+of+pre-notified+and+notified+eID+schemes+under+eIDAS) läbi eIDAS-Node taristu.
 
 ## Kellele?
 
