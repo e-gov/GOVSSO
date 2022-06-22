@@ -2,7 +2,7 @@
 permalink: Example
 ---
 
-# Example software for GOVSSO client
+# GOVSSO näidiskliendi tarkvara
 
 Currently there is one example in Java for integrating with GOVSSO. The example can be found [here](https://github.com/e-gov/GOVSSO-Client/).
 
