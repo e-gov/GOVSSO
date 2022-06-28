@@ -2,11 +2,11 @@
 permalink: Archive
 ---
 
-Documents in this section are published for informational purposes. These documents provide background context of previous iterations of solutions. These must not be used as specification for current implementation!
+Arhiveeritud dokumendid on publitseeritud taustainfo loomiseks ning ülevaate andmiseks varasematest tegevustest. Need dokumendid ei ole spetsifikatsioonid praegusele lahendusele ning neile ei tohi liidestumisel tugineda!
 {: .adv}
 
-# Archived Documents
+# Arhiveeritud dokumendid
 
-- [Proof of Concept: Analysis (in Estonian)](ArchivedPocAnalysis)
+- [Proof of Concept: Analüüs](ArchivedPocAnalysis)
 - [Proof of Concept: Technical Specification](ArchivedPocTechnicalSpecification)
 - [Proof of Concept: Implementation](https://github.com/e-gov/GOVSSO-POC) (Git repository)

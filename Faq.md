@@ -83,18 +83,18 @@ GOVSSO tarbeks on planeeritud luua ka mock teenus (nagu TARA-l), mille arenduste
 
 RIA on eID iseteeninduskeskkonna loomiseks jaoks taotlenud rahastust, mis võimaldaks alustada selle realisatsiooniga.
 
-## Getting `401 unauthorized` error response on requesting identity token from /token endpoint?
+## `401 unauthorized` viga identsustõendi küsimisel /token otspunktist?
 
-Make sure that:
-- Authorization header is correctly formed based on instructions in [technical specification](/TechnicalSpecification#62-identity-token-request).
-- client_id and client_secret values are correct
+Veendu et:
+- Authorization päis on korrektselt koostatud vastavalt juhendile [Technical Specification](/TechnicalSpecification#62-id-token-request).
+- client_id ja client_secret väärtused on õiged ning väljastatud antud keskkonna jaoks.
 
-For getting new client_secret contact help@ria.ee
+Uue saladuse (client_secret) väljastamiseks kontakteeru help@ria.ee. Kindlasti lisa vastava teenuse client_id millele saladust soovitakse.
 
-## Must browser allow storing the cookies?
+## Kas brauseris peavad küpsised olema lubatud?
 
-Yes, GOVSSO usage requires cookies.  
+Jah, GOVSSO vajab küpsiste lubamist.  
 
 
-Did not find an answer? Contact Information System Authority: help@ria.ee
+Ei leidnud oma küsimusele vastust? Kontakteeru Riigi Infosüsteemi Ametiga: help@ria.ee. Kui sa oled juba GOVSSO teenusega liitunud siis kindlasti lisa ka oma infopäringusse client_id väärtus.
 {: .adv}
