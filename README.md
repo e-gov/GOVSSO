@@ -2,4 +2,4 @@
 
 # Riigi SSO teenuse (GOVSSO) dokumentatsioon
 
-[https://e-gov.github.io/TARA-Doku/](https://e-gov.github.io/GOVSSO/)
+[https://e-gov.github.io/GOVSSO/](https://e-gov.github.io/GOVSSO/)
