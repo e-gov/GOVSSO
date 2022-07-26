@@ -10,6 +10,16 @@ Hea GOVSSO-ga liidestuja! Siit leiad valiku küsimusi, mis teistel on tekkinud -
 - TOC
 {:toc}
 
+## Mida arvestada liitumistaotluses toodud klientrakenduse lühinimetuse valimisel?
+  
+Klientrakenduse lühinimetus on mõeldud kasutajale kuvamiseks mobiilseadmes. Lühinimetuse mobiilseadmes kuvamise eesmärgiks on autentimisprotsessi käigus lõppkasutaja täiendav informeerimine autentimise algatanud infosüsteemist, et muuta autentimise protsess läbipaistvamaks. 
+
+Lühinimetuse valimisel tuleks arvestada järgmiste asjaoludega:
+
+1. Klientrakenduse lühinimetuse pikkus on piiratud. <br/><br/>Lühinimetuse maksimaalne lubatud pikkus sõltub nimetuses kasutatavatest tähemärkidest. Kui piirdutakse standardsete [GSM märgistiku](https://en.wikipedia.org/wiki/GSM_03.38) sümbolitega võib lühinimetus olla maksimaalselt 40 tähemärki. Juhul kui kasutatakse GSM-7 väliseid sümboleid, võib lühinimetus olla maksimaalselt 20 tähemärki.
+
+2. Klientrakenduse lühinimetus peaks olema kasutajale arusaadav ja seostatav autentimist algatava infosüsteemiga. <br/><br/>Kui klientrakenduse nimetuse maksimaalne pikkus ei ületa ülaltoodud piirangut võib sama nimetust kasutada ka lühinimetuse puhul. Muul juhul võib klientrakenduse lühinimetuse tuletada infosüsteemi täispikast nimetusest. Näiteid klientrakenduse lühinimetustest:`Eesti.ee`, `E-MTA`, `eKool`.
+
 ## Kas GOVSSO toetab ka teesklemist (impersonation)?
 
 TARA ega GOVSSO seda praegu ei toeta.
