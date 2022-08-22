@@ -8,7 +8,7 @@ permalink: /
 
 Riigi SSO teenus (tehnilise nimega GOVSSO) on Riigi Infosüsteemi Ameti poolt keskselt osutatav teenus, millega asutus saab oma e-teenuses ühekordse sisselogimisega autentida ID-kaardi, mobiil-ID, smart-ID ja Euroopa Liidu eID kasutaja.
 
-Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.fin.ee/riik-ja-omavalitsused-planeeringud/riigihaldus) toodud [tabelile»](https://www.fin.ee/media/6840/download)(XLSX) (v.a Muu avalik sektor).
+Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.fin.ee/riik-ja-omavalitsused-planeeringud/riigihaldus) toodud tabelile (XLSX) (v.a Muu avalik sektor).
 
 Käesoleva lehe teave on mõeldud kolmele sihtrühmale:
 1. Asutuse äriüksuse juht saab siinse teabe alusel hinnata GOVSSO sobivust, liidestustööde mahtu ja teha otsuse GOVSSO kasutuselevõtuks;
@@ -20,6 +20,8 @@ Ametlikku teavet GOVSSO ja teiste RIA teenuste kohta leiab [RIA autentimisteenus
 ## Ärikasutajale
 
 [Ärikirjeldus](BusinessDescription) · [Liitumine](Application)
+
+<a href='https://e-gov.github.io/GOVSSO/files/GOVSSO_intro_for_pilots_220607.pdf' target='_new'>Web service integration with State Single Sign-On (GOVSSO)</a>, esitlus Riigi SSO teenuse infopäeval 07.06.2022<br> ja infopäeva [salvestus](https://youtu.be/hrVNblSqHYw).
 
 ## Liidese arendajale
 
