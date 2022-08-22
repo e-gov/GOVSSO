@@ -19,8 +19,8 @@ GOVSSO teenusega liitumise tingimused ning taotluste blanketid on leitavad Riigi
 
 ## Liidestumise protsess
 
-1. Liituda GOVSSO demokeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#govsso)
-2. Teostada infosüsteemi arenduskeskkonna/testkeskkonna/demokeskkonna liidestus GOVSSO demokeskkonnaga. Info liidestumise tehnilistest tegevustest on leitav siit: [link](TechnicalSpecification) 
-3. Testida liidestust kasutades GOVSSO demokeskkonda. Peamised testistenaariumid on leitavad [siit](https://github.com/e-gov/GOVSSO-Test)
-4. Liituda GOVSSO toodangukeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#govsso)
+1. Liituda GOVSSO demokeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#govsso).
+2. Teostada infosüsteemi arenduskeskkonna/testkeskkonna/demokeskkonna liidestus GOVSSO demokeskkonnaga. Info liidestumise tehnilistest tegevustest on leitav [siit](TechnicalSpecification).
+3. Testida liidestust kasutades GOVSSO demokeskkonda. Peamised testistenaariumid on leitavad [siit](https://github.com/e-gov/GOVSSO-Test).
+4. Liituda GOVSSO toodangukeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#govsso).
 5. Teostada infosüsteemi toodangukeskkonna liidestus GOVSSO toodangukeskkonnaga.
