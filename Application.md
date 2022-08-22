@@ -15,7 +15,7 @@ Karbitarkvara muutmine ei pruugi aga olla võimalik või ka mõttekas. Seega tul
 
 ## Lepingud ning tingimused
 
-GOVSSO teenusega liitumise tingimused ning taotluste blanketid on leitavad Riigi Infosüsteemi Ameti [kodulehelt](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#govsso)
+GOVSSO teenusega liitumise tingimused ning taotluste blanketid on leitavad Riigi Infosüsteemi Ameti [kodulehelt](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#govsso).
 
 ## Liidestumise protsess
 
