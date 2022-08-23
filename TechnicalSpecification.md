@@ -2,7 +2,7 @@
 permalink: TechnicalSpecification
 ---
 
-This documentation is in DRAFT state and can be changed during the development of GOVSSO. Changes in API may take place until finalization of this document. 
+This documentation is in DRAFT state and can be changed during the development of GovSSO. Changes in API may take place until finalization of this document. 
 {: .adv}
 
 # Technical specification
