@@ -1,5 +1,5 @@
 <img src="img/eu_regional_development_fund_horizontal.jpg" width="350" height="200" alt="European Union European Regional Development Fund"/>
 
-# Riigi SSO teenuse (GOVSSO) dokumentatsioon
+# Riigi SSO teenuse (GovSSO) dokumentatsioon
 
 [https://e-gov.github.io/GOVSSO/](https://e-gov.github.io/GOVSSO/)
