@@ -2,6 +2,8 @@
 permalink: Application
 ---
 
+<img src='img/el_regionaalarengu_fond_horisontaalne.jpg' width="350" height="200" alt="Euroopa Liit Euroopa Regionaalarengu Fond"/>
+
 # GovSSO-ga liidestumiseks vajalikud tegevused
 
 Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel](https://www.rahandusministeerium.ee/et/riigihaldus) toodud tabelile (XLSX) (v.a Muu avalik sektor).

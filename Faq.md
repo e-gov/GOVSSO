@@ -2,6 +2,8 @@
 permalink: Faq
 ---
 
+<img src='img/el_regionaalarengu_fond_horisontaalne.jpg' width="350" height="200" alt="Euroopa Liit Euroopa Regionaalarengu Fond"/>
+
 # Korduma kippuvad küsimused
 {: .no_toc}
 

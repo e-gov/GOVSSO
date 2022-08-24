@@ -2,8 +2,7 @@
 permalink: TechnicalSpecification
 ---
 
-This documentation is in DRAFT state and can be changed during the development of GovSSO. Changes in API may take place until finalization of this document. 
-{: .adv}
+<img src='img/eu_regional_development_fund_horizontal.jpg' width="350" height="200" alt="European Union European Regional Development Fund"/>
 
 # Technical specification
 {: .no_toc}
