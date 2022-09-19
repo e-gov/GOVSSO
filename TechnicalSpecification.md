@@ -295,6 +295,9 @@ If GOVSSO is unable to process an authentication request – there is an error i
 
 GOVSSO relies on the OpenID Connect standard error messages [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.6. Authentication Error Response" and [[OAUTH](https://tools.ietf.org/html/rfc6749)] "4.1.2.1. Error Response". The error messages are always displayed in English.
 
+Additionally, the following custom error codes are returned:
+* 
+
 `state` is also returned but no authorization code (`code`) is sent.
 
 ***Example GOVSSO authentication error***
@@ -309,7 +312,17 @@ state=hkMVY7vjuN7xyLl5
 
 **Authentication termination response**
 
-The user may also return to the client application without choosing an authentication method and completing the authentication process (via ‘Back to the service provider’ link). This option is provided for the cases in which the user has clicked ‘Log in’ in the client application but does not actually wish to log in. The URL where to direct the user must be defined upon registering for GOVSSO service. NB! The OpenID Connect protocol `redirect_url` and the URL described here have different meanings.
+The user may also return to the client application without choosing an authentication method and completing the authentication process (via ‘Back to the service provider’ link). This option is provided for the cases in which the user has clicked ‘Log in’ in the client application but does not actually wish to log in. Then GOVSSO returns an error response with `user_cancel` error code.
+
+***Example GOVSSO authentication termination response***
+````
+GET https://client.example.com/callback?
+ 
+error=user_cancel&
+error_description=User+canceled+the+authentication+process.&
+state=hkMVY7vjuN7xyLl5
+````
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 ### 6.2 ID Token request
 
@@ -703,7 +716,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date | Description |
 |---------------|-------------|
-| TBD, 2022-09-19 | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. |
+| TBD, 2022-09-19 | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. |
 | 0.3, 2022-03-27 | Clarifications: session update request must be performed 2 minutes before ID Token's expiration (`exp` claim value), 15 minutes must not be hard coded; if session update request returns with an OIDC error code, session must be terminated; if session update request fails with a network error, it may be retried. |
 | 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
