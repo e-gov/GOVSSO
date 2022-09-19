@@ -710,13 +710,13 @@ Logging must enable the reconstruction of the course of the communication betwee
 | Environment | OpenID Connect Issuer URL | Originating IP address of GOVSSO back-channel logout requests (from GOVSSO to client application) |
 |-------------|---------------------------|---------------------------------------------------------------------------------------------------|
 | Demo | `https://govsso-demo.ria.ee/` | 195.80.127.38 (govsso-demo.ria.ee) |
-| Production | `https://govsso.ria.ee/` | To be specified. |
+| Production | `https://govsso.ria.ee/` | 195.80.127.3 (govsso.ria.ee) |
 
 ## Change history
 
 | Version, Date | Description |
 |---------------|-------------|
-| TBD, 2022-09-19 | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. Fixed `post_logout_redirect_uri` references. |
+| TBD, 2022-09-19 | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. Fixed `post_logout_redirect_uri` references. Specified production environment address. |
 | 0.3, 2022-03-27 | Clarifications: session update request must be performed 2 minutes before ID Token's expiration (`exp` claim value), 15 minutes must not be hard coded; if session update request returns with an OIDC error code, session must be terminated; if session update request fails with a network error, it may be retried. |
 | 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
