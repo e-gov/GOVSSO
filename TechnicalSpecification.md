@@ -101,7 +101,7 @@ If the SSO session update request returns with an OpenID Connect error code, the
 
 It is expected that client applications terminate GOVSSO session as soon as the user has finished using client application(s). If a user has requested to log out of a client application, then information about this event must be sent to GOVSSO as well. GOVSSO will either terminate the SSO session automatically (if only one client application is linked to the same SSO session) or display a logout consent form. The consent form allows user to log out from all client applications at once or to continue SSO session.
 
-After a successful logout the user agent is redirected back to the client application. If a technical error occurs or the logout request is invalid (for example `redirect_uri` does not match registered redirect URL in GOVSSO), then the user is redirected to GOVSSO default error page.
+After a successful logout the user agent is redirected back to the client application. If a technical error occurs or the logout request is invalid (for example `post_logout_redirect_uri` does not match registered post-logout redirect URL in GOVSSO), then the user is redirected to GOVSSO default error page.
 
 <p style='text-align:left;'><img src='img/govsso_logout_flow.png' style='width:800px'></p>
 
@@ -509,7 +509,7 @@ A client application must notify the GOVSSO that the user has logged out of clie
 GET https://govsso.ria.ee/oauth2/sessions/logout?
  
 id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs
-post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback&
+post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Floggedout&
 state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&
 ui_locales=et
 ````
@@ -520,7 +520,7 @@ ui_locales=et
 | URL element   | compulsory       |    example        |     explanation       |
 |---------------|------------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/sessions/logout` |  `/oauth2/auth` is the OpenID Connect-based logout endpoint of the GOVSSO service. Described in OIDC session management specification [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "2.1.  OpenID Provider Discovery Metadata" <br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration end_session_endpoint` parameter. |
-| post_logout_redirect_uri | yes | `redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback` |  Redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[https://en.wikipedia.org/wiki/Percent-encoding](https://en.wikipedia.org/wiki/Percent-encoding).<br> It is not permitted ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment".<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the ID Token (token audience must belong to a registered GOVSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GOVSSO. In GOVSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
+| post_logout_redirect_uri | yes | `post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Floggedout` |  Post-logout redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[https://en.wikipedia.org/wiki/Percent-encoding](https://en.wikipedia.org/wiki/Percent-encoding).<br> It is not permitted ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment".<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the ID Token (token audience must belong to a registered GOVSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GOVSSO. In GOVSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
 | id_token_hint | yes |  `id_token_hint=eyJhbGciOiJSU...TvE` |  ID Token previously issued by GOVSSO being passed as a hint about the user's current or past authenticated session with the client application. If the user identified by the ID Token is not logged in or is logged in by the request, then GOVSSO returns a positive response; otherwise, it WILL return an error. **`id_token_hint` encryption is not supported.** |
 | state | no |  `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks (cross-site request forgery, CSRF). Length of `state` parameter must be minimally 8 characters. Read more about formation and verification of state under 'Protection against false request attacks'.<br> If included in the logout request, the TARA passes this value back to the RP using the state query parameter when redirecting the user agent back to the client application.<br> Using the state parameter is not mandatory for login callbacks. It is expected that the user was already logged out of the client application before calling GOVSSO logout endpoint. |
 | ui_locales | no |  `ui_locales=et	` |  Selection of the user interface language. The following languages are supported: `et`, `en`, `ru`. By default, the user interface is in Estonian language.<br> If the user was logged into a single client application, then no GUI prompt will be displayed to the user. |
@@ -531,7 +531,7 @@ After successful logout request, GOVSSO will redirect the user agent back to the
 
 ***Example GOVSSO logout redirect***
 ````
-GET https://client.example.com/callback?state=hkMVY7vjuN7xyLl5
+GET https://client.example.com/loggedout?state=hkMVY7vjuN7xyLl5
 ````
 
 Request might contain other URL parameters, that client application must ignore.
@@ -716,7 +716,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date | Description |
 |---------------|-------------|
-| TBD, 2022-09-19 | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. |
+| TBD, 2022-09-19 | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. Fixed `post_logout_redirect_uri` references. |
 | 0.3, 2022-03-27 | Clarifications: session update request must be performed 2 minutes before ID Token's expiration (`exp` claim value), 15 minutes must not be hard coded; if session update request returns with an OIDC error code, session must be terminated; if session update request fails with a network error, it may be retried. |
 | 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
 | 0.1, 2021-12-28 | Preliminary protocol changes |
