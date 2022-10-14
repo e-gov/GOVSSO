@@ -15,7 +15,7 @@ Käesoleva lehe teave on mõeldud kolmele sihtrühmale:
 2. Liidese arendaja leiab siit kogu vajaliku tehnilise teabe asutuse e-teenuste liidestamiseks GovSSO-ga;
 3. GovSSO edasiarendajale.
 
-Ametlikku teavet GovSSO ja teiste RIA teenuste kohta leiab [RIA autentimisteenuste lehelt](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#govsso).
+Ametlikku teavet GovSSO ja teiste RIA teenuste kohta leiab [RIA autentimisteenuste lehelt](https://www.ria.ee/et/riigi-infosusteem/eid/partnerile.html#GOVSSO).
 
 ## Ärikasutajale
 
