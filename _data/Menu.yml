@@ -8,6 +8,8 @@
   url: "/Application"
 - title: "Technical Specification"
   url: "/TechnicalSpecification"
+- title: "Testing"
+  url: "/Testing"
 - title: "GovSSO example client"
   url: "/Example"
 - title: "Viited"

@@ -647,7 +647,7 @@ The application must choose the permitted difference between clocks value.
 
 **Verifying the eIDAS level of assurance**
 
-In order to prevent access to cross-border authentication tools with a lower security level, it must be verified that the authentication level in the `acr` claim of ID Token is not lower than the minimum level of assurance allowed.
+In order to prevent access with authentication tools with a lower security level, it must be verified that the authentication level in the `acr` claim of ID Token is not lower than the minimum level of assurance allowed.
 
 For example, if the client application wants to use only authentication methods with eIDAS level of assurance `high` and has specified the value in the `acr_values` parameter, then only ID Tokens with `acr` claim with value `high` can be accepted.
 
