@@ -6,7 +6,7 @@ permalink: Testing
 {: .no_toc}
 
 - TOC
-  {:toc}
+{:toc}
 
 ## 1 Overview
 
@@ -72,7 +72,7 @@ If the session update request is unsuccessful due to a network error, the client
 
 If the session update request returns and OpenID Connect error, the client application must terminate the user's session immediately and inform the user about it.
 
-After a successful session update request, a new ID token is issued. Before the client application can consider the session updated, the same ID token checks have to be conducted as described in the [authentication step](#311-Authentication). If any of the security checks fail, the client application should immediately terminate the user's session.
+After a successful session update request, a new ID token is issued. Before the client application can consider the session updated, the same ID token checks have to be conducted as described in the [authentication step](#311-authentication). If any of the security checks fail, the client application should immediately terminate the user's session.
 
 In case a session has to be terminated for any reason, the user must be logged out and informed accordingly.
 
@@ -87,7 +87,7 @@ If the user already has an active GovSSO session in another GovSSO client applic
 
 A session cannot be continued if the existing session has been created with a lower eIDAS level-of-assurance ([submitted as `acr_values` parameter in the authentication request](TechnicalSpecification#61-authentication-request) and [displayed as `acr` value in ID token](TechnicalSpecification#51-id-token)) than required by the new client application. In this case, GovSSO will allow the user to access the new client application only by reauthenticating.
 
-If an existing session is continued in another client application, the new client application receives an ID token. The ID token must be verified the same way as in the [authentication step](#311-Authentication) before the client application can use the token.
+If an existing session is continued in another client application, the new client application receives an ID token. The ID token must be verified the same way as in the [authentication step](#311-authentication) before the client application can use the token.
 
 The integrator must ensure that the user can only access the client application once ID token validation has passed.
 
