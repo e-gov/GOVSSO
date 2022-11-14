@@ -239,7 +239,7 @@ GET https://govsso.ria.ee/oauth2/auth?
  
 redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback&
 scope=openid&
-state=hkMVY7vjuN7xyLl5&|
+state=hkMVY7vjuN7xyLl5&
 response_type=code&
 client_id=58e7ba35aab5b4f1671a&
 ui_locales=en&
@@ -426,7 +426,7 @@ GET https://govsso.ria.ee/oauth2/auth?
  
 redirect_uri=https%3A%2F%2client.example.com%2Fcallback&
 scope=openid&
-state=hkMVY7vjuN7xyLl5&|
+state=hkMVY7vjuN7xyLl5&
 response_type=code&
 client_id=58e7ba35aab5b4f1671a&
 ui_locales=en&
