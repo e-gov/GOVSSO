@@ -22,7 +22,17 @@ In order to perform testing, the integrating party has to first [submit an appli
 
 The integrator should beforehand acquaint with GovSSO [technical specifications](TechnicalSpecification).
 
-Demo GovSSO uses same authentication methods as demo [TARA](https://e-gov.github.io/TARA-Doku/), and therefore it is also important to be aware of [different authentication methods and test accounts](https://www.id.ee/en/rubriik/for-developer/).
+Demo GovSSO uses same authentication methods as demo [TARA](https://e-gov.github.io/TARA-Doku/), and therefore it is also important to be aware of [different authentication methods and test accounts](https://e-gov.github.io/TARA-Doku/Testing#2-prerequisites).
+
+### 2.1 Quick reference of testing accounts
+
+The table below holds information on test accounts for quick access.
+
+| Authentication method | Login info                                                                                                                                                                                         |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Mobile-ID             | **Number:** 68000769, **ID code:** 60001017869                                                                                                                                                     |
+| Smart-ID              | **ID code:** 30303039914                                                                                                                                                                           |
+| EU eID (eIDAS)        | Choose **Czech Republic** from the drop-down menu. Press `Continue`. You will be redirected to the Czech Republic demo authentication service. Select **Testovací profily** and press `Přihlásit`. |
 
 ## 3 Testing
 
@@ -34,7 +44,7 @@ The backend processes mainly include processes dealing with ID tokens, logout to
 
 For backend processes the integrator should ensure conformity through static testing, code reviews and unit tests.
 
-NB! Demo and production GovSSO environments **should not** be used for performance or load testing.
+NB! Demo and production GovSSO environments **must not** be used for performance or load testing.
 
 ### 3.1 Main workflows
 
@@ -70,9 +80,9 @@ It is important for the integrator to ensure that session update is triggered as
 
 If the session update request is unsuccessful due to a network error, the client application should retry the request.
 
-If the session update request returns and OpenID Connect error, the client application must terminate the user's session immediately and inform the user about it.
+If the session update request returns an OpenID Connect error, the client application must terminate the user's session immediately and inform the user about it.
 
-After a successful session update request, a new ID token is issued. Before the client application can consider the session updated, the same ID token checks have to be conducted as described in the [authentication step](#311-authentication). If any of the security checks fail, the client application should immediately terminate the user's session.
+After a successful session update request, a new ID token is issued. Before the client application can consider the session updated, the same ID token checks have to be conducted as described in the [authentication step](#311-authentication). If any of the security checks fail, the client application must immediately terminate the user's session.
 
 In case a session has to be terminated for any reason, the user must be logged out and informed accordingly.
 
@@ -82,8 +92,10 @@ If the session update process is successful and security checks passed, the inte
 
 If the user already has an active GovSSO session in another GovSSO client application, the user can:
 
-- continue the session in another GovSSO client application and skip TARA authentication
-- terminate the existing session and reauthenticate in TARA
+- continue the session in another GovSSO client application and skip initial authentication;
+- terminate the existing session and reauthenticate;
+
+From the perspective of the client application, the process is similar to [authentication](#311-authentication).
 
 A session cannot be continued if the existing session has been created with a lower eIDAS level-of-assurance ([submitted as `acr_values` parameter in the authentication request](TechnicalSpecification#61-authentication-request) and [displayed as `acr` value in ID token](TechnicalSpecification#51-id-token)) than required by the new client application. In this case, GovSSO will allow the user to access the new client application only by reauthenticating.
 
@@ -99,6 +111,8 @@ There are three possible scenarios regarding logging out from a GovSSO session:
 - User is logged in to more than one client application and logs out only from one;
 - User is logged in to more than one client application and logs out from all client applications by terminating the active GovSSO session;
 
+From the perspective of the client application, the above scenarios should be handled in the same way. The difference is only in GovSSO behaviour.
+
 The integrator has to ensure that no matter the reason for user logging out of the client application, that this information is also submitted to GovSSO.
 
 In all the above-mentioned cases the application(s) being logged out from will be sent a logout token to the back-channel logout endpoint URL specified in the submitted GovSSO joining application.
@@ -113,7 +127,7 @@ Beside the main workflows, there are additional aspects related to integrating w
 
 #### 3.2.1 Multiple browser tabs
 
-A user might have open several tabs of the same client application in a browser. This means that the integrator should ensure proper handling of different tabs.
+A user might have open several tabs of the same client application in the same browser. This means that the integrator must ensure proper handling of different tabs.
 
 For **authentication** the integrator has to ensure that after a successful login from one tab, the user can also access the client application from other tabs.
 
@@ -127,8 +141,8 @@ If the client application encounters an issue which leads to termination of the 
 
 GovSSO uses the compulsory `state` and optional `nonce` parameters to protect against [false request attacks](TechnicalSpecification#73-protection-against-false-request-attacks).
 
-The integrator should ensure the following:
-- `state` and `nonce` parameters are created according to the standard described in technical specification, i.e. the value of these parameters is a Base64 encoded hash of at least a 16 byte random string;
+The integrator must ensure the following:
+- `state` and `nonce` parameters are created according to the standard described in technical specification. While the required minimum length of the `state` parameter value is 8 characters, we advise to generate a hash from at least a 16 byte random string;
 - The client application conducts a `state` parameter check on callback request from GovSSO. If the validation fails, the client side authentication must also fail.
 - If the optional `nonce` parameter is used, then `nonce` validation is incorporated into ID token validation.
 
@@ -140,7 +154,7 @@ Please refer to [requests subsection in technical specifications](TechnicalSpeci
 
 The integrator has to ensure that if an error is returned and user is redirected back to the client application, then the application displays the user proper information regarding the error.
 
-If an error is returned for logout or session update requests, the user session should be terminated in the client application.
+If an error is returned for logout or session update requests, the user session must be terminated in the client application.
 
 #### 3.2.4 Public signature key identifier usage
 
@@ -148,7 +162,7 @@ The public signature key (`kid`) is used for JWT [signature verification](Techni
 
 The integrator should ensure that the `kid` value is not hardcoded on the client application side. If the key is hardcoded and should change, then client application users will be unable to log in.
 
-It is recommended to buffer the key on the client side. If JWT validation fails due to a key change, then the client application should check the public signature key endpoint. If there is a new `kid`, the client application should buffer the new value and revalidate the JWT.
+It is recommended to buffer the key on the client side. If JWT validation fails due to a key value mismatch between JWT signature and buffered key, then the client application should check the public signature key endpoint. If there is a new `kid`, the client application should buffer the new value and revalidate the JWT.
 
 #### 3.2.5 User language preference
 
