@@ -6,7 +6,7 @@ permalink: TechnicalSpecification
 
 # Technical specification
 {: .no_toc}
-v1.0, 2022-09-19
+v1.1, 2023-01-24
 
 - TOC
 {:toc}
@@ -73,6 +73,8 @@ In order to log a user into a client application, the client application must ac
 11. GOVSSO will respond to the client application with a GOVSSO ID Token. GOVSSO will also internally update the SSO session expiration time to `currentTime + N minutes`. The client application now has the user authentication information and can display the protected page. Client application signals it's UI that next session update request should be scheduled at ID Token's `exp` minus 2 minutes.
 
 ### 4.2 Session update process
+NB! Due to the user agents (browsers) trend of blocking third party cookies by default we are currently working on alternative solution for session update process than described below. This change will affect the session update process and protocol. There for, we suggest not to implement update sequence by current specification.
+{: .note}
 
 Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GOVSSO. In GOVSSO protocol this is done by acquiring a new ID Token from GOVSSO service. GOVSSO session update requests are very similar to authentication requests. The only difference is that GOVSSO will not display any graphical page to the user when the user agent is redirected. To differentiate SSO session update requests from SSO authentication requests, the client application will add `prompt` parameter to the request (`prompt=none`). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.2.1.  Authentication Request".)
 
@@ -414,6 +416,9 @@ In case the token endpoint encounters an error and can not issue valid tokens, a
 
 ### 6.3 Session update request
 
+NB! Due to the user agents (browsers) trend of blocking third party cookies by default we are currently working on alternative solution for session update process than described below. This change will affect the session update process and protocol. There for, we suggest not to implement update sequence by current specification.
+{: .note}
+
 **Request**
 
 Client applications must periodically check the SSO authentication session validity on GOVSSO server. Session update requests will also signal GOVSSO server that the user is still active in the client application and the authentication session expiration time can be extended.
@@ -714,10 +719,11 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 ## Change history
 
-| Version, Date | Description |
-|---------------|-------------|
-| 1.0, 2022-09-19 | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. Fixed `post_logout_redirect_uri` references. Specified production environment address. |
-| 0.3, 2022-03-27 | Clarifications: session update request must be performed 2 minutes before ID Token's expiration (`exp` claim value), 15 minutes must not be hard coded; if session update request returns with an OIDC error code, session must be terminated; if session update request fails with a network error, it may be retried. |
-| 0.2, 2022-03-23 | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
-| 0.1, 2021-12-28 | Preliminary protocol changes |
+| Version, Date    | Description |
+|------------------|-------------|
+| 1.1, 2023-01-24  | Notification about changes in session update process |
+| 1.0, 2022-09-19  | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. Fixed `post_logout_redirect_uri` references. Specified production environment address. |
+| 0.3, 2022-03-27  | Clarifications: session update request must be performed 2 minutes before ID Token's expiration (`exp` claim value), 15 minutes must not be hard coded; if session update request returns with an OIDC error code, session must be terminated; if session update request fails with a network error, it may be retried. |
+| 0.2, 2022-03-23  | Clarifications: client can't verify ID Token's authentication method, because it cannot be given as input parameter to authentication request; requests might contain other URL parameters, that client application must ignore; session update request must be performed in user agent's background. Specify originating IP addresses of GOVSSO back-channel logout requests. |
+| 0.1, 2021-12-28  | Preliminary protocol changes |
 | 0.01, 2021-10-26 | Initial version |
