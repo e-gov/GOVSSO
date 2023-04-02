@@ -70,11 +70,13 @@ The integrator should then test that the user can indeed access the client appli
 
 #### 3.1.2 Session update
 
-In order for the GovSSO session to stay active, a session update is required before the ID token expires.
+In order for the GovSSO session to stay active, a session update is required before the ID token and refresh token expire.
 
-The current validity period of an ID token is 15 minutes. However, this value should not be hardcoded as it may be subject to change.  
+The session update process must adhere to the logic described in the [technical specification page](TechnicalSpecification#42-session-update-process).
 
-To avoid any issues arising from, for example, network problems, it is advised that the client application initiates session update 2 minutes before ID token's expiration (`exp`) time.
+Current validity period of an ID token and a refresh token is 15 minutes. However, this value should not be hard coded as it may be subject to change.  
+
+To avoid any issues arising from, for example, network problems, it is advised that the client application UI initiates session update 2 minutes before ID token's expiration (`exp`) time.
 
 It is important for the integrator to ensure that session update is triggered as a background request so that it would be seamless for the user and would not interfere with the user's activities.
 
@@ -82,7 +84,11 @@ If the session update request is unsuccessful due to a network error, the client
 
 If the session update request returns an OpenID Connect error, the client application must terminate the user's session immediately and inform the user about it.
 
-After a successful session update request, a new ID token is issued. Before the client application can consider the session updated, the same ID token checks have to be conducted as described in the [authentication step](#311-authentication). If any of the security checks fail, the client application must immediately terminate the user's session.
+The integrator should ensure that the update process is initiated by the client application UI. 
+
+The client application back-end server should never perform a GovSSO session update request on its own initiative. The integrator should test that session update is not initiated when the user has closed the client application browser tab without logging out.
+
+After a successful session update request, a new ID token is issued. Before the client application can consider the session updated, same ID token checks have to be conducted as described in the [authentication step](#311-authentication). If any of the security checks fail, the client application must immediately terminate the user's session.
 
 In case a session has to be terminated for any reason, the user must be logged out and informed accordingly.
 
@@ -125,7 +131,15 @@ As with ID tokens, the integrator has to validate the logout token before actual
 
 Beside the main workflows, there are additional aspects related to integrating with GovSSO to keep in mind while testing the client application.
 
-#### 3.2.1 Multiple browser tabs
+#### 3.2.1 Session duration
+
+The integrator must ensure that the client application session duration is not tied with the ID token expiration time. Otherwise, since session update requests are conducted on a regular interval in the background, a non-active user might never get logged out due to inactivity. 
+
+It is important that the client application performs its own checks to determine if the user is still active and if the client application session should still last.
+
+Please note that the client application should still end the users' session if GovSSO session update has not been successful before the ID token expires. 
+
+#### 3.2.2 Multiple browser tabs
 
 A user might have open several tabs of the same client application in the same browser. This means that the integrator must ensure proper handling of different tabs.
 
@@ -137,7 +151,15 @@ For **logging out** the integrator has to ensure that after logging out from one
 
 If the client application encounters an issue which leads to termination of the user session (e.g. security checks fail for a new ID token), the integrator has to ensure that the user is logged out of all tabs of the same application.
 
-#### 3.2.2 State and nonce parameters
+#### 3.2.3 Parallel sessions
+
+If the integrator allows parallel sessions in client application for the same user, then the integrator should ensure that ID token and refresh token information relating to those sessions are handled separately.
+
+This means that the integrator should ensure that session update and logout request should only apply to the user's corresponding client application session and only use information corresponding to that session.
+
+For example, the refresh token gained from [token request](TechnicalSpecification#62-id-token-request) for a user's session should not be used in the [update request](TechnicalSpecification#63-session-update-request) of a parallel session.
+
+#### 3.2.4 State and nonce parameters
 
 GovSSO uses the compulsory `state` and optional `nonce` parameters to protect against [false request attacks](TechnicalSpecification#73-protection-against-false-request-attacks).
 
@@ -146,7 +168,7 @@ The integrator must ensure the following:
 - The client application conducts a `state` parameter check on callback request from GovSSO. If the validation fails, the client side authentication must also fail.
 - If the optional `nonce` parameter is used, then `nonce` validation is incorporated into ID token validation.
 
-#### 3.2.3 Error response handling
+#### 3.2.5 Error response handling
 
 Errors can occur for various reasons, and it is important for the integrator to handle these cases with care.
 
@@ -156,7 +178,7 @@ The integrator has to ensure that if an error is returned and user is redirected
 
 If an error is returned for logout or session update requests, the user session must be terminated in the client application.
 
-#### 3.2.4 Public signature key identifier usage
+#### 3.2.6 Public signature key identifier usage
 
 The public signature key (`kid`) is used for JWT [signature verification](TechnicalSpecification#71-verification-of-the-id-token-and-logout-token) and can be obtained from the public signature key [endpoint](TechnicalSpecification#8-endpoints).
 
@@ -164,13 +186,13 @@ The integrator should ensure that the `kid` value is not hardcoded on the client
 
 It is recommended to buffer the key on the client side. If JWT validation fails due to a key value mismatch between JWT signature and buffered key, then the client application should check the public signature key endpoint. If there is a new `kid`, the client application should buffer the new value and revalidate the JWT.
 
-#### 3.2.5 User language preference
+#### 3.2.7 User language preference
 
 GovSSO supports Estonian, English and Russian. For better user experience, it is advised to add the `ui_locales` parameter with [authentication](TechnicalSpecification#61-authentication-request) and [logout](TechnicalSpecification#64-logout-request) requests.
 
 When using the parameter, the integrator should test that after making requests to GovSSO the client application is shown in accordance with the submitted user's language preference.
 
-#### 3.2.6 Client logo
+#### 3.2.8 Client logo
 
 GovSSO clients have the option of submitting their logo to GovSSO. This logo will be displayed in GovSSO and TARA UI.
 
@@ -178,6 +200,6 @@ If a logo is used, the integrator should test that the logo is displayed properl
 
 Please note that client logos are not displayed in mobile view.
 
-#### 3.2.7 Browsers and devices
+#### 3.2.9 Browsers and devices
 
 The integrator should test whether the client application works with GovSSO with a combination of browsers and devices supported by the client.

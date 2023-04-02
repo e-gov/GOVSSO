@@ -62,7 +62,7 @@ Pigem on mõistlik klientrakenduse enda poolel teostada kasutaja aktiivsuse tuva
 
 Kui need on eraldi brauserid ehk käsitletavad eraldi seadmetena (s.t. igaühel on oma küpsisehoidla), siis nendes moodustatakse eraldi GovSSO seansid. Ühes seadmes / brauseris seansi lõpetamine ei mõjuta teist seadet / brauserit.
 
-## Miks redirect uri on hardcoded?
+## Miks redirect_uri on *hard coded*?
 
 Turvalisuse kaalutlustel, samamoodi nagu TARA-s. redirect_uri tuleb registreerida liitumistaotluses ja seda saab hiljem muuta kirjutades help@ria.ee.
 Kui Teie klientrakenduse arhitektuurist tulenevalt on vaja, siis on võimalik registreerida ühele klientrakendusele mitu redirect_uri väärtust ja klientrakendus saab autentimispäringut sooritades ise valida, millise eelregistreeritud redirect_uri väärtuse ta kaasa annab.
