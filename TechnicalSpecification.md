@@ -6,7 +6,7 @@ permalink: TechnicalSpecification
 
 # Technical specification
 {: .no_toc}
-v2.0, 2023-03-20
+v2.1, 2023-04-11
 
 - TOC
 {:toc}
@@ -611,9 +611,17 @@ b. If client application buffers the public key (it needs to be buffered togethe
 
 NB! "Hard coding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GovSSO is already using the new key until the new key is taken use in client application.
 
-**Trust of the public signature key endpoint**
+**Verifying the TLS connection to endpoints**
 
-HTTPS must be used on requests to GovSSO server. The client application must verify GovSSO server’s certificate.
+When making requests from the client application to GovSSO (to all endpoints, i.e., server discovery endpoint, public signature key endpoint, token endpoint), all necessary checks must be correctly performed during the initiation of the TLS connection. It is recommended not to implement these checks yourself, but to use a library with HTTPS or TLS connection functionality.
+
+The trust anchor for the TLS connection must be set to the [DigiCert Global Root CA](https://cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem) root certificate only. It is not advisable to trust certificates from other CAs or the entire operating system's CA certificate store. If necessary, instead of the DigiCert Global Root CA, the trust anchor for the TLS connection can be set to the [end-entity certificate](https://github.com/e-gov/TARA-Doku/blob/master/certificates/star_ria_ee_valid_until_2023-11-22.crt), which is replaced at least once a year.
+
+The HTTPS or TLS connection functionality library must perform the following checks for each connection initiation:
+* check whether a certificate chain with valid signatures is formed, ending with the DigiCert Global Root CA root certificate;
+* check whether the hostname in the request (`govsso.ria.ee` or `govsso-demo.ria.ee`) matches the CN field in the server's presented certificate or is included in the SAN field;
+* check the start and end validity values for all certificates in the chain;
+* check the constraints defined in the certificates (basic, name, key usage, critical extensions).
 
 **Verifying the issuer of tokens**
 
@@ -720,6 +728,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date    | Description |
 |------------------|-------------|
+| 2.1, 2023-04-11  | Elaborated TLS validation requirements and specified TLS trust anchor (same as in TARA Technical Specification). |
 | 2.0, 2023-03-20  | Replaced `prompt=none&id_token_hint=...` session update process with Refresh Token session update process. |
 | 1.1, 2023-01-24  | Notification about upcoming changes in session update process. |
 | 1.0, 2022-09-19  | Added `phone` scope, `phone_number` claim, and `phone_number_verified` claim. Specified authentication termination response with `user_cancel` error code. Fixed `post_logout_redirect_uri` references. Specified production environment address. |
