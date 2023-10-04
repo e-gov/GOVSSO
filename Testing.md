@@ -18,25 +18,35 @@ If you need further advice than present in GovSSO documentation or wish to repor
 
 ## 2 Prerequisites
 
-In order to perform testing, the integrating party has to first [submit an application to join the GovSSO demo environment](Application).
+Testing can be performed against demo GovSSO or [GovSSO mock](#21-testing-with-govsso-mock-application).
+
+In order to perform testing against demo GovSSO, the integrating party has to first [submit an application to join the GovSSO demo environment](Application).
 
 The integrator should beforehand acquaint with GovSSO [technical specifications](TechnicalSpecification).
 
 Demo GovSSO uses same authentication methods as demo [TARA](https://e-gov.github.io/TARA-Doku/), and therefore it is also important to be aware of [different authentication methods and test accounts](https://e-gov.github.io/TARA-Doku/Testing#2-prerequisites).
 
-### 2.1 Quick reference of testing accounts
+All testing flows described below are applicable when testing against demo GovSSO or GovSSO mock.
 
-The table below holds information on test accounts for quick access.
+### 2.1 Testing with GovSSO mock application
 
-| Authentication method | Login info                                                                                                                                                                                         |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Mobile-ID             | **ID code:** 60001017869, **Number:** 68000769                                                                                                                                                     |
-| Smart-ID              | **ID code:** 30303039914                                                                                                                                                                           |
-| EU eID (eIDAS)        | Choose **Czech Republic** from the drop-down menu. Press `Continue`. You will be redirected to the Czech Republic demo authentication service. Select **Testovací profily** and press `Přihlásit`. |
+Additionally, you can also use [GovSSO mock](Mock) application for ease of testing.
+
+GovSSO mock application has the following benefits:
+
+- Can simulate GovSSO flows with preset or custom sets of data
+- Can simulate various error conditions that are not easy to replicate against demo GovSSO environment
+- Can be deployed locally or in a closed network
+- Can be used offline
+- No prior registration with Information System Authority (RIA) needed
+
+GovSSO mock returns protocol-compliant responses for all successful flows but not all validations are currently as strict as for demo GovSSO.
+
+**NB!** Please keep in mind that at least one of your client application environments has to be integrated with demo GovSSO to be eligible to integrate with production GovSSO.
 
 ## 3 Testing
 
-Once your client application has been integrated with demo GovSSO and you have familiarized yourself with other prerequisites, you are ready to start the testing process.
+Once your client application has been integrated with demo or mock GovSSO and you have familiarized yourself with other prerequisites, you are ready to start the testing process.
 
 Please note that the processes described below include both workflows through the user interface and backend processes.
 
@@ -44,7 +54,7 @@ The backend processes mainly include processes dealing with ID tokens, logout to
 
 For backend processes the integrator should ensure conformity through static testing, code reviews and unit tests.
 
-NB! Demo and production GovSSO environments **must not** be used for performance or load testing.
+NB! Demo and production GovSSO environments **must not** be used for performance or load testing. Please use GovSSO mock for such purposes.
 
 ### 3.1 Main workflows
 
