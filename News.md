@@ -6,6 +6,15 @@ permalink: News
 
 # Uudised
 
+**18.10.2023**
+## Makett
+
+[GovSSO mock](Mock) leht kirjeldab GovSSO makettrakenduse kasutust. GovSSO makett on rakendus, mis serveerib GovSSO protokolli klientrakendustele. Selle põhilised kasutusalad on:
+* Võimaldada klientrakendustel arendada ja testida liidestust GovSSO protokolliga. Erinevalt GovSSO teenuse demokeskkonnast (`govsso-demo.ria.ee`) saab maketti kasutada ilma RIA-le liitumistaotlust esitamata ja ka internetiühenduse puudumisel või suletud võrkudes.
+* Pakkuda testimiseks sobivaid andmeid arendus- ja testkeskkondadele. Erinevalt GovSSO teenuse demokeskkonnast (`govsso-demo.ria.ee`) võimaldab makett tagastada suvalisi kasutajaandmeid klientrakendusele ja seda on automaattestidega lihtsam kasutada. Erinevalt GovSSO demokeskkonnast võib maketti kasutada ka infosüsteemi koormustestimise stsenaariumites.
+
+Enne infosüsteemi toodangukeskkonna liidestamist GovSSO toodangukeskkonnaga (`govsso.ria.ee`) peab vähemalt üks infosüsteemi keskkond olema liidestatud GovSSO demokeskkonnaga (`govsso-demo.ria.ee`) ja liidestus peab olema testitud kasutades GovSSO demokeskkonda. Peamised testistenaariumid on leitavad [siit](Testing). Enne GovSSO demokeskkonnaga liidestumist võib kasutusele võtta ka maketi ja liidestust testida vastu maketti. Makett tagastab GovSSO protokolli kohaseid vastuseid ja võimaldab simuleerida mitmeid veaolukordi. Kõik valideerimised GovSSO maketis ei ole praegu nii ranged nagu GovSSO demokeskkonnas.
+
 **20.03.2023**
 ## Seansi uuendamise lahenduse muutus
 Senine seansi uuendamise mehhanism (autentimispäringu perioodiline kordamine taustal `prompt=none&id_token_hint=...` lisaparameetritega) sõltus veebisirvikutes kolmanda osapoole küpsiste toest. Selleks, et vähendada riski veebisirvikutes kolmanda osapoole küpsiste käitumise muutuste osas ning suurendada GovSSO protokolli vastavust OpenID Connect ja OAuth standarditele, on seansi uuendamise mehhanism asendatud teistsugusega: uuendusluba (_refresh token_).

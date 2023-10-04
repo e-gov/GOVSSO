@@ -21,8 +21,10 @@ GovSSO teenusega liitumise tingimused ning taotluste blanketid on leitavad Riigi
 
 ## Liidestumise protsess
 
-1. Liituda GovSSO demokeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/riigi-infosusteem/elektrooniline-identiteet-ja-usaldusteenused/kesksed-autentimisteenused#govsso).
-2. Teostada infosüsteemi arenduskeskkonna/testkeskkonna/demokeskkonna liidestus GovSSO demokeskkonnaga. Info liidestumise tehnilistest tegevustest on leitav [siit](TechnicalSpecification).
-3. Testida liidestust kasutades GovSSO demokeskkonda. Peamised testistenaariumid on leitavad [siit](https://github.com/e-gov/GOVSSO-Test).
-4. Liituda GovSSO toodangukeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/riigi-infosusteem/elektrooniline-identiteet-ja-usaldusteenused/kesksed-autentimisteenused#govsso).
-5. Teostada infosüsteemi toodangukeskkonna liidestus GovSSO toodangukeskkonnaga.
+1. Valikuline: Teostada infosüsteemi arenduskeskkonna või mõne muu keskkonna liidestus [GovSSO maketiga](Mock). Info liidestumise tehnilistest tegevustest on leitav [siit](TechnicalSpecification).
+2. Valikuline: Testida liidestust kasutades GovSSO maketti. Peamised testistenaariumid on leitavad [siit](Testing). NB! Kõik valideerimised GovSSO maketis ei ole praegu nii ranged nagu GovSSO demokeskkonnas.
+3. Liituda GovSSO demokeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/riigi-infosusteem/elektrooniline-identiteet-ja-usaldusteenused/kesksed-autentimisteenused#govsso).
+4. Teostada infosüsteemi vähemalt ühe keskkonna liidestus GovSSO demokeskkonnaga.
+5. Testida liidestust kasutades GovSSO demokeskkonda. Peamised testistenaariumid on leitavad [siit](Testing).
+6. Liituda GovSSO toodangukeskkonnaga. Taotluse info on leitav [siit](https://www.ria.ee/riigi-infosusteem/elektrooniline-identiteet-ja-usaldusteenused/kesksed-autentimisteenused#govsso).
+7. Teostada infosüsteemi toodangukeskkonna liidestus GovSSO toodangukeskkonnaga.

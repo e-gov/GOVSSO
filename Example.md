@@ -6,5 +6,5 @@ permalink: Example
 
 # Example software for GovSSO client
 
-Currently there is one example in Java for integrating with GovSSO. The example can be
-found [here](https://github.com/e-gov/GOVSSO-Client/).
+Currently, there is one example in Java for integrating with GovSSO. The example can be found
+at [https://github.com/e-gov/GOVSSO-Client/](https://github.com/e-gov/GOVSSO-Client/).
