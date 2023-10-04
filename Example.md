@@ -8,7 +8,3 @@ permalink: Example
 
 Currently there is one example in Java for integrating with GovSSO. The example can be
 found [here](https://github.com/e-gov/GOVSSO-Client/).
-
-NB! Currently, this is a proof of concept implementation, not a reference implementation! Validations and checks are not
-fully implemented yet! Example code and configuration in that repository cannot be used as a reference yet!
-{: .adv}
