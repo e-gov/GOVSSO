@@ -8,6 +8,8 @@ permalink: BusinessDescription
 
 Riigi SSO teenus (GovSSO) on Riigi Infosüsteemi Ameti poolt pakutav teenus, millega asutus saab oma e-teenusesse lisada nii siseriiklike kui ka Euroopa Liidu piiriüleste autentimismeetodite toe koos seansihaldusega.
 
+Ülevaate seansihaldusest leiab [siit](https://www.id.ee/artikkel/autentimine-e-teenustes/).
+
 Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.fin.ee/riik-ja-omavalitsused-planeeringud/riigihaldus) toodud tabelile (v.a Muu avalik sektor).
 
 Siseriiklikest autentimismeetoditest on toetatud:

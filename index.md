@@ -8,6 +8,8 @@ permalink: /
 
 Riigi SSO teenus (tehnilise nimega GovSSO) on Riigi Infosüsteemi Ameti poolt keskselt osutatav teenus, millega asutus saab oma e-teenuses ühekordse sisselogimisega autentida ID-kaardi, mobiil-ID, smart-ID ja Euroopa Liidu eID kasutaja.
 
+Ülevaate seansihaldusest leiab [siit](https://www.id.ee/artikkel/autentimine-e-teenustes/).
+
 Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.fin.ee/riik-ja-omavalitsused-planeeringud/riigihaldus) toodud tabelile (XLSX) (v.a Muu avalik sektor).
 
 Käesoleva lehe teave on mõeldud kolmele sihtrühmale:
