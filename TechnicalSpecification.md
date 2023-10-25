@@ -588,7 +588,7 @@ The client must verify token’s:
 - eIDAS level of assurance of (in case of ID Token)
 
 
-**Verifying the signature**
+#### 7.1.1 Verifying the signature
 
 The ID Token and Logout Tokens are signed by the GovSSO authentication service. The signature meets the JWT standard ([JWT](https://tools.ietf.org/html/rfc7519)). GovSSO uses the same key for signing ID Token and Logout Token.
 
@@ -611,7 +611,7 @@ b. If client application buffers the public key (it needs to be buffered togethe
 
 NB! "Hard coding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GovSSO is already using the new key until the new key is taken use in client application.
 
-**Verifying the TLS connection to endpoints**
+#### 7.1.2 Verifying the TLS connection to endpoints
 
 When making requests from the client application to GovSSO (to all endpoints, i.e., server discovery endpoint, public signature key endpoint, token endpoint), all necessary checks must be correctly performed during the initiation of the TLS connection. It is recommended not to implement these checks yourself, but to use a library with HTTPS or TLS connection functionality.
 
@@ -623,15 +623,15 @@ The HTTPS or TLS connection functionality library must perform the following che
 * check the start and end validity values for all certificates in the chain;
 * check the constraints defined in the certificates (basic, name, key usage, critical extensions).
 
-**Verifying the issuer of tokens**
+#### 7.1.3 Verifying the issuer of tokens
 
 The `iss` value of the ID Token element must be `https://govsso-demo.ria.ee/` (for GovSSO demo environment) or `https://govsso.ria.ee/` (for GovSSO production environment).
 
-**Verifying the addressee of the tokens**
+#### 7.1.4 Verifying the addressee of the tokens
 
 The client application must verify whether the token received was issued for them. For this purpose, it must be made sure that the `aud` value of the ID Token element matches the `client_id` issued upon registration of the client application.
 
-**Verifying the validity of the tokens**
+#### 7.1.5 Verifying the validity of the tokens
 
 ***ID Token***
 
@@ -657,7 +657,7 @@ The verification is done using the `iat` claim value of the Logout Token. The fo
 
 The application must choose the permitted difference between clocks value.
 
-**Verifying the eIDAS level of assurance**
+#### 7.1.6 Verifying the eIDAS level of assurance
 
 In order to prevent access with authentication tools with a lower security level, it must be verified that the authentication level in the `acr` claim of ID Token is not lower than the minimum level of assurance allowed.
 
