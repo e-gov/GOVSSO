@@ -6,6 +6,16 @@ permalink: News
 
 # Uudised
 
+**26.10.2023**
+## 07.11.2023 vahetub TLS sertifikaat `govsso-demo.ria.ee` keskkonnas ja 14.11.2023 vahetub `govsso.ria.ee` keskkonnas.
+• Palume klientidel, kes on oma teenuses usaldanud senist DigiCert juursertifikaati (DigiCert Global Root CA), lisada enne vahetusaega usaldusankruks uus DigiCert juursertifikaat ([DigiCert Global Root G2](https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem)) ja eemaldada pärast vahetusaega senine juursertifikaat.<br/>
+• Palume klientidel, kes on oma teenuses usaldanud senist DigiCert vahesertifikaati (DigiCert TLS Hybrid ECC SHA384 2020 CA1), asendada usaldusankur kas juursertifikaadiga või lõppolemi sertifikaadiga.<br/>
+• Palume klientidel, kes on oma teenuses usaldanud otse Riigi autentimisteenuse TLS lõppolemi sertifikaati (`*.ria.ee`), lisada enne vahetusaega usaldusankruks [uus lõppolemi sertifikaat](https://github.com/e-gov/TARA-Doku/blob/master/certificates/star_ria_ee_valid_until_2024-11-17.crt) ja eemaldada pärast vahetusaega senine lõppolemi sertifikaat.<br/>
+
+Täpsemalt TLS ühenduste usaldamisest: [https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints](https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints). Kui Teil esineb teenusega probleeme, siis palun võtke meiega ühendust [help@ria.ee](help@ria.ee).
+
+___
+
 **18.10.2023**
 ## Makett
 
