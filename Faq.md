@@ -64,7 +64,7 @@ Kui need on eraldi brauserid ehk käsitletavad eraldi seadmetena (s.t. igaühel 
 
 ## Miks redirect_uri on *hard coded*?
 
-Turvalisuse kaalutlustel, samamoodi nagu TARA-s. redirect_uri tuleb registreerida liitumistaotluses ja seda saab hiljem muuta kirjutades help@ria.ee.
+Turvalisuse kaalutlustel, samamoodi nagu TARA-s. redirect_uri tuleb registreerida liitumistaotluses ja seda saab hiljem muuta kirjutades [help@ria.ee](mailto:help@ria.ee).
 Kui Teie klientrakenduse arhitektuurist tulenevalt on vaja, siis on võimalik registreerida ühele klientrakendusele mitu redirect_uri väärtust ja klientrakendus saab autentimispäringut sooritades ise valida, millise eelregistreeritud redirect_uri väärtuse ta kaasa annab.
 
 ## Kas "given_name" on antud nimi või eesnimi? Samamoodi, kas "family_name" on perekonnanimi või viimane nimi? Mõnel juhul on need vahetuses (s.t perekonnanimi kirjutatakse esimese nimena)?
@@ -101,12 +101,12 @@ Veendu et:
 - Authorization päis on korrektselt koostatud vastavalt juhendile [Technical Specification](/TechnicalSpecification#62-id-token-request).
 - client_id ja client_secret väärtused on õiged ning väljastatud antud keskkonna jaoks.
 
-Uue saladuse (client_secret) väljastamiseks kontakteeru help@ria.ee. Kindlasti lisa vastava teenuse client_id millele saladust soovitakse.
+Uue saladuse (client_secret) väljastamiseks kontakteeru [help@ria.ee](mailto:help@ria.ee). Kindlasti lisa vastava teenuse client_id millele saladust soovitakse.
 
 ## Kas brauseris peavad küpsised olema lubatud?
 
 Jah, GovSSO vajab küpsiste lubamist.  
 
 
-Ei leidnud oma küsimusele vastust? Kontakteeru Riigi Infosüsteemi Ametiga: help@ria.ee. Kui sa oled juba GovSSO teenusega liitunud siis kindlasti lisa ka oma infopäringusse client_id väärtus.
+Ei leidnud oma küsimusele vastust? Kontakteeru Riigi Infosüsteemi Ametiga: [help@ria.ee](mailto:help@ria.ee). Kui sa oled juba GovSSO teenusega liitunud siis kindlasti lisa ka oma infopäringusse client_id väärtus.
 {: .adv}

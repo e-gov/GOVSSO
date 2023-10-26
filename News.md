@@ -12,7 +12,7 @@ permalink: News
 • Palume klientidel, kes on oma teenuses usaldanud senist DigiCert vahesertifikaati (DigiCert TLS Hybrid ECC SHA384 2020 CA1), asendada usaldusankur kas juursertifikaadiga või lõppolemi sertifikaadiga.<br/>
 • Palume klientidel, kes on oma teenuses usaldanud otse Riigi autentimisteenuse TLS lõppolemi sertifikaati (`*.ria.ee`), lisada enne vahetusaega usaldusankruks [uus lõppolemi sertifikaat](https://github.com/e-gov/TARA-Doku/blob/master/certificates/star_ria_ee_valid_until_2024-11-17.crt) ja eemaldada pärast vahetusaega senine lõppolemi sertifikaat.<br/>
 
-Täpsemalt TLS ühenduste usaldamisest: [https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints](https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints). Kui Teil esineb teenusega probleeme, siis palun võtke meiega ühendust [help@ria.ee](help@ria.ee).
+Täpsemalt TLS ühenduste usaldamisest: [https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints](https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints). Kui Teil esineb teenusega probleeme, siis palun võtke meiega ühendust [help@ria.ee](mailto:help@ria.ee).
 
 ___
 

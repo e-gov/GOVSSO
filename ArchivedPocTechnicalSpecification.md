@@ -661,7 +661,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 |------------|----------------------|
 | server discovery |  Public endpoint for GOVSSO server OpenID Connect configuration information. Usually provided as standard endpoint for OIDC implementations that support service discovery. (References: OIDC-DISCOVERY "4.1 OpenID Provider Configuration Request"). |
 | public signature key of the service |  JSON Web Key Set document for GOVSSO service. Publishes at minimum the public key that client applications must use to validate id token and logout token signatures. (References: JWK). |
-| registration of the client application |  Dynamic registration is not supported, static registration via `help@ria.ee`. |
+| registration of the client application |  Dynamic registration is not supported, static registration via [help@ria.ee](mailto:help@ria.ee). |
 | authorization |  OAuth 2.0 authorization endpoint. Used for GOVSSO session update requests and authentication requests. (References: OAUTH "3.1.  Authorization Endpoint"). |
 | token |  GOVSSO endpoint to obtain an Access Token, an ID Token (References: OIDC-CORE "3.1.3.  Token Endpoint"). Access tokens are returned for OAuth 2.0 compliance but their use in GOVSSO protocol is not required. |
 | logout |  GOVSSO client application initiated logout endpoint. (References: OIDC-SESSION "5. RP-Initiated Logout"). |

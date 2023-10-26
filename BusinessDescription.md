@@ -60,7 +60,7 @@ Teenus on avatud toodangukeskkonnas augustist 2022.
 
 ## Rohkem teavet?
 
-Kontakt: `help@ria.ee`.
+Kontakt: [help@ria.ee](mailto:help@ria.ee).
 
 Kui pöördute liidestamisel või liidestatud klientrakenduses GovSSO kasutamise tehnilise probleemiga, siis palume valmis panna väljavõte klientrakenduse logist. Tõrkepõhjuse väljaselgitamiseks vajame teavet, mis päring(ud) GovSSO-sse saadeti ja mis vastuseks saadi.
 

@@ -16,7 +16,7 @@ This page holds guidelines for GovSSO clients to ensure a secure and working int
 
 The information contained here focuses on testing integration with GovSSO from the point of view of the client application.
 
-If you need further advice than present in GovSSO documentation or wish to report a possible bug, please send an e-mail to [help@ria.ee](help@ria.ee).
+If you need further advice than present in GovSSO documentation or wish to report a possible bug, please send an e-mail to [help@ria.ee](mailto:help@ria.ee).
 
 ## 2 Prerequisites
 
