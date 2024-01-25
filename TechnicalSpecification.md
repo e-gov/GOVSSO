@@ -6,7 +6,7 @@ permalink: TechnicalSpecification
 
 # Technical specification
 {: .no_toc}
-v2.2, 2023-10-26
+v2.3, 2024-01-25
 
 - TOC
 {:toc}
@@ -127,7 +127,7 @@ If the logout succeeded, the RP MUST respond with HTTP 200 OK.
 
 Access to client application's back-channel logout endpoint should be restricted to GovSSO outgoing IP address specified in [9 Environments](#9-environments). For example, client application can serve users at `https://client.example.com/` and may provide back-channel logout endpoint on the same domain and port, for example `https://client.example.com/aaa/bbb/back-channel-logout`, but should filter requests to this endpoint by GovSSO IP address. 
 
-Back-channel logout endpoint must support TLSv1.2 and/or TLSv1.3 protocol. Back-channel logout endpoint must present a valid TLS certificate that is signed by a certificate authority (CA) that is participating in the Mozilla Root Program.
+Back-channel logout endpoint must support TLSv1.2 and/or TLSv1.3 protocol. Back-channel logout endpoint must present a valid TLS certificate that is signed by a certificate authority (CA) that is participating in the Mozilla Root Program. Back-channel logout endpoint must serve the end-entity TLS certificate and also any intermediate CA certificates that form the trust path up the root CA certificate (the root CA certificate itself should not be served by the TLS server). When the GovSSO server initiates a connection to the back-channel logout endpoint, it must be able to form a valid certificate chain. The GovSSO server has only the root CA certificates from the Mozilla Root Program, therefore all other certificates in the trust chain must be served by the client application (back-channel logout endpoint TLS server).
 
 ## 5 Tokens
 
@@ -732,6 +732,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date    | Description |
 |------------------|-------------|
+| 2.3, 2024-01-25  | Clarified TLS requirements for the client application's back-channel logout endpoint (intermediate CA certificates must be served by the client application's back-channel logout endpoint TLS server so that a valid certificate chain can be formed without extra downloads, by verifying only against the root CA certificates from the Mozilla Root Program). |
 | 2.2, 2023-10-26  | TLS trust anchor change (same as in TARA Technical Specification). Elaborated instructions for setting TLS trust anchor and checking certificate revocation. |
 | 2.1, 2023-04-11  | Elaborated TLS validation requirements and specified TLS trust anchor (same as in TARA Technical Specification). |
 | 2.0, 2023-03-20  | Replaced `prompt=none&id_token_hint=...` session update process with Refresh Token session update process. |
