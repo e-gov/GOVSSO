@@ -139,6 +139,11 @@ The integrator has to ensure that the client application can handle user logout 
 
 As with ID tokens, the integrator has to validate the logout token before actually logging out the user. For a more detailed overview of logout token verification, please refer to [technical specifications](TechnicalSpecification#71-verification-of-the-id-token-and-logout-token).
 
+Triggering back-channel logout separately (when the user does not initiate the logout flow from your client application, but initiates it from another client application) can be performed in the following way:
+
+* when integrated with the GovSSO mock, back-channel logout can be separately initiated from the mock's front page as described in [mock documentation](https://github.com/e-gov/GOVSSO-Mock/blob/master/USAGE.md#4-back-channel-logout); your client application must receive the logout token and must terminate the user's login;
+* when integrated with the demo GovSSO environment, back-channel logout request to your client application can be initiated, when being logged into your client application and additionally logging into another client application (for example to one of [publicly available example client deployments](Demo)), then initiating logout from that other application and choosing "Log out all" in GovSSO; your client application must receive the logout token and must terminate the user's login.
+
 ### 3.2 Additional aspects to test
 
 Beside the main workflows, there are additional aspects related to integrating with GovSSO to keep in mind while testing the client application.

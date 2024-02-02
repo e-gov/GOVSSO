@@ -6,6 +6,15 @@ permalink: News
 
 # Uudised
 
+**07.02.2024**
+## Näidisklient
+
+[GovSSO example client](Example) leht kirjeldab GovSSO näidisklientrakendust. Näidisklient on implementeeritud Java platvormil ja demonstreerib kõiki vooge, mida GovSSO liidestuja peab implementeerima (autentimine, seansi uuendamine, väljalogimine, taustakanali väljalogimine). Koodibaas on mõeldud õppeotstarbeliseks uurimiseks, seda ei saa _out of the box_ toodangus kasutada.
+
+[Demo](Demo) leht kirjeldab näidiskliendi kahte paigaldust, mis on avalikult kättesaadavad demonstreerimise ja testimise eesmärgil. Need paigaldused on integreeritud GovSSO teenuse demokeskkonnaga (`govsso-demo.ria.ee`) ja demonstreerivad kõiki ülalnimetatud GovSSO kliendi vooge.
+
+___
+
 **26.10.2023**
 ## 07.11.2023 vahetub TLS sertifikaat `govsso-demo.ria.ee` keskkonnas ja 14.11.2023 vahetub `govsso.ria.ee` keskkonnas.
 • Palume klientidel, kes on oma teenuses usaldanud senist DigiCert juursertifikaati (DigiCert Global Root CA), lisada enne vahetusaega usaldusankruks uus DigiCert juursertifikaat ([DigiCert Global Root G2](https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem)) ja eemaldada pärast vahetusaega senine juursertifikaat.<br/>

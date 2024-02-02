@@ -6,6 +6,8 @@
   url: "/BusinessDescription"
 - title: "Liitumine"
   url: "/Application"
+- title: "Demo"
+  url: "/Demo"
 - title: "Technical Specification"
   url: "/TechnicalSpecification"
 - title: "Testing"
