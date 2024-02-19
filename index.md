@@ -31,4 +31,4 @@ Ametlikku teavet GovSSO ja teiste RIA teenuste kohta leiab [RIA autentimisteenus
 
 ## Riigi SSO teenuse arendajale
 
-[Kood ja arendaja dokumentatsioon](https://github.com/e-gov/GOVSSO-Session)
+[Kood ja arendaja dokumentatsioon](https://github.com/e-gov/GovSSO-Session)
