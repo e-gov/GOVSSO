@@ -18,4 +18,4 @@ GovSSO mock is an application that serves [GovSSO protocol](TechnicalSpecificati
 NB! GovSSO mock currently validates most conditions on input data, therefore not all validations in GovSSO mock are
 currently as strict as in GovSSO environment.
 
-GovSSO mock can be found at [https://github.com/e-gov/GOVSSO-Mock](https://github.com/e-gov/GOVSSO-Mock).
+GovSSO mock can be found at [https://github.com/e-gov/GovSSO-Mock](https://github.com/e-gov/GovSSO-Mock).
