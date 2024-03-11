@@ -10,7 +10,7 @@ Riigi SSO teenus (tehnilise nimega GovSSO) on Riigi Infosüsteemi Ameti poolt ke
 
 Ülevaate seansihaldusest leiab [siit](https://www.id.ee/artikkel/autentimine-e-teenustes/).
 
-Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.fin.ee/riik-ja-omavalitsused-planeeringud/riigihaldus) toodud tabelile (XLSX) (v.a Muu avalik sektor).
+Teenust osutatakse kõigile valitsussektori asutustele vastavalt Rahandusministeeriumi [kodulehel»](https://www.fin.ee/riigihaldus-ja-avalik-teenistus-kinnisvara/riigihaldus/avaliku-sektori-statistika) toodud tabelile (XLSX) (v.a Muu avalik sektor).
 
 Käesoleva lehe teave on mõeldud kolmele sihtrühmale:
 1. Asutuse äriüksuse juht saab siinse teabe alusel hinnata GovSSO sobivust, liidestustööde mahtu ja teha otsuse GovSSO kasutuselevõtuks;
