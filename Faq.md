@@ -12,15 +12,31 @@ Hea GovSSO-ga liidestuja! Siit leiad valiku küsimusi, mis teistel on tekkinud -
 - TOC
 {:toc}
 
-## Mida arvestada liitumistaotluses toodud klientrakenduse lühinimetuse valimisel?
-  
-Klientrakenduse lühinimetus on mõeldud kasutajale kuvamiseks mobiilseadmes. Lühinimetuse mobiilseadmes kuvamise eesmärgiks on autentimisprotsessi käigus lõppkasutaja täiendav informeerimine autentimise algatanud infosüsteemist, et muuta autentimise protsess läbipaistvamaks. 
+## Mida arvestada liitumisavalduses toodud klientrakenduse nimetuse valimisel?
 
-Lühinimetuse valimisel tuleks arvestada järgmiste asjaoludega:
+Klientrakenduse nimetus on mõeldud kasutajale kuvamiseks Riigi SSO teenuse (GovSSO) lehtedel ning Riigi autentimisteenuse (TARA) autentimisvahendite valiku lehel. Klientrakenduse nimetuse kuvamise eesmärgiks on luua autentimise algatanud infosüsteemi ja teiste autentimisteenuste vahel kasutajale arusaadav seos.
+
+Klientrakenduse nimetuse valimisel peab arvestama järgmiste asjaoludega:
+
+1. Klientrakenduse nimetuse pikkus on piiratud 150 tähemärgiga.
+
+2. Klientrakenduse nimetus peab olema kasutajale arusaadav ja seostatav autentimist algatava infosüsteemiga. Kasutama peab nimetust, mida kuvatakse kasutajale ka autentimist alustavas süsteemis. Vältida tuleb tehnilisi, sisemiseks kasutuseks mõeldud nimetusi ning üldisi nimetusi, mis võivad rakenduda paljudele klientrakendustele (näiteks ei sobi `XYZ v2 toodangteenus` või `e-raamatukogu`).
+
+3. Kui klientrakenduses kasutatakse inglise keeles või vene keeles tõlgitud nimetust, siis tuleb vastavad inglis- ja venekeelse nimetuse tõlked lisada ka Riigi SSO teenuses. Antud tõlkeid kuvatakse vastavalt valitud keelele.
+
+4. Juhul kui klientrakendus on teenus, mis vahendab autentimist mitmele süsteemile (nt SSO teenus) ja need süsteemid on kasutaja jaoks selgelt eristatavad, siis võiks nimetus siiski seostuda üldiselt antud teenustega (näiteks `X ministeeriumi e-teenused`). Kui kasutaja ei erista erinevaid süsteeme, siis peab nimetus põhinema peamisel süsteemil, mis on kasutajale arusaadava identiteediga.
+
+## Mida arvestada liitumisavalduses toodud klientrakenduse lühinimetuse valimisel?
+
+Klientrakenduse lühinimetus on mõeldud kasutajale kuvamiseks mobiilseadmes (näiteks Smart-ID ja Mobiil-ID korral). Lühinimetuse mobiilseadmes kuvamise eesmärgiks on autentimisprotsessi käigus lõppkasutaja täiendav informeerimine autentimise algatanud infosüsteemist, et muuta autentimise protsess läbipaistvamaks.
+
+Klientrakenduse lühinimetuse valimisel peab arvestama järgmiste asjaoludega:
 
 1. Klientrakenduse lühinimetuse pikkus on piiratud. <br/><br/>Lühinimetuse maksimaalne lubatud pikkus sõltub nimetuses kasutatavatest tähemärkidest. Kui piirdutakse standardsete [GSM märgistiku](https://en.wikipedia.org/wiki/GSM_03.38) sümbolitega võib lühinimetus olla maksimaalselt 40 tähemärki. Juhul kui kasutatakse GSM-7 väliseid sümboleid, võib lühinimetus olla maksimaalselt 20 tähemärki.
 
-2. Klientrakenduse lühinimetus peaks olema kasutajale arusaadav ja seostatav autentimist algatava infosüsteemiga. <br/><br/>Kui klientrakenduse nimetuse maksimaalne pikkus ei ületa ülaltoodud piirangut võib sama nimetust kasutada ka lühinimetuse puhul. Muul juhul võib klientrakenduse lühinimetuse tuletada infosüsteemi täispikast nimetusest. Näiteid klientrakenduse lühinimetustest:`Eesti.ee`, `E-MTA`, `eKool`.
+2. Klientrakenduse lühinimetus peab olema kasutajale arusaadav ja seostatav autentimist algatava infosüsteemiga. Vältida tuleb tehnilisi, sisemiseks kasutuseks mõeldud lühinimetusi, mis ei loo kasutajale seost autenditava infosüsteemiga (näiteks ei sobi `Live SSO V2`). <br/><br/>Kui klientrakenduse nimetuse maksimaalne pikkus ei ületa ülaltoodud piirangut, võib sama nimetust kasutada ka lühinimetuse puhul (näiteks `Riigiandmete register`). Muul juhul võib klientrakenduse lühinimetuse tuletada infosüsteemi täispikast nimetusest (näiteks nimetus `Eesti Vabariigi riigiandmete infosüsteemi (EVRIS) e-teenindus` ning lühinimetus `EVRIS e-teenindus`).
+
+3. Kui klientrakenduses kasutatakse inglise keeles või vene keeles tõlgitud nimetust, siis tuleb vastavad inglis- ja venekeelse lühinime tõlked lisada ka Riigi SSO teenuses. Antud tõlkeid kuvatakse mobiilseadmes vastavalt valitud keelele.
 
 ## Kas GovSSO toetab ka teesklemist (impersonation)?
 
