@@ -6,6 +6,19 @@ permalink: News
 
 # Uudised
 
+**22.10.2024**
+## Pääsutõendi võimaluse lisandumine
+
+GovSSO hakkab toetama pääsutõendi (_access token_) väljastamist. Pääsutõendi väljastus on klientrakenduse põhine ning antud funktsionaalsuse kasutamiseks tuleb vastav soov registreerida (saates kirja [help@ria.ee](mailto:help@ria.ee)).
+
+Sarnaselt identsustõendile (_ID token_) väljastatakse pääsutõend [identsustõendipäringu](TechnicalSpecification#62-id-token-request) ja [seansi uuendamise päringu](TechnicalSpecification#63-session-update-request) vastustes ning see on JWT vormingus. Pääsutõendi kehtivusaeg (vahemikus 1-15 minutit) ja sihtrühmad tuleb klientrakenduse põhiselt kokku leppida.
+
+Pääsutõendit saab klientrakendus kasutada kui soovib enda süsteemi üles ehitada selliselt, et teatud _back-end_ komponendid ei tea kasutaja seansi olekut, vaid API päringutel valideerivad pääsutõendit. Kokkuvõttes võimaldab pääsutõendi kasutamine toetada klientrakendustel [https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps) juures välja toodud _"6.1. Backend For Frontend (BFF)"_ ja _"6.2. Token-Mediating Backend"_ arhitektuurimustreid.
+
+Kirjeldatud funktsionaalsuse lisandumisel GovSSO-sse anname sellest teada koos vastava dokumentatsiooniga.
+
+___
+
 **07.02.2024**
 ## Näidisklient
 
