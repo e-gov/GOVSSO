@@ -31,7 +31,7 @@ GovSSO protocol has been designed to follow the OpenID Connect protocol standard
 - Available authentication methods for the user are provided based on the requested minimum authentication level of assurance.
 - GovSSO supports only a single default scope that will return person authentication data: given name, family name, birthdate, person identifier. The scope remains the same during the entire GovSSO authentication session.
 - Single-sign-on (SSO) is supported. Client applications are expected to perform session status checks to keep the authentication session alive.
-- Refresh Token mechanism is used to keep the GovSSO session alive and retrieve new ID Token. ID Token is always present on successful response. Access Token mechanism is not used. ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "12.  Using Refresh Tokens".)
+- Refresh Token mechanism is used to keep the GovSSO session alive and retrieve new ID Token. ID Token is always present on successful response. Access Token mechanism is not used by default. JWT Access Tokens can be enabled per client application as described in [Access Token specification](AccessToken). ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "12.  Using Refresh Tokens".)
 - Central logout is supported according to OIDC Back-Channel logout specification [[OIDC-BACK](https://openid.net/specs/openid-connect-backchannel-1_0.html)].
 
 ## 3 SSO session
@@ -76,7 +76,7 @@ In order to log a user into a client application, the client application must ac
 
 Once the user has been authenticated and an SSO session created, the client application must periodically perform SSO session update requests to keep the SSO session alive in GovSSO. In GovSSO protocol this is done by acquiring a new ID Token from GovSSO service using Refresh Token ([[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "12.  Using Refresh Tokens").
 NB! GovSSO has the following specifics compared to general Refresh Token approach in OpenID Connect and OAuth standards:
-* Access Token mechanism is not used in GovSSO. Refresh Token mechanism is used to retrieve new ID Token instead.
+* Access Token mechanism is not used by default. Refresh Token mechanism is used to retrieve new ID Tokens. JWT Access Tokens can be enabled per client application as described in [Access Token specification](AccessToken).
 * Refresh Token is always returned, without requesting `offline_access` scope. Client application must not add `offline_access` scope to authentication request.
 * Refresh Token expires at the same time as the ID Token that was received with the same request.
 * `id_token` field is always present in successful response of Refresh Request.
@@ -404,9 +404,9 @@ Pragma: no-cache
 
 | Parameter   |    explanation       |
 |-------------|----------------------|
-| access_token |  OAuth 2.0 access token. With the access token the client application can request authenticated user’s data from userinfo endpoint.<br> **Not used in GovSSO because GovSSO session management is purely ID Token dependent. All user data is already available in the ID Token.** |
-| token_type |  OAuth 2.0 access token type with `bearer` value. Not used in GovSSO. |
-| expires_in |  The validity period of the OAuth 2.0 access token. Not used in GovSSO. |
+| access_token |  OAuth 2.0 access token.<br>GovSSO issues two types of Access Tokens:<br> * A default opaque token (random string) - required by OpenID Connect but not functional in GovSSO, as all user data and session management rely on ID Tokens.<br> * JWT Access Tokens - optional, can be enabled per client to share user data with external services as described in [Access Token specification](AccessToken). |
+| token_type |  OAuth 2.0 access token type with `bearer` value. |
+| expires_in |  The validity period of the OAuth 2.0 access token. |
 | refresh_token | Refresh Token to be used for the next GovSSO session update request. An opaque string value. Refresh Token expires at the same time as `exp` value of `id_token`. |
 | id_token |  ID Token, encapsulated in JWS Compact Serialization form ([[JWS](https://tools.ietf.org/html/rfc7515)] chapter 3.1). The ID Token itself is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)] format .|
 
@@ -490,9 +490,9 @@ Pragma: no-cache
 
 | Parameter   |    explanation       |
 |-------------|----------------------|
-| access_token |  OAuth 2.0 access token. With the access token the client application can request authenticated user’s data from userinfo endpoint.<br> **Not used in GovSSO because GovSSO session management is purely ID Token dependent. All user data is already available in the ID Token.** |
-| token_type |  OAuth 2.0 access token type with `bearer` value. Not used in GovSSO. |
-| expires_in |  The validity period of the OAuth 2.0 access token. Not used in GovSSO. |
+| access_token |  OAuth 2.0 access token.<br>GovSSO issues two types of Access Tokens:<br> * A default opaque token (random string) - required by OpenID Connect but not functional in GovSSO, as all user data and session management rely on ID Tokens.<br> * JWT Access Tokens - optional, can be enabled per client to share user data with external services as described in [Access Token specification](AccessToken). |
+| token_type |  OAuth 2.0 access token type with `bearer` value. |
+| expires_in |  The validity period of the OAuth 2.0 access token. |
 | refresh_token | New Refresh Token to be used for the next GovSSO session update request. An opaque string value. Refresh Token expires at the same time as `exp` value of `id_token`. |
 | id_token |  New ID Token which is valid for a specified duration. ID Token claims are identical to previously issued ID Tokens, except for `jti`, `iat`, `exp`, `at_hash`. ID Token is encapsulated in JWS Compact Serialization form ([[JWS](https://tools.ietf.org/html/rfc7515)] chapter 3.1). The ID Token itself is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)] format .|
 
@@ -718,7 +718,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 | server discovery | `/.well-known/openid-configuration` |Public endpoint for GovSSO server OpenID Connect configuration information. Usually provided as standard endpoint for OIDC implementations that support service discovery [[OIDC-DISCOVERY](https://openid.net/specs/openid-connect-discovery-1_0.html)] "4.1 OpenID Provider Configuration Request". |
 | key info | `/.well-known/jwks.json` |  JSON Web Key Set document for GovSSO service. Publishes at minimum the public key that client applications must use to validate ID Token and Logout Token signatures [[JWK](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)]. |
 | authorization | `/oauth2/auth` |  OAuth 2.0 authorization endpoint. Used for GovSSO session update requests and authentication requests. [[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.  Authorization Endpoint". |
-| token | `/oauth2/token` | GovSSO endpoint to obtain ID Token [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". In addition access tokens are returned for OAuth 2.0 compliance but their use in GovSSO protocol is not required. |
+| token | `/oauth2/token` | GovSSO endpoint to obtain ID Tokens, Refresh Tokens and Access Tokens [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". In addition access tokens are returned for OAuth 2.0 compliance but their use in GovSSO protocol is not required. |
 | logout | `/oauth2/sessions/logout` | GovSSO client application initiated logout endpoint. [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "5. RP-Initiated Logout". |
 
 ## 9 Environments
