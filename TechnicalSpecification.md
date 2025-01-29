@@ -170,11 +170,11 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
 | aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GovSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified in authentication request). <br><br> String or array of strings. A single `aud` value is present in GovSSO tokens. |
 | exp | `"exp": 1591709871` |  The expiration time of the ID Token (in Unix _epoch_ format). This also denotes the expiration time of the corresponding Refresh Token. |
 | iat | `"iat": 1591709811` |  The time of issue of the ID Token (in Unix _epoch_ format). |
-| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). The subject identifier format is set by TARA authentication service ID Token [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.3.1 Identity token". NB! in case of eIDAS authentication the maximum length is 256 characters.|
+| sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | birthdate | `"birthdate": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
-| given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user (the test name was chosen because it includes special characters). |
-| family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user (the test name was selected because it includes special characters). |
-| amr | `"amr": [ "mID" ]` |  Authentication method reference. The authentication method used for user authentication. A single `amr` value is present in GovSSO tokens. Possible values:<br><br> `mID` - Mobile-ID<br> `idcard` - Estonian ID card<br> `eIDAS` - European cross-border authentication<br> `smartid` - Smart-ID<br><br> Available authentication methods depend on TARA authentication service and the list may be extended in the future [[TARA](https://e-gov.github.io/TARA-Doku/TechnicalSpecification)] "4.1 Authentication request". |
+| given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user. |
+| family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` |  The surname of the authenticated user. |
+| amr | `"amr": [ "mID" ]` |  Authentication method reference. The authentication method used for user authentication. A single `amr` value is present in GovSSO tokens. Possible values:<br><br> `idcard` - Estonian ID card<br> `mID` - Mobile-ID<br> `smartid` - Smart-ID<br> `eIDAS` - European cross-border authentication |
 | nonce | `"nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM"` |  Security element. The authentication request’s `nonce` parameter value. Value is present only in case the `nonce` parameter was sent in the authentication request. |
 | acr | `"acr": "high"` |  Authentication Context Class Reference. Signals the level of assurance of the authentication method that was used. Possible values: `low`, `substantial`, `high`. The element is not used if the level of assurance is not applicable or is unknown. |
 | at_hash | `"at_hash": "AKIDtvBT2JS_02tkl_DvuA"` |  The access token hash calculated as described in OIDC specification [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
@@ -590,23 +590,23 @@ The client must verify token’s:
 
 #### 7.1.1 Verifying the signature
 
-The ID Token and Logout Tokens are signed by the GovSSO authentication service. The signature meets the JWT standard ([JWT](https://tools.ietf.org/html/rfc7519)). GovSSO uses the same key for signing ID Token and Logout Token.
+The GovSSO authentication service signs ID Tokens and Logout Tokens. The signature meets the JWT standard ([JWT](https://tools.ietf.org/html/rfc7519)). GovSSO uses the same key for signing ID Token and Logout Token.
 
-`RS256` signature algorithm is used, the client application must be able to verify the signature using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. The change of algorithm is considered unlikely, but possible in case a security vulnerability is detected in the `RS256`.
+The signature uses the `RS256` algorithm. The client application must be able to verify the signature using this algorithm. It would be reasonable to use a standard JWT library which supports all JWT algorithms. Change of signing algorithm is considered unlikely, but possible for security considerations.
 
-For the signature verification the GovSSO public signature key must be used. The public signature key is published at the public signature key endpoint (see chapter [8 Endpoints](#8-endpoints)).
+GovSSO public signature key must be used for the signature verification. The public signature key is published at the public signature key endpoint (see chapter [8 Endpoints](#8-endpoints)).
 
-The public signature key is stable - the public signature key will be changed according to security recommendations. However, the key can be changed without prior notice for security reasons. Key exchange is carried out based on [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html) standard.
+The public signature key remains stable under normal conditions. However, it may be changed without prior notice if required for security reasons. Key exchange is carried out based on [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html) standard.
 
-The public signature key has an identifier (`kid`). The key identifier is aligned with the best practices of [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html#Signing) and OAuth 2.0 ([OAUTH](https://tools.ietf.org/html/rfc6749)) that enables the key exchange without the service interruption.
+The public signature key has an identifier (`kid`). The key identifier is aligned with the best practices of [OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html#Signing) and OAuth 2.0 ([OAUTH](https://tools.ietf.org/html/rfc6749)) that enables the key exchange without service interruption.
 
-We recommend buffering the GovSSO public key (together with `kid` value) in order to decrease the amount of requests made to GovSSO server. However, it is allowed to request the key on each validation.
+We recommend buffering the GovSSO public key (together with `kid` value) in order to decrease the amount of requests made to GovSSO server.
 
-For signature validation following checks needs to be performed on client application:
+The client application must perform the following signature validation steps:
 
-1. Read the `kid` value from the JWT header. 
-2. a. If the client application do not buffer the public key, make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header. <br>
-b. If client application buffers the public key (it needs to be buffered together with `kid` value), it needs to compare the `kid` value from JWT header with buffered `kid` value. If they match, buffered key can be used. If not client application needs to make request to public signature key endpoint and select key corresponding to `kid` value received from JWT header and buffer it. 
+1. Read the `kid` value from the JWT header.
+2. a. If the client application does not buffer the public key, make a request to GovSSO public key info endpoint and select key corresponding to `kid` value received from JWT header. <br>
+   b. If client application buffers the public key (it needs to be buffered together with `kid` value), it must compare the `kid` value from JWT header with buffered `kid` value. If they match, buffered key can be used. If not, then client application needs to make a request to public key info endpoint and select the key corresponding to `kid` value received from JWT header and buffer it.
 3. Validate the signature using the key corresponding to `kid` value from the JWT header.
 
 NB! "Hard coding" the key to client application configuration must be avoided. The key change will be typically communicated (except of urgent security reasons), but manual key handling will result downtime in client application for the period when GovSSO is already using the new key until the new key is taken use in client application.
