@@ -6,7 +6,7 @@ permalink: TechnicalSpecification
 
 # Technical specification
 {: .no_toc}
-v2.4, 2024-11-15
+v2.5, 2025-02-17
 
 - TOC
 {:toc}
@@ -286,7 +286,7 @@ state=hkMVY7vjuN7xyLl5
 | URL element   | example           |     explanation       |
 |---------------|------------------ |-----------------------|
 | protocol, host, port and path	 | `https://client.example.com/callback` |  Matches the `redirect_uri` value sent in the authentication request. |
-| code | `code=71ed579...` |  The authorization code to request the ID Token. |
+| code | `code=71ed5797c3d957817d31` |  The authorization code to request the ID Token. |
 | state | `state=hkMVY7vjuN7xyLl5` |  Security code against false request attacks. The security code received in the authentication request is mirrored back. Read more about forming and verifying `state` from ‘Protection against false request attacks’. |
 
 Request might contain other URL parameters, that client application must ignore.
@@ -328,11 +328,18 @@ state=hkMVY7vjuN7xyLl5
 
 ### 6.2 ID Token request
 
-**Request**
-
 The ID Token request is an HTTP POST request which is used by the client application to request the ID Token from the GovSSO service. It must be performed by client application's back-end server which knows `client_secret` value.
 
-***Example GovSSO ID Token request***
+By default, client applications must use the `client_secret_basic` client authentication method to acquire identity tokens. A client application may use the `client_secret_post` client authentication method instead, but this must be specified in client application registration. A client application must use only one authentication method - the methods cannot be used concurrently.
+
+#### 6.2.1 Using `client_secret_basic` client authentication method
+
+When using `client_secret_basic`, the request must include the `Authorization` request header with the value formed of the word `Basic`, a space, and a string `<form_urlencoded_client_id>:<form_urlencoded_client_secret>` encoded in the Base64 format. `form_urlencoded_client_id` represents `client_id` value encoded in the "application/x-www-form-urlencoded" format and `form_urlencoded_client_secret` represents `client_secret` value encoded in the "application/x-www-form-urlencoded" format (see [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.3.1)).
+
+The body of the HTTP POST request must be presented in a serialised [format](https://openid.net/specs/openid-connect-core-1_0.html#FormSerialization) based on the OpenID Connect protocol.
+
+An example of an identity token request using `client_secret_basic`:
+
 ````
 POST /oauth2/token HTTP/1.1
 Host: govsso.ria.ee
@@ -343,24 +350,50 @@ grant_type=authorization_code&
 code=SplxlOBeZQQYbYS6WxSbIA&
 redirect_uri=https%3A%2F%2client.example.com%2Fcallback
 ````
-(for better readability, the body of the HTTP POST request is divided over several lines)
-
-The client secret code must be provided in the ID Token request. For this purpose, the request must include the Authorization request header with the value formed of the word Basic, a space, and a string `<client_id>:<client_secret>` encoded in the Base64 format ([[HTTP-AUTH](https://datatracker.ietf.org/doc/html/rfc2617)] "2 Basic Authentication Scheme").
-
-The body of the HTTP POST request must be presented in a serialized format based on the OpenID Connect protocol.
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 ***Request parameters***
 
-| Parameter   | parameter type     |    example        |     explanation       |
-|-------------|--------------------|------------------ |-----------------------|
-| protocol, host, port and path | query |  `https://govsso.ria.ee/oauth2/token` |  GovSSO server token endpoint URL. Published in GovSSO discovery endpoint `token_endpoint` parameter value. |
-| grant_type | body |  `grant_type=authorization_code` |  The `authorization_code` value required based on the protocol. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.1.  Token Request" |
-| code | body |  `code=SplxlOBeZQQYbYS6WxSbIA` |  The authorization code received from the authentication service. |
-| redirect_uri | body |  `redirect_uri=https%3A%2F%2client.example.com%2Fcallback` |  The redirect URL sent in the authentication request. |
+| Parameter | example | explanation |
+|-----------|---------|-------------|
+| grant_type | `grant_type=authorization_code` | The `authorization_code` value required based on the protocol. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.1.  Token Request" |
+| code | `code=SplxlOBeZQQYbYS6WxSbIA` | The authorization code received from the authentication service. |
+| redirect_uri | `redirect_uri=https%3A%2F%2client.example.com%2Fcallback` | The redirect URL sent in the authentication request. |
 
-**Response**
+#### 6.2.2 Using `client_secret_post` client authentication method
 
-GovSSO server verifies that the ID Token is requested by the right application and issues the ID Token included in the response body (HTTP response body).
+When using `client_secret_post`, the client credentials are included directly in the request body as parameters instead of the `Authorization` header.
+
+The body of the HTTP POST request must be presented in a serialised [format](https://openid.net/specs/openid-connect-core-1_0.html#FormSerialization) based on the OpenID Connect protocol.
+
+An example of an identity token request using `client_secret_post`:
+
+```
+POST /oauth2/token HTTP/1.1
+Host: govsso.ria.ee
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&
+code=SplxlOBeZQQYbYS6WxSbIA&
+redirect_uri=https%3A%2F%2client.example.com%2Fcallback&
+client_id=<client_id>&
+client_secret=<client_secret>
+```
+(for better readability, the parts of the HTTP request are divided onto several lines)
+
+***Request parameters***
+
+| Parameter | example | explanation |
+|-----------|---------|-------------|
+| grant_type | `grant_type=authorization_code` | The `authorization_code` value required based on the protocol. |
+| code | `code=SplxlOBeZQQYbYS6WxSbIA` | The authorization code received from the authentication service. | 
+| redirect_uri | `redirect_uri=https%3A%2F%2client.example.com%2Fcallback` | The redirect URL sent in the authentication request. |
+| client_id | `client_id=de39d9dc-3c1b-4105-81ec-54a449c1ae36` | Client application's ID. |
+| client_secret | `client_secret=t3fx3ehWoL9z6yzw` | Client application's secret. |
+
+#### 6.2.3 ID Token response
+
+GovSSO server verifies that the ID Token is requested by the right application and issues the ID Token included in the HTTP response body.
 
 ***Example GovSSO token endpoint response***
 ````
@@ -398,7 +431,6 @@ Pragma: no-cache
               iia9Cl7qaszTRmyQbWCTvE"
 }
 ````
-(for better readability, the body of the HTTP response is divided over several lines)
 
 ***Response parameters***
 
@@ -408,7 +440,7 @@ Pragma: no-cache
 | token_type |  OAuth 2.0 access token type with `bearer` value. |
 | expires_in |  The validity period of the OAuth 2.0 access token. |
 | refresh_token | Refresh Token to be used for the next GovSSO session update request. An opaque string value. Refresh Token expires at the same time as `exp` value of `id_token`. |
-| id_token |  ID Token, encapsulated in JWS Compact Serialization form ([[JWS](https://tools.ietf.org/html/rfc7515)] chapter 3.1). The ID Token itself is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)] format .|
+| id_token | ID Token, encapsulated in JWS Compact Serialization form ([[JWS](https://tools.ietf.org/html/rfc7515)] chapter 3.1). The ID Token itself is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7519)] format .|
 
 Response body might contain other fields, that client application must ignore.
 
@@ -418,13 +450,11 @@ In case the token endpoint encounters an error and can not issue valid tokens, a
 
 ### 6.3 Session update request
 
-**Request**
-
 Client applications must periodically check the SSO authentication session validity on GovSSO server. Session update requests will also signal GovSSO server that the user is still active in the client application and the authentication session expiration time can be extended.
 
 The process of acquiring a new authentication token is similar to initial ID Token request after user authentication, but `grant_type=refresh_token` and `refresh_token=` with a value of the previously received Refresh Token are used. 
 
-***Example GovSSO session update request***
+***Example GovSSO session update request with `client_secret_basic`***
 ````
 POST /oauth2/token HTTP/1.1
 Host: govsso.ria.ee
@@ -438,11 +468,31 @@ refresh_token=1kYI7zBU_WEGoMCVxSraXLcuA906szL9hxC2qq7bgso.uq1VHIByywr0Q9fk-V9Jp1
 
 ***Request parameters***
 
-| Parameter   | parameter type     |    example        |     explanation       |
-|-------------|--------------------|------------------ |-----------------------|
-| protocol, host, port and path | query |  `https://govsso.ria.ee/oauth2/token` |  GovSSO server token endpoint URL. Published in GovSSO discovery endpoint `token_endpoint` parameter value. |
-| grant_type | body |  `grant_type=refresh_token` |  The `refresh_token` value required based on the protocol. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "12.  Using Refresh Tokens"|
-| refresh_token | body |  `refresh_token=1kY...3bQ` |  The Refresh Token value previously received from the GovSSO service. |
+| Parameter | example | explanation |
+|-----------|---------|-------------|
+| grant_type | `grant_type=refresh_token` | The `refresh_token` value required based on the protocol. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "12. Using Refresh Tokens" |
+| refresh_token | `refresh_token=1kY...3bQ` | The Refresh Token value previously received from the GovSSO service. |
+
+***Example GovSSO session update request with `client_secret_post`***
+````
+POST /oauth2/token HTTP/1.1
+Host: govsso.ria.ee
+Content-Type: application/x-www-form-urlencoded
+ 
+grant_type=refresh_token&
+refresh_token=1kYI7zBU_WEGoMCVxSraXLcuA906szL9hxC2qq7bgso.uq1VHIByywr0Q9fk-V9Jp1BmLLQihoqXctHHHY8b3bQ&
+client_id=<client_id>&
+client_secret=<client_secret>
+````
+
+***Request parameters***
+
+| Parameter | example | explanation |
+|-----------|---------|-------------|
+| grant_type | `grant_type=refresh_token` | The `refresh_token` value required based on the protocol. [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "12. Using Refresh Tokens" |
+| refresh_token | `refresh_token=1kY...3bQ` | The Refresh Token value previously received from the GovSSO service. |
+| client_id | `de39d9dc-3c1b-4105-81ec-54a449c1ae36` | Client application's ID. |
+| client_secret | `t3fx3ehWoL9z6yzw` | Client application's secret. |
 
 **Response**
 
@@ -732,7 +782,8 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date    | Description |
 |------------------|-------------|
-| 2.4, 2024-11-15  | TLS end-entity certificate removal |
+| 2.5, 2025-02-17  | Add `client_secret_post` support. |
+| 2.4, 2024-11-15  | TLS end-entity certificate removal. |
 | 2.3, 2024-01-25  | Clarified TLS requirements for the client application's back-channel logout endpoint (intermediate CA certificates must be served by the client application's back-channel logout endpoint TLS server so that a valid certificate chain can be formed without extra downloads, by verifying only against the root CA certificates from the Mozilla Root Program). |
 | 2.2, 2023-10-26  | TLS trust anchor change (same as in TARA Technical Specification). Elaborated instructions for setting TLS trust anchor and checking certificate revocation. |
 | 2.1, 2023-04-11  | Elaborated TLS validation requirements and specified TLS trust anchor (same as in TARA Technical Specification). |

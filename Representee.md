@@ -56,6 +56,7 @@ ui_locales=en&
 nonce=fsdsfwrerhtry3qeewq&
 acr_values=substantial&
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 ### 3.2 Session update requests with representation data
 
@@ -76,6 +77,7 @@ grant_type=refresh_token&
 refresh_token=1kYI7zBU_WEGoMCVxSraXLcuA906szL9hxC2qq7bgso.uq1VHIByywr0Q9fk-V9Jp1BmLLQihoqXctHHHY8b3bQ&
 scope=openid%20representee_list
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 #### 3.2.2 Session update request with `representee.*` scope
 
@@ -96,6 +98,7 @@ grant_type=refresh_token&
 refresh_token=1kYI7zBU_WEGoMCVxSraXLcuA906szL9hxC2qq7bgso.uq1VHIByywr0Q9fk-V9Jp1BmLLQihoqXctHHHY8b3bQ&
 scope=openid%20representee.EE12345678901
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 ## 4 Receiving representation data
 

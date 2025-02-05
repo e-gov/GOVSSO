@@ -56,6 +56,7 @@ nonce=fsdsfwrerhtry3qeewq&
 acr_values=substantial&
 audience=https%3A%2F%2Fexample.com
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 ### 3.2 Access Token request
 
@@ -70,6 +71,7 @@ grant_type=authorization_code&
 code=8mnzSdFyJM1LyBvBNvynthUbbNma9Byrao19gOIVcgM.RCsRqqR1BaNJRB_ZsUQxmHhPLr9IgffM2JUrrwCUBIo&
 redirect_uri=https%3A%2F%2client.example.com%2Fcallback
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 ***Example Access Token request with session update***
 ````
@@ -81,6 +83,7 @@ Authorization: Basic Zm9vYmFyYmF6OkhYUkhIYzV1RzB2N2VROTNIcDJ2N0poME9jSVBKRVM=
 grant_type=refresh_token&
 refresh_token=1kYI7zBU_WEGoMCVxSraXLcuA906szL9hxC2qq7bgso.uq1VHIByywr0Q9fk-V9Jp1BmLLQihoqXctHHHY8b3bQ
 ````
+(for better readability, the parts of the HTTP request are divided onto several lines)
 
 ### 3.3 Access Token response
 
