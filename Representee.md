@@ -37,7 +37,7 @@ GovSSO client application can request representation data by adding `representee
 
 - `representee_list` scope enables the client application to get the list of all representations of the currently authenticated user. The client application can use this information to display representation choices to the end-user on the client application page. GovSSO does not use `representee_list` itself to display any additional information to the end-user on the GovSSO page. 
 - `representee.*` scope enables the client application to request specific representation of the authenticated user after initial authentication. Details of a specific representation can only be requested with [session update requests](TechnicalSpecification#63-session-update-request).
-- `representee.{{subject}}` scope enables client applications to get detailed representation data of a person from the `representee_list` with [session update requests](TechnicalSpecification#63-session-update-request).
+- `representee.{subject}` scope enables client applications to get detailed representation data of a person from the `representee_list` with [session update requests](TechnicalSpecification#63-session-update-request).
 
 ### 3.1 Authentication request with representation scopes
  
@@ -79,9 +79,9 @@ scope=openid%20representee_list
 
 #### 3.2.2 Session update request with `representee.*` scope
 
-To get detailed representation information for a specific person, `representee.{{subject}}` scope needs to be added to session update request.
+To get detailed representation information for a specific person, `representee.{subject}` scope needs to be added to session update request.
 
-The `{{subject}}` value must be the ID code of a natural person or the registry code of a legal person, prefixed by the country code of the person's origin.
+The `{subject}` value must be the ID code of a natural person or the registry code of a legal person, prefixed by the country code of the person's origin.
 
 The client application can only request detailed representation info about persons listed in the `representee_list`. Only one representee can be requested at once.
 
@@ -140,11 +140,11 @@ If `representee_list` scope was requested with the initial authentication reques
 | representee_list.list.given_name | `Max` | Natural person's given name. |
 | representee_list.list.family_name | `Stonewood` | Natural person's family name. |
 
-### 4.2 `representee.{{subject}}` claims
+### 4.2 `representee.{subject}` claims
 
-If `representee.{{subject}}` scope was requested with session update requests, the ID Token will hold additional information regarding users specific representation.
+If `representee.{subject}` scope was requested with session update requests, the ID Token will hold additional information regarding users specific representation.
 
-***Example `representee.{{subject}}` claims for a natural person in an ID Token***
+***Example `representee.{subject}` claims for a natural person in an ID Token***
 ````
 ...
 "representee": {
@@ -165,7 +165,7 @@ If `representee.{{subject}}` scope was requested with session update requests, t
 ...
 ````
 
-***Example `representee.{{subject}}` claims for a legal person in an ID Token***
+***Example `representee.{subject}` claims for a legal person in an ID Token***
 ````
 ...
 "representee": {

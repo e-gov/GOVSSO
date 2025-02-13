@@ -40,7 +40,7 @@ If an Access Token is set to expire before the ID Token, but the client applicat
 
 ### 3.1 Requesting Access Token with specific audience
 
-If the client application has registered more than 1 Access Token audience URL but wants to explicitly get an Access Token with a specific audience URL, then this can be done by adding `audience={{registered URL}}` to the initial authentication request query. If the `audience` parameter is omitted, then all pre-registered audience URLs are returned in the Access Token.
+If the client application has registered more than 1 Access Token audience URL but wants to explicitly get an Access Token with a specific audience URL, then this can be done by adding `audience={registered URL}` to the initial authentication request query. If the `audience` parameter is omitted, then all pre-registered audience URLs are returned in the Access Token.
 
 ***Example authentication request with specific audience URL***
 ````
