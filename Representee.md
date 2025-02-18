@@ -4,7 +4,7 @@ permalink: Representee
 
 <img src='img/eu_regional_development_fund_horizontal.jpg' width="350" height="200" alt="European Union European Regional Development Fund"/>
 
-# Technical Specification: Representee
+# Technical Specification: Representee Feature
 
 {: .no_toc}
 v1.0, 2025-02-13
@@ -35,7 +35,7 @@ For a client application to obtain representation rights via GovSSO, the represe
 
 GovSSO client application can request representation rights by adding `representee.*` and/or `representee_list` to the initial [authentication request](TechnicalSpecification#61-authentication-request) scope values.
 
-- The `representee_list` scope enables the client application for the currently authenticated user to get the list representations (the list of all persons the authenticated user is allowed to represent). The client application can use this information to display representation choices to the end-user on the client application page. GovSSO does not use `representee_list` to display additional information to the end-user on the GovSSO page. 
+- The `representee_list` scope enables the client application for the currently authenticated user to get the list representations (the list of all representees (persons the authenticated user is allowed to represent) together with the role codes of the authorisations). The client application can use this information to display representation choices to the end-user on the client application page. GovSSO does not use `representee_list` to display additional information to the end-user on the GovSSO page. 
 The `representee.*` scope enables the client application to request a specific representation (the list of representation rights granted by a particular person to the authenticated user) after initial authentication. The client application can request details of a specific representation with [session update requests](TechnicalSpecification#63-session-update-request).
 - The `representee.{subject}` scope enables client applications to get detailed representation data of a person from the `representee_list` with [session update requests](TechnicalSpecification#63-session-update-request).
 
@@ -82,11 +82,11 @@ scope=openid%20representee_list
 
 #### 3.2.2 Session update request with `representee.*` scope
 
-The client application must add `representee.{subject}` scope to the session update request to get detailed representation information for a specific person.
+The client application must add `representee.{subject}` scope to the session update request to get detailed representation information for a specific representee.
 
 The `{subject}` value must be the ID code of a natural person or the registry code of a legal person, prefixed by the country code of the person's origin.
 
-The client application can only request detailed representation information about persons listed in the `representee_list`. Only one representee can be requested at once.
+The client application can only request detailed representation information about representees listed in the `representee_list`. Only information about one representee can be requested at once.
 
 ***Example GovSSO session update request with `representee.*` scope***
 ````
@@ -159,7 +159,7 @@ If `representee.{subject}` scope was requested with session update requests, the
     "family_name": "Stonewood",
     "mandates": [
       {
-        "role": "BR_REPRIGHT:ROLE_IN_BOARD"
+        "role": "AGENCY-Q:Submit"
       },
       {
         "role": "AGENCY-Q:Edit"
