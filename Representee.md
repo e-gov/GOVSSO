@@ -16,32 +16,32 @@ v1.0, 2025-02-13
 
 This document is an addition to the [core technical specification](TechnicalSpecification), specifying details about the optional representee feature.
 
-[Central authorisations management information system Pääsuke](https://www.ria.ee/en/state-information-system/central-platforms-provision-public-services/authorisations-management) can provide client applications data about representation rights. If a client application registers as a client of Pääsuke service, that client application can directly query X-Road services offered by Pääsuke.
+[Central authorisations management information system Pääsuke](https://www.ria.ee/en/state-information-system/central-platforms-provision-public-services/authorisations-management) can provide client applications data about representation rights. An application can register as a client of Pääsuke service. In that case, that application can directly query representation rights (legal representation rights loaded from the Estonian e-Business Register and authorisations created from the Pääsuke user interface in eesti.ee) by calling Pääsuke X-Road services.
 
-GovSSO offers brokering the data about representation rights from Pääsuke to GovSSO's client application. That way GovSSO's client application itself does not have to query Pääsuke's X-Road services, but can get the necessary data about representation rights from GovSSO. GovSSO itself does not display representations to the end-user on the GovSSO page.
+GovSSO offers brokering representation rights data from Pääsuke to its client application. That way, the GovSSO client application does not have to query Pääsuke X-Road services but can get representation rights data from GovSSO. GovSSO does not display representation rights data to the end-user on the GovSSO page.
 
-## 2 Enabling and configuring representee feature
+## 2 Enabling and configuring the GovSSO representee feature
 
-For a client application to be able to obtain representation rights via GovSSO, the representee feature must be explicitly enabled and configured for that client application registration on the GovSSO side.
+For a client application to obtain representation rights via GovSSO, the representee feature must be explicitly enabled and configured for that client application on the GovSSO side.
 
-1. **Prerequisite:** the client application must register as a client of Pääsuke service, [see registration form](https://www.ria.ee/riigi-infosusteem/kesksed-platvormid-avalike-e-teenuste-pakkumiseks/paasuke#liitumine). GovSSO can broker representation rights only if the client has a contract with Pääsuke service.
+1. **Prerequisite:** the client application must register as a client of Pääsuke service [see registration form](https://www.ria.ee/riigi-infosusteem/kesksed-platvormid-avalike-e-teenuste-pakkumiseks/paasuke#liitumine). GovSSO can broker representation rights only if the client has a contract with Pääsuke service.
 2. For a GovSSO client application with a certain `client_id`, provide RIA with the following configuration values (on the initial client application registration form or later via [help@ria.ee](help@ria.ee)):
 
 | Configuration parameter | example | explanation |
 |-------------------------|---------|-------------|
-| Parameters for Pääsuke request | `ns=BR_REPRIGHT&role=AGENCY-Q:Edit.submit` | URL query parameters that GovSSO transmits to Pääsuke service for all representation rights requests. Must be in the format described in Pääsuke's technical documentation's chapter [X-Road services offered by Pääsuke](https://github.com/e-gov/PH?tab=readme-ov-file#x-road-services-offered-by-p%C3%A4%C3%A4suke). Client application must specify the same URL query parameters here that it would use if it would perform requests to Pääsuke's X-Road services directly. URL query parameters must limit the queriable representation rights by namespace, role, or other criteria that is supported by Pääsuke. As of [Pääsuke specification 0.5.3](https://github.com/e-gov/PH/blob/main/spec/x-road_services_provided_by_paasuke.v0.5.3.pdf), at least one `ns` and/or `role` parameter must be included, `representeeType` is optional. |
+| Parameters for Pääsuke request | `ns=BR_REPRIGHT&role=AGENCY-Q:Edit.submit` | URL query parameters that GovSSO transmits to Pääsuke service for all representation rights requests. Must be in the format described in Pääsuke's technical documentation chapter [X-Road services offered by Pääsuke](https://github.com/e-gov/PH?tab=readme-ov-file#x-road-services-offered-by-p%C3%A4%C3%A4suke). Client application must specify the same URL query parameters here that it would use if it would perform requests to Pääsuke's X-Road services directly. URL query parameters must limit the queriable representation rights by a list of namespaces and/or roles or other criteria that Pääsuke supports. As of [Pääsuke specification 0.5.3](https://github.com/e-gov/PH/blob/main/spec/x-road_services_provided_by_paasuke.v0.5.3.pdf), at least one `ns` and/or `role` parameter must be included, `representeeType` is optional. |
 
-## 3 Requesting representation data
+## 3 Requesting representation rights
 
-GovSSO client application can request representation data by adding `representee.*` and/or `representee_list` to the initial [authentication request](TechnicalSpecification#61-authentication-request) scope values.
+GovSSO client application can request representation rights by adding `representee.*` and/or `representee_list` to the initial [authentication request](TechnicalSpecification#61-authentication-request) scope values.
 
-- `representee_list` scope enables the client application to get the list of all representations of the currently authenticated user. The client application can use this information to display representation choices to the end-user on the client application page. GovSSO does not use `representee_list` itself to display any additional information to the end-user on the GovSSO page. 
-- `representee.*` scope enables the client application to request specific representation of the authenticated user after initial authentication. Details of a specific representation can only be requested with [session update requests](TechnicalSpecification#63-session-update-request).
-- `representee.{subject}` scope enables client applications to get detailed representation data of a person from the `representee_list` with [session update requests](TechnicalSpecification#63-session-update-request).
+- The `representee_list` scope enables the client application for the currently authenticated user to get the list representations (the list of all persons the authenticated user is allowed to represent). The client application can use this information to display representation choices to the end-user on the client application page. GovSSO does not use `representee_list` to display additional information to the end-user on the GovSSO page. 
+The `representee.*` scope enables the client application to request a specific representation (the list of representation rights granted by a particular person to the authenticated user) after initial authentication. The client application can request details of a specific representation with [session update requests](TechnicalSpecification#63-session-update-request).
+- The `representee.{subject}` scope enables client applications to get detailed representation data of a person from the `representee_list` with [session update requests](TechnicalSpecification#63-session-update-request).
 
 ### 3.1 Authentication request with representation scopes
  
-Client application cannot request representation information later during the user's session if representation scopes were not requested in the initial authentication request.
+A client application cannot request representation information later during the user's session if it didn't request representation scopes in the initial authentication request.
 
 ***Example authentication request with representation scopes***
 ````
@@ -60,11 +60,12 @@ acr_values=substantial&
 
 ### 3.2 Session update requests with representation data
 
-Representation data will not carry on by default to subsequent ID Tokens. The client application should request representation data with following [session update requests](TechnicalSpecification#63-session-update-request) if needed.
+By default, representation data will not be carried over to subsequent ID Tokens. If needed, the client application should request representation data with the following [session update requests](TechnicalSpecification#63-session-update-request).
+
 
 #### 3.2.1 Session update requests with `representee_list` scope
 
-To get a new up-to-date `representee_list`, the scope needs to be added to session update request.
+To get a new up-to-date `representee_list`, the client application needs to add scope to the session update request.
 
 ***Example GovSSO session update request with `representee_list` scope***
 ````
@@ -81,11 +82,11 @@ scope=openid%20representee_list
 
 #### 3.2.2 Session update request with `representee.*` scope
 
-To get detailed representation information for a specific person, `representee.{subject}` scope needs to be added to session update request.
+The client application must add `representee.{subject}` scope to the session update request to get detailed representation information for a specific person.
 
 The `{subject}` value must be the ID code of a natural person or the registry code of a legal person, prefixed by the country code of the person's origin.
 
-The client application can only request detailed representation info about persons listed in the `representee_list`. Only one representee can be requested at once.
+The client application can only request detailed representation information about persons listed in the `representee_list`. Only one representee can be requested at once.
 
 ***Example GovSSO session update request with `representee.*` scope***
 ````
@@ -106,7 +107,7 @@ All information regarding representation will be provided to the client applicat
 
 If the GovSSO client application has also enabled the optional [Access Token configuration](AccessToken), then `representee.*` scope specific claims will be present in the Access Token as well. Note that Access Token does not hold `representee_list` claims.
 
-`representee` claim is omitted from ID Tokens and Access Tokens if the user is representing themselves.
+The `representee` claim is omitted from ID Tokens and Access Tokens if the authenticated user represents oneself.
 
 ### 4.1 `representee_list` claims
 
@@ -136,7 +137,7 @@ If `representee_list` scope was requested with the initial authentication reques
 
 | ID Token element (claim) | example | explanation |
 |--------------------------|---------|-------------|
-| representee_list.status | `REPRESENTEE_LIST_CURRENT` or `SERVICE_NOT_AVAILABLE`| `REPRESENTEE_LIST_CURRENT` when the request from GovSSO to Pääsuke succeeded, therefore the nested `list` claim contains the currently valid list of representees for the currently authenticated user. When the currently authenticated user does not have any representees, the nested `list` claim is an empty array. The list of representees for the currently authenticated user is filtered on Pääsuke service's side by the namespaces, roles, or other criteria configured with "Parameters for Pääsuke request" in [chapter 2](2-enabling-and-configuring-representee-feature).<br> `SERVICE_NOT_AVAILABLE` when the request from GovSSO to Pääsuke failed (temporary problem), therefore the nested `list` claim is omitted. |
+| representee_list.status | `REPRESENTEE_LIST_CURRENT` or `SERVICE_NOT_AVAILABLE`| `REPRESENTEE_LIST_CURRENT` when the request from GovSSO to Pääsuke succeeded, therefore the nested `list` claim contains the currently valid list of representees for the currently authenticated user. The nested `list` claim is an empty array when the currently authenticated user has no representees. The list of representees for the currently authenticated user is filtered on the Pääsuke service's side by the namespaces, roles, or other criteria configured with "Parameters for Pääsuke request" in [chapter 2](2-enabling-and-configuring-representee-feature).<br> `SERVICE_NOT_AVAILABLE` when the request from GovSSO to Pääsuke failed (temporary problem); therefore, the nested `list` claim is omitted. |
 | representee_list.list.sub | `EE12345678901` | The ID code of a natural person or the registry code of a legal person. Prefixed by the country code of the person's origin. |
 | representee_list.list.type | `NATURAL_PERSON` or `LEGAL_PERSON` | Type of the representee. |
 | representee_list.list.name | `AS Legal Person` | Legal person's official name. |
@@ -158,7 +159,7 @@ If `representee.{subject}` scope was requested with session update requests, the
     "family_name": "Stonewood",
     "mandates": [
       {
-        "role": "BR_REPRIGHT:MANAGEMENT"
+        "role": "BR_REPRIGHT:ROLE_IN_BOARD"
       },
       {
         "role": "AGENCY-Q:Edit"
@@ -178,7 +179,7 @@ If `representee.{subject}` scope was requested with session update requests, the
     "name": "AS Legal Person",    
     "mandates": [
       {
-        "role": "BR_REPRIGHT:MANAGEMENT"
+        "role": "BR_REPRIGHT:ROLE_IN_BOARD"
       },
       {
         "role": "AGENCY-Q:Edit"
