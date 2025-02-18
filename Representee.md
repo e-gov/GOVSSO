@@ -137,9 +137,9 @@ If `representee_list` scope was requested with the initial authentication reques
 
 | ID Token element (claim) | example | explanation |
 |--------------------------|---------|-------------|
-| representee_list.status | `REPRESENTEE_LIST_CURRENT` or `SERVICE_NOT_AVAILABLE`| `REPRESENTEE_LIST_CURRENT` when the request from GovSSO to Pääsuke succeeded, therefore the nested `list` claim contains the currently valid list of representees for the currently authenticated user. The nested `list` claim is an empty array when the currently authenticated user has no representees. The list of representees for the currently authenticated user is filtered on the Pääsuke service's side by the namespaces, roles, or other criteria configured with "Parameters for Pääsuke request" in [chapter 2](2-enabling-and-configuring-representee-feature).<br> `SERVICE_NOT_AVAILABLE` when the request from GovSSO to Pääsuke failed (temporary problem); therefore, the nested `list` claim is omitted. |
+| representee_list.status | `REPRESENTEE_LIST_CURRENT` or `SERVICE_NOT_AVAILABLE`| `REPRESENTEE_LIST_CURRENT` when the request from GovSSO to Pääsuke succeeded, therefore the nested `list` claim contains the currently valid list of representations for the currently authenticated user. The nested `list` claim is an empty array when the currently authenticated user has no representations. The list of representations for the currently authenticated user is filtered on the Pääsuke service's side by the namespaces, roles, or other criteria configured with "Parameters for Pääsuke request" in [chapter 2](2-enabling-and-configuring-representee-feature).<br> `SERVICE_NOT_AVAILABLE` when the request from GovSSO to Pääsuke failed (temporary problem); therefore, the nested `list` claim is omitted. |
 | representee_list.list.sub | `EE12345678901` | The ID code of a natural person or the registry code of a legal person. Prefixed by the country code of the person's origin. |
-| representee_list.list.type | `NATURAL_PERSON` or `LEGAL_PERSON` | Type of the representee. |
+| representee_list.list.type | `NATURAL_PERSON` or `LEGAL_PERSON` | Type of the representee (person the user has a right to represent). |
 | representee_list.list.name | `AS Legal Person` | Legal person's official name. |
 | representee_list.list.given_name | `Max` | Natural person's given name. |
 | representee_list.list.family_name | `Stonewood` | Natural person's family name. |
@@ -197,7 +197,7 @@ If `representee.{subject}` scope was requested with session update requests, the
 | representee.name | `AS Legal Person` | Legal person's official name. |
 | representee.given_name | `Max` | Natural person's given name. |
 | representee.family_name | `Stonewood` | Natural person's family name. |
-| representee.mandates.role | `"role": "BR_REPRIGHT:MANAGEMENT"` | Roles that have been granted to the currently authenticated user for representing that representee. At least one role exists for each representee. |
+| representee.mandates.role | `"role": "BR_REPRIGHT:ROLE_IN_BOARD"` | Role codes of authorisations and legal representation rights that the currently authenticated user has been granted to represent that representee. For each representee returned by GovSSO, there exists at least one role. |
 
 ## 5 Logout request
 
