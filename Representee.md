@@ -18,7 +18,7 @@ This document is an addition to the [core technical specification](TechnicalSpec
 
 [Central authorisations management information system Pääsuke](https://www.ria.ee/en/state-information-system/central-platforms-provision-public-services/authorisations-management) can provide client applications data about representation rights. An application can register as a client of Pääsuke service. In that case, that application can directly query representation rights (legal representation rights loaded from the Estonian e-Business Register and authorisations created from the Pääsuke user interface in eesti.ee) by calling Pääsuke X-Road services.
 
-GovSSO offers brokering representation rights data from Pääsuke to its client application. That way, the GovSSO client application does not have to query Pääsuke X-Road services but can get representation rights data from GovSSO. GovSSO does not display representation rights data to the end-user on the GovSSO page.
+GovSSO offers brokering representation rights data from Pääsuke to its client application. That way, the GovSSO client application does not have to query Pääsuke X-Road services but can get representation rights data from GovSSO (that internally performs queries to Pääsuke X-Road services getDelegateRepresentees and getRepresenteeDelegateMandates). GovSSO does not display representation rights data to the end-user on the GovSSO page.
 
 ## 2 Enabling and configuring the GovSSO representee feature
 
