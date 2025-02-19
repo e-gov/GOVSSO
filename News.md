@@ -6,6 +6,13 @@ permalink: News
 
 # Uudised
 
+**19.02.2025**
+## Pääsutõendi ja esindatava funktsionaalsus demo- ja toodangukeskkonnas
+
+GovSSO demo- ja toodangukeskkonnas on nüüd GovSSO klientidel võimalik kasutada pääsutõendi ja esindatava funktsionaalsust. Nimetatud funktsionaalsused on klientrakendusepõhised. Nende kasutamiseks tuleb vastav soov registreerida, saates kirja [help@ria.ee](mailto:help@ria.ee).
+
+Rohkem informatsiooni antud funktsionaalsuste kohta leiab [pääsutõendi](AccessToken) ja [esindatava](Representee) dokumentatsiooni lehekülgedelt.
+
 **22.10.2024**
 ## Pääsutõendi võimaluse lisandumine
 
