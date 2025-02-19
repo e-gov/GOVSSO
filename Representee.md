@@ -18,7 +18,7 @@ This document is an addition to the [core technical specification](TechnicalSpec
 
 [Central authorisations management information system Pääsuke](https://www.ria.ee/en/state-information-system/central-platforms-provision-public-services/authorisations-management) can provide client applications data about representation rights. An application can register as a client of Pääsuke service. In that case, that application can directly query representation rights (legal representation rights loaded from the Estonian e-Business Register and authorisations created from the Pääsuke user interface in eesti.ee) by calling Pääsuke X-Road services.
 
-GovSSO offers brokering representation rights data from Pääsuke to its client application. That way, the GovSSO client application does not have to query Pääsuke X-Road services but can get representation rights data from GovSSO (that internally performs queries to Pääsuke X-Road services getDelegateRepresentees and getRepresenteeDelegateMandates). GovSSO does not display representation rights data to the end-user on the GovSSO page.
+GovSSO offers brokering representation rights data from Pääsuke to its client application. That way, the GovSSO client application does not have to query Pääsuke X-Road services but can get representation rights data from GovSSO (that internally performs queries to Pääsuke X-Road services `getDelegateRepresentees` and `getRepresenteeDelegateMandates`). GovSSO does not display representation rights data to the end-user on the GovSSO page.
 
 ## 2 Enabling and configuring the GovSSO representee feature
 
@@ -63,7 +63,7 @@ acr_values=substantial&
 By default, representation data will not be carried over to subsequent ID Tokens. If needed, the client application should request representation data with the following [session update requests](TechnicalSpecification#63-session-update-request).
 
 
-#### 3.2.1 Session update requests with `representee_list` scope
+#### 3.2.1 Session update requests with representee_list scope
 
 To get a new up-to-date `representee_list`, the client application needs to add scope to the session update request.
 
@@ -80,7 +80,7 @@ scope=openid%20representee_list
 ````
 (for better readability, the parts of the HTTP request are divided onto several lines)
 
-#### 3.2.2 Session update request with `representee.*` scope
+#### 3.2.2 Session update request with representee.* scope
 
 The client application must add `representee.{subject}` scope to the session update request to get detailed representation information for a specific representee.
 
@@ -109,7 +109,7 @@ If the GovSSO client application has also enabled the optional [Access Token con
 
 The `representee` claim is omitted from ID Tokens and Access Tokens if the authenticated user represents oneself.
 
-### 4.1 `representee_list` claims
+### 4.1 representee_list claims
 
 If `representee_list` scope was requested with the initial authentication request or subsequent session update requests, the ID Token will hold additional information regarding users representations.
 
@@ -144,7 +144,7 @@ If `representee_list` scope was requested with the initial authentication reques
 | representee_list.list.given_name | `Max` | Natural person's given name. |
 | representee_list.list.family_name | `Stonewood` | Natural person's family name. |
 
-### 4.2 `representee.{subject}` claims
+### 4.2 representee.{subject} claims
 
 If `representee.{subject}` scope was requested with session update requests, the ID Token will hold additional information regarding users specific representation.
 

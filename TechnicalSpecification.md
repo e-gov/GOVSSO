@@ -332,7 +332,7 @@ The ID Token request is an HTTP POST request which is used by the client applica
 
 By default, client applications must use the `client_secret_basic` client authentication method to acquire identity tokens. A client application may use the `client_secret_post` client authentication method instead, but this must be specified in client application registration. A client application must use only one authentication method - the methods cannot be used concurrently.
 
-#### 6.2.1 Using `client_secret_basic` client authentication method
+#### 6.2.1 Using client_secret_basic client authentication method
 
 When using `client_secret_basic`, the request must include the `Authorization` request header with the value formed of the word `Basic`, a space, and a string `<form_urlencoded_client_id>:<form_urlencoded_client_secret>` encoded in the Base64 format. `form_urlencoded_client_id` represents `client_id` value encoded in the "application/x-www-form-urlencoded" format and `form_urlencoded_client_secret` represents `client_secret` value encoded in the "application/x-www-form-urlencoded" format (see [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.3.1)).
 
@@ -360,7 +360,7 @@ redirect_uri=https%3A%2F%2client.example.com%2Fcallback
 | code | `code=SplxlOBeZQQYbYS6WxSbIA` | The authorization code received from the authentication service. |
 | redirect_uri | `redirect_uri=https%3A%2F%2client.example.com%2Fcallback` | The redirect URL sent in the authentication request. |
 
-#### 6.2.2 Using `client_secret_post` client authentication method
+#### 6.2.2 Using client_secret_post client authentication method
 
 When using `client_secret_post`, the client credentials are included directly in the request body as parameters instead of the `Authorization` header.
 
