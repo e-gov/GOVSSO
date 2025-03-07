@@ -6,7 +6,7 @@ permalink: TechnicalSpecification
 
 # Technical specification
 {: .no_toc}
-v2.5, 2025-02-17
+v2.6, 2025-03-11
 
 - TOC
 {:toc}
@@ -558,20 +558,26 @@ In case the token endpoint encounters an error and can not issue valid tokens, a
 
 A client application must notify the GovSSO that the user has logged out of client application and might want to log out of GovSSO as well. In this case, the client application, after having logged the user out of the client application, redirects the user's User Agent to GovSSO's logout endpoint URL. This URL is normally obtained via the `end_session_endpoint` element of GovSSO Discovery response or may be learned via other mechanisms.
 
-***Example GovSSO logout request***
+Logout request can be performed by GET method or POST method (Form Serialization).
+
+***Example GovSSO logout request by GET method***
 ````
-GET https://govsso.ria.ee/oauth2/sessions/logout?
- 
-id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs
-post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Floggedout&
-state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&
-ui_locales=et
+GET /oauth2/sessions/logout?id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs&post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Floggedout&state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&ui_locales=et HTTP/1.1
+Host: govsso.ria.ee
 ````
-(for better readability, the parts of the HTTP request are divided onto several lines)
+
+***Example GovSSO logout request by POST method***
+````
+POST /oauth2/sessions/logout HTTP/1.1
+Host: govsso.ria.ee
+Content-Type: application/x-www-form-urlencoded
+
+id_token_hint=eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzo3Njc2MG...VkDzh0LYvs&post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Floggedout&state=0dHJpYnV0ZXMiOnsiZGF0ZV9vZl9iaXJ&ui_locales=et
+````
 
 ***Request parameters***
 
-| URL element   | compulsory       |    example        |     explanation       |
+| Parameter     | compulsory       |    example        |     explanation       |
 |---------------|------------------|------------------ |-----------------------|
 | protocol, host, port and path | yes |  `https://govsso.ria.ee/oauth2/sessions/logout` |  `/oauth2/auth` is the OpenID Connect-based logout endpoint of the GovSSO service. Described in OIDC session management specification [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "2.1.  OpenID Provider Discovery Metadata" <br><br> The URL is provided from OIDC server public discovery service: `https://govsso.ria.ee/.well-known/openid-configuration end_session_endpoint` parameter. |
 | post_logout_redirect_uri | yes | `post_logout_redirect_uri=https%3A%2F%2Fclient.example.com%2Floggedout` |  Post-logout redirect URL. The redirect URL is selected by the institution. The redirect URL may include the query component. URL encoding should be used, if necessary [[https://en.wikipedia.org/wiki/Percent-encoding](https://en.wikipedia.org/wiki/Percent-encoding).<br> It is not permitted ([[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.2. Redirection Endpoint") to use the URI fragment component (`#` and the following component; [[URI](https://tools.ietf.org/html/rfc3986)] "3.5. Fragment".<br> The URL protocol, host, port and path must match one of the pre-registered redirect URLs of given client application. Client application is determined by the contents of the ID Token (token audience must belong to a registered GovSSO client application).<br> Different from OIDC session management specification, this parameter is considered mandatory in GovSSO. In GovSSO user logout flow we expect that the user is always redirected back to the client application that initiated the logout process. The `post_logout_redirect_uri` should point to the client application front page or a client application internal redirect url. |
@@ -782,6 +788,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date    | Description |
 |------------------|-------------|
+| 2.6, 2025-03-11  | Add POST method support for logout request. |
 | 2.5, 2025-02-17  | Add `client_secret_post` support. |
 | 2.4, 2024-11-15  | TLS end-entity certificate removal. |
 | 2.3, 2024-01-25  | Clarified TLS requirements for the client application's back-channel logout endpoint (intermediate CA certificates must be served by the client application's back-channel logout endpoint TLS server so that a valid certificate chain can be formed without extra downloads, by verifying only against the root CA certificates from the Mozilla Root Program). |
