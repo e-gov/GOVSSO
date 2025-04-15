@@ -4,7 +4,10 @@ permalink: AccessToken
 
 <img src='img/eu_regional_development_fund_horizontal.jpg' width="350" height="200" alt="European Union European Regional Development Fund"/>
 
-# Technical Specification: Access Token
+NB! The usage principles for the GovSSO Access Token are currently under review by the state architect's board and may change in the near future. Updates will be published as they become available.
+{: .adv}
+
+# Technical Specification: Access Token Feature
 {: .no_toc}
 v1.0, 2025-02-10
 
