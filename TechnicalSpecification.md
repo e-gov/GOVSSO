@@ -558,7 +558,7 @@ In case the token endpoint encounters an error and can not issue valid tokens, a
 
 A client application must notify the GovSSO that the user has logged out of client application and might want to log out of GovSSO as well. In this case, the client application, after having logged the user out of the client application, redirects the user's User Agent to GovSSO's logout endpoint URL. This URL is normally obtained via the `end_session_endpoint` element of GovSSO Discovery response or may be learned via other mechanisms.
 
-Logout request can be performed by GET method or POST method (Form Serialization).
+Logout request can be performed by GET method or POST method (Form Serialization). If the [representee feature](Representee) is being used, then the logout request must use the POST method (see [chapter 5 of the representee feature specification](Representee#5-logout-request)).
 
 ***Example GovSSO logout request by GET method***
 ````
