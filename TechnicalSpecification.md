@@ -50,6 +50,14 @@ SSO session validity period is determined by GovSSO service. It is currently 15 
 
 The SSO session may also be terminated before the end of its expiry time by the user. When the user initiates a logout from one client application the client application must inform GovSSO of the logout event. The user is then given an option to terminate the SSO session and log out of all client applications related to the same SSO session.
 
+## 4 Client application configuration on the GovSSO side
+
+The following configuration regarding each client application registration is managed on the GovSSO service side. During initial registration for joining the GovSSO service, these configuration values must be provided by the client to RIA on the [client application registration form](https://www.ria.ee/en/state-information-system/electronic-identity-eid-and-trust-services/central-authentication-services#govsso). To change these values later, write to [klient@ria.ee](mailto:klient@ria.ee) and specify your client application `client_id` value and new configuration values.
+
+| Configuration element | example | explanation |
+|-----------------------|---------|-------------|
+| Token request allowed IP addresses | `1.2.3.4`, `5.6.7.8` | The GovSSO production environment allows client application token requests only from the specified IPv4 addresses. Multiple IPv4 addresses can be specified as lists, or ranges in the following formats: `1.2.0.0/29`, `1.*.1-3.1-4`. The GovSSO demo environment allows token requests from all IPv4 addresses (i.e., this configuration element does not exist for the GovSSO demo environment). **NB! When planning to change client application outgoing IP addresses, write to RIA in advance to change the GovSSO production environment configuration.** |
+
 ## 4 Process flows
 
 ### 4.1 Authentication process
@@ -331,6 +339,8 @@ state=hkMVY7vjuN7xyLl5
 The ID Token request is an HTTP POST request which is used by the client application to request the ID Token from the GovSSO service. It must be performed by client application's back-end server which knows `client_secret` value.
 
 By default, client applications must use the `client_secret_basic` client authentication method to acquire identity tokens. A client application may use the `client_secret_post` client authentication method instead, but this must be specified in client application registration. A client application must use only one authentication method - the methods cannot be used concurrently.
+
+In the GovSSO production environment, requests are allowed only from IP addresses that are configured per client application. See the "Token request allowed IP addresses" configuration element in chapter [4 Client application configuration on the GovSSO side](#4-client-application-configuration-on-the-govsso-side).
 
 #### 6.2.1 Using client_secret_basic client authentication method
 
@@ -774,7 +784,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 | server discovery | `/.well-known/openid-configuration` |Public endpoint for GovSSO server OpenID Connect configuration information. Usually provided as standard endpoint for OIDC implementations that support service discovery [[OIDC-DISCOVERY](https://openid.net/specs/openid-connect-discovery-1_0.html)] "4.1 OpenID Provider Configuration Request". |
 | key info | `/.well-known/jwks.json` |  JSON Web Key Set document for GovSSO service. Publishes at minimum the public key that client applications must use to validate ID Token and Logout Token signatures [[JWK](https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41)]. |
 | authorization | `/oauth2/auth` |  OAuth 2.0 authorization endpoint. Used for GovSSO session update requests and authentication requests. [[OAUTH](https://tools.ietf.org/html/rfc6749)] "3.1.  Authorization Endpoint". |
-| token | `/oauth2/token` | GovSSO endpoint to obtain ID Tokens, Refresh Tokens and Access Tokens [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". In addition access tokens are returned for OAuth 2.0 compliance but their use in GovSSO protocol is not required. |
+| token | `/oauth2/token` | GovSSO endpoint to obtain ID Tokens, Refresh Tokens and Access Tokens [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)] "3.1.3.  Token Endpoint". In the GovSSO production environment, requests are allowed only from IP addresses that are configured per client application. See the "Token request allowed IP addresses" configuration element in chapter [4 Client application configuration on the GovSSO side](#4-client-application-configuration-on-the-govsso-side). |
 | logout | `/oauth2/sessions/logout` | GovSSO client application initiated logout endpoint. [[OIDC-SESSION](https://openid.net/specs/openid-connect-session-1_0.html)] "5. RP-Initiated Logout". |
 
 ## 9 Environments
