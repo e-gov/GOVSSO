@@ -789,7 +789,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 | Version, Date    | Description |
 |------------------|-------------|
 | 2.6, 2025-03-11  | Add POST method support for logout request. |
-| 2.5, 2025-02-17  | Add `client_secret_post` support. |
+| 2.5, 2025-02-17  | Add `client_secret_post` support for token request. |
 | 2.4, 2024-11-15  | TLS end-entity certificate removal. |
 | 2.3, 2024-01-25  | Clarified TLS requirements for the client application's back-channel logout endpoint (intermediate CA certificates must be served by the client application's back-channel logout endpoint TLS server so that a valid certificate chain can be formed without extra downloads, by verifying only against the root CA certificates from the Mozilla Root Program). |
 | 2.2, 2023-10-26  | TLS trust anchor change (same as in TARA Technical Specification). Elaborated instructions for setting TLS trust anchor and checking certificate revocation. |

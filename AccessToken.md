@@ -28,7 +28,7 @@ ID Tokens must be consumed only by the same GovSSO client application for which 
 
 ## 2 Enabling and configuring JWT Access Token feature
 
-For a client application to be able to obtain JWT Access Tokens from GovSSO, the JWT Access Token feature must be explicitly enabled and configured for that client application registration on the GovSSO side. For a client application with a certain `client_id`, provide RIA with the following configuration values (on the initial client application registration form or later via [klient@ria.ee](klient@ria.ee)):
+For a client application to be able to obtain JWT Access Tokens from GovSSO, the JWT Access Token feature must be explicitly enabled and configured for that client application registration on the GovSSO side. For a client application with a certain `client_id`, provide RIA with the following configuration values (on the initial client application registration form or later via [klient@ria.ee](mailto:klient@ria.ee)):
 
 | Configuration parameter | example | explanation |
 |-------------------------|---------|-------------|
