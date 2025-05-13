@@ -58,6 +58,22 @@ Testteenus on avatud 2022. a märtsist
 
 Teenus on avatud toodangukeskkonnas augustist 2022.
 
+## Soovitused Riigi SSO teenuse integreerimiseks kliendi teenuses
+
+- kui teenuses on kasutuses üksnes Riigi SSO teenus (GovSSO) või Riigi autentimisteenus (TARA), on soovituslik kasutada viidet “Logi sisse” koos paigutusega veebilehe paremal üleval servas
+
+<img src='img/riigiportaal.png' width='500'>
+
+- ainult eIDAS liidestuse korral on soovituslik kasutada Riigi SSO teenusele suunamiseks viidet “EL riigi eID” / “Other EU country” või kasutada [logo](https://github.com/e-gov/TARA-Login/blob/master/disain/assets/eu_citizen_login_btn_190x50.svg)
+
+<img src='img/eu_citizen_login_btn_190x50_rgb.png' width='150'> 
+
+- kui teenuses on kasutusel Riigi SSO teenuse kõrval ka teisi autentimisvahendeid, kasutada viitena Riigi autentimisteenuse [logo](https://github.com/e-gov/TARA-Login/blob/master/disain/assets/tara_logo.svg) koos selgitusega “Sisene Riigi autentimisteenuse kaudu” või “Sisene läbi Riigi autentimisteenuse”.
+
+<img src='img/tara-logo-et.png' width='150'>
+  
+<img src='img/tara.png' width='500'>
+
 ## Rohkem teavet?
 
 Kontakt: [help@ria.ee](mailto:help@ria.ee).
