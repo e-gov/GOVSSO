@@ -25,7 +25,7 @@ GovSSO offers brokering representation rights data from Pääsuke to its client 
 For a client application to obtain representation rights via GovSSO, the representee feature must be explicitly enabled and configured for that client application on the GovSSO side.
 
 1. **Prerequisite:** the client application must register as a client of Pääsuke service [see registration form](https://www.ria.ee/riigi-infosusteem/kesksed-platvormid-avalike-e-teenuste-pakkumiseks/paasuke#liitumine). GovSSO can broker representation rights only if the client has a contract with Pääsuke service.
-2. For a GovSSO client application with a certain `client_id`, provide RIA with the following configuration values (on the initial client application registration form or later via [help@ria.ee](help@ria.ee)):
+2. For a GovSSO client application with a certain `client_id`, provide RIA with the following configuration values (on the initial client application registration form or later via [klient@ria.ee](klient@ria.ee)):
 
 | Configuration parameter | example | explanation |
 |-------------------------|---------|-------------|
