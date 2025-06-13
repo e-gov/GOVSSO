@@ -26,6 +26,9 @@ Valitsussektori asutustele, kes soovivad:
 - oma e-teenustes pakkuda kasutajatele laia valikut autentimismeetodeid, ise neid meetodeid teostamata.
 - lisada oma e-teenusele SSO toe.
 
+## Kes Riigi SSO teenust kasutavad?
+Riigi autentimisteenusega on liitunud 57 asutust 98 infosüsteemiga, sh Riigiportaal eesti.ee, e-Rahvastikuregister, Riigi Tugiteenuste Keskuse Toetuste register (SFOS), Terviseportaal, Tervisejuhtimise töölaud, Tervisekassa Partnerportaal, PRIA kliendiportaal (ePRIA), Tallinna raielubade andmekogu, Transpordiameti Sõidukite digiregistreerimise keskkond, Keskkonnaotsuste Infosüsteem (KOTKAS), Keskkonnaameti Metsaportaal, Riiklik Postkast, X-tee iseteeninduskeskkond jt.
+
 ## Tehnilised tingimused?
 
 E-teenus liidestatakse autentimisteenusega OpenID Connect protokolli kohaselt. Vt lähemalt: [TechnicalSpecification](TechnicalSpecification).
