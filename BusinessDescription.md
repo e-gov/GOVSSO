@@ -27,7 +27,7 @@ Valitsussektori asutustele, kes soovivad:
 - lisada oma e-teenusele SSO toe.
 
 ## Kes Riigi SSO teenust kasutavad?
-Riigi autentimisteenusega on liitunud 57 asutust 98 infosüsteemiga, sh Riigiportaal eesti.ee, e-Rahvastikuregister, Riigi Tugiteenuste Keskuse Toetuste register (SFOS), Terviseportaal, Tervisejuhtimise töölaud, Tervisekassa Partnerportaal, PRIA kliendiportaal (ePRIA), Tallinna raielubade andmekogu, Transpordiameti Sõidukite digiregistreerimise keskkond, Keskkonnaotsuste Infosüsteem (KOTKAS), Keskkonnaameti Metsaportaal, Riiklik Postkast, X-tee iseteeninduskeskkond jt.
+Riigi SSO teenusega on liitunud 57 asutust 98 infosüsteemiga, sh Riigiportaal eesti.ee, e-Rahvastikuregister, Riigi Tugiteenuste Keskuse Toetuste register (SFOS), Terviseportaal, Tervisejuhtimise töölaud, Tervisekassa Partnerportaal, PRIA kliendiportaal (ePRIA), Tallinna raielubade andmekogu, Transpordiameti Sõidukite digiregistreerimise keskkond, Keskkonnaotsuste Infosüsteem (KOTKAS), Keskkonnaameti Metsaportaal, Riiklik Postkast, X-tee iseteeninduskeskkond jt.
 
 ## Tehnilised tingimused?
 
