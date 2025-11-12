@@ -6,6 +6,16 @@ permalink: News
 
 # Uudised
 
+**12.11.2025**
+## 12.11.2025 vahetub TLS sertifikaat `govsso-demo.ria.ee` keskkonnas ja `govsso.ria.ee` keskkonnas.
+• Klientidel, kes on oma teenuses usaldanud senist DigiCert juursertifikaati (DigiCert Global Root G2), ei ole vajalik muudatusi teha.<br/>
+• Palume klientidel, kes on oma teenuses usaldanud senist DigiCert vahesertifikaati (DigiCert Global G2 TLS RSA SHA256 2020 CA1), asendada usaldusankur juursertifikaadiga ([DigiCert Global Root G2](https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem)).<br/>
+• Palume klientidel, kes on oma teenuses usaldanud otse Riigi autentimisteenuse TLS lõppolemi sertifikaati (`*.ria.ee`), asendada enne vahetusaega usaldusankur juursertifikaadiga ([DigiCert Global Root G2](https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem)).<br/>
+
+Täpsemalt TLS ühenduste usaldamisest: [https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints](TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints). Kui Teil esineb teenusega probleeme, siis palun võtke meiega ühendust [klient@ria.ee](mailto:klient@ria.ee).
+
+___
+
 **07.05.2025**
 ## Alates 30.04.2025 on GovSSO demokeskkonnas (`https://govsso-demo.ria.ee/`) võimalik testida autentimist Thales testkaartidega
 GovSSO demokeskkond (`https://govsso-demo.ria.ee/`) võimaldab alates 30.04.2025 testida autentimist Thales testkaartidega. Täpsem informatsioon uute Thales testkaartide tellimise ja kasutamise kohta on leitav [id.ee](https://www.id.ee/artikkel/thales-id-kaart/) artiklist.
