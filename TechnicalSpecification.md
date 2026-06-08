@@ -6,7 +6,7 @@ permalink: TechnicalSpecification
 
 # Technical specification
 {: .no_toc}
-v2.6, 2025-03-11
+v2.7, 2026-06-16
 
 - TOC
 {:toc}
@@ -146,8 +146,9 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
   "aud": [
     "sso-client-1"
   ],
-  "exp": 1591709871,
-  "iat": 1591709811,
+  "exp": 1780906660,
+  "iat": 1780906600,
+  "auth_time": 1780906599,
   "sub": "EE60001018800",
   "birthdate": "2000-01-01",
   "given_name": "MARY ÄNN",
@@ -158,7 +159,8 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
   "nonce": "POYXXoyDo49deYC3o5_rG-ig3U4o-dtKgcym5SyHfCM",
   "acr": "high",
   "at_hash": "AKIDtvBT2JS_02tkl_DvuA",
-  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258"
+  "sid": "f5ab396c-1490-4042-b073-ae8e003c7258",
+  "initiator": "SECURED_APP"
 }
 ````
 **ID Token claims**
@@ -168,8 +170,9 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
 | jti | `"jti": "663a35d8-92ec-4a8d-95e7-fc6ca90ebda2"` |  ID Token unique identifier ([[JWT](https://tools.ietf.org/html/rfc7519)] "4.1.7.  jti (JWT ID) Claim"). |
 | iss | `"iss": "https://govsso.ria.ee/"` |  Issuer Identifier, as specified in  [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
 | aud | `"aud": [`<br> `"sso-client-1"` <br>`]` <br><br> or<br><br> `"aud": "sso-client-1"` |  Unique ID of a client application in GovSSO client database. ID belongs to the client that requested authentication (the value of `client_id` field is specified in authentication request). <br><br> String or array of strings. A single `aud` value is present in GovSSO tokens. |
-| exp | `"exp": 1591709871` |  The expiration time of the ID Token (in Unix _epoch_ format). This also denotes the expiration time of the corresponding Refresh Token. |
-| iat | `"iat": 1591709811` |  The time of issue of the ID Token (in Unix _epoch_ format). |
+| exp | `"exp": 1780906660` |  The expiration time of the ID Token (in Unix _epoch_ format). This also denotes the expiration time of the corresponding Refresh Token. |
+| iat | `"iat": 1780906600` |  The time of issue of the ID Token (in Unix _epoch_ format). |
+| auth_time | `"auth_time": "1780906599"` | Time when the end-user authentication occurred (in Unix _epoch_ format). |
 | sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | birthdate | `"birthdate": "2000-01-01"` |  The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
 | given_name | `"given_name": "MARY ÄNN"` |  The first name of the authenticated user. |
@@ -180,7 +183,7 @@ The ID Token is issued in JSON Web Token [[JWT](https://tools.ietf.org/html/rfc7
 | at_hash | `"at_hash": "AKIDtvBT2JS_02tkl_DvuA"` |  The access token hash calculated as described in OIDC specification [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
 | sid | `"sid": "f5ab396c-1490-4042-b073-ae8e003c7258"` |  Session ID - String identifier for a GovSSO session. This represents a session of a User Agent. Different sid values are used to identify distinct sessions at GovSSO. |
 
-ID Token may consist other OpenID Connect protocol based fields that are not supported in GovSSO.
+ID Token may hold other OpenID Connect protocol-based claims that are not supported in GovSSO.
 
 **Phone number claims**
 If authentication request is performed with `phone` scope (e.g. `scope=openid%20phone`) and user's phone number is known (currently only when user has authenticated with Mobile-ID), then GovSSO will issue ID Tokens with the following additional claims. If authentication request is not performed with `phone` scope or user's phone number is not known, these claims are not included in GovSSO ID Token.
@@ -191,6 +194,14 @@ If authentication request is performed with `phone` scope (e.g. `scope=openid%20
 | phone_number_verified | `"phone_number_verified": true` | Always `true`, because user's phone number was verified during Mobile-ID authentication. |
 
 Obtaining user's phone number can be useful if client application also provides digital signing functionality with Mobile-ID, then phone number can be used as an input parameter in Mobile-ID signing request.
+
+**Initiator claim**
+This claim is present when GovSSO client application has been configured to have non-standard session handling.
+If the configuration is not set (default value), then this claim is not present.
+
+| ID Token element (claim)   | example           |     explanation       |
+|----------------------------|------------------ |-----------------------|
+| initiator | `"initiator": "SECURED_APP"` | Indicates the type of client application that has authenticated the end-user and requested the ID Token (i.e., the client application identified by the `aud` claim in the current ID Token). A missing `initiator` claim denotes the default client application type. This claim is only present when a non-default type is configured for the given client application. The only non-default client application type value is `SECURED_APP`. |
 
 ### 5.2 Logout Token
 
@@ -788,6 +799,7 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 | Version, Date    | Description |
 |------------------|-------------|
+| 2.7, 2026-06-16  | Add `initiator` claim to ID Token when a non-default type has been configured for the client application. Describe `auth_time` claim in ID Token (has been present since 1.0). |
 | 2.6, 2025-03-11  | Add POST method support for logout request. |
 | 2.5, 2025-02-17  | Add `client_secret_post` support for token request. |
 | 2.4, 2024-11-15  | TLS end-entity certificate removal. |

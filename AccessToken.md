@@ -9,7 +9,7 @@ NB! The usage principles for the GovSSO Access Token are currently under review 
 
 # Technical Specification: Access Token Feature
 {: .no_toc}
-v1.0, 2025-02-10
+v1.1, 2026-06-16
 
 - TOC
 {:toc}
@@ -153,7 +153,7 @@ Other response parameters other than `access_token` are returned exactly the sam
 
 ## 4 Access Token details
 
-***Example GovSSO Access Token***
+***Example of GovSSO Access Token with optional claims***
 ````
 {
   "jti": "7816a5ca-bafe-4fb1-80e8-4b5f6991bfbe",
@@ -163,8 +163,8 @@ Other response parameters other than `access_token` are returned exactly the sam
     "https://example.org/example"
   ],
   "iss": "https://govsso.ria.ee/",
-  "exp": 1732030361,
-  "iat": 1732029460,
+  "exp": 1780907651,
+  "iat": 1780907599,
   "sub": "EE30303039914"
   "birthdate": "1903-03-03",
   "given_name": "OK",
@@ -172,7 +172,9 @@ Other response parameters other than `access_token` are returned exactly the sam
   "amr": [
     "smartid"
   ],
-  "acr": "high"
+  "acr": "high",
+  "initiator": "SECURED_APP",
+  "auth_time": 1780906599
 }
 ````
 **Access Token claims**
@@ -183,8 +185,8 @@ Other response parameters other than `access_token` are returned exactly the sam
 | client_id | `"client_id": "GovSSO client"` | Unique ID belonging to the client that requested authentication (the value of `client_id` field is specified in authentication request). |
 | aud | `"aud": [`<br> `"https://example.com",` <br><br> `"https://example.org/example"` <br>`]` | List of Access Token audience URLs. Compared to ID Token, Access Token `aud` claim does not hold GovSSO `client_id` value. Instead, the audience URLs are preregistered values (see explanation in [2.1 Configuration parameters](21-configuration-parameters). |
 | iss | `"iss": "https://govsso.ria.ee/"` | Issuer Identifier, as specified in  [[OIDC-CORE](https://openid.net/specs/openid-connect-core-1_0.html)]. |
-| exp | `"exp": 1591709871` | The expiration time of the Access Token (in Unix _epoch_ format). |
-| iat | `"iat": 1591709811` | The time of issuance of the Access Token (in Unix _epoch_ format). |
+| exp | `"exp": 1780907651` | The expiration time of the Access Token (in Unix _epoch_ format). |
+| iat | `"iat": 1780907599` | The time of issuance of the Access Token (in Unix _epoch_ format). |
 | sub | `"sub": "EE60001018800"` |  The identifier of the authenticated user (personal identification code or eIDAS identifier) with the prefix of the country code of the citizen (country codes based on the ISO 3166-1 alpha-2 standard). NB! in case of eIDAS authentication the maximum length is 256 characters.|
 | birthdate | `"birthdate": "2000-01-01"` | The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
 | given_name | `"given_name": "MARY ÄNN"` | The first name of the authenticated user. |
@@ -198,8 +200,10 @@ Compared to [ID Token claims](TechnicalSpecification#51-id-token):
 - Access Token doesn't have `at_hash`, `nonce` and `sid` claims, that exist in ID Token; 
 - Access Token always has identical values for `iss`, `birthdate`, `given_name`, `family_name`, `amr` and `acr` claims as the ID Token that is returned with the same `/oauth2/token` response; 
 - Access Token also has identical values for `phone_number` and `phone_number_verified` claims if these claims exist in the ID Token;
+- Access Token also has identical values for `initiator` and `auth_time` claims in ID Token if these claims are present;
 
 **Phone number claims**
+
 If authentication request is performed with `phone` scope (e.g. `scope=openid%20phone`) and user's phone number is known (currently only when user has authenticated with Mobile-ID), then GovSSO will issue Access Tokens with the following additional claims.
 
 | Access Token element (claim) | example | explanation |
@@ -209,9 +213,16 @@ If authentication request is performed with `phone` scope (e.g. `scope=openid%20
 
 If authentication request is not performed with `phone` scope or user's phone number is not known, these claims are not included in GovSSO Access Token.
 
+**Initiator and auth_time claims**
+
+| Access Token element (claim) | example | explanation |
+|------------------------------|---------|-------------|
+| initiator | `"initiator": "SECURED_APP"` | Indicates the type of client application that has authenticated the end-user and requested the Access Token (i.e., the client application identified by the `client_id` claim in the current Access Token). A missing `initiator` claim denotes the default client application type. This claim is only present when a non-default type is configured for the given client application. The only non-default client application type value is `SECURED_APP`. |
+| auth_time | `"auth_time": "1780906599"` | Time when the end-user authentication occurred (in Unix _epoch_ format). |
+
 Additionally, Access Token can also hold claims related to the optional [representee functionality](Representee).
 
-Compared to Access Tokens, ID Tokens may hold other OpenID Connect protocol based claims not supported by GovSSO.
+Compared to Access Token, ID Token may hold other OpenID Connect protocol-based claims not supported by GovSSO.
 
 ## 5 Security operations for client applications
 
@@ -230,8 +241,13 @@ The resource server must conduct the following Access Token verifications:
 - Verify that the token's audience holds a matching value to the resource server;
 - Verify that the token is current;
 - Verify the eIDAS level of assurance (`acr`) if lower than `high` level of assurance is not acceptable;
+- Verify `initiator` and `auth_time` claims if present; 
 
-These validations are the same as in [RFC 9068 standard](https://datatracker.ietf.org/doc/html/rfc9068#name-validating-jwt-access-token) except for `typ` header validation which GovSSO does not support and with the inclusion of `client_id` validation.
+These validations are the same as in [RFC 9068 standard](https://datatracker.ietf.org/doc/html/rfc9068#name-validating-jwt-access-token) except for
+
+- `typ` header validation, which GovSSO does not support;
+- the inclusion of `client_id` validation;
+- the inclusion of `initiator` and `auth_time` validation, if `initiator` is present.
 
 ### 6.1 Signature verification
 
@@ -298,8 +314,30 @@ Estonian authentication methods (ID-card, Mobile-ID, Smart-ID) have been defined
 
 However, foreigners authenticating to Estonian services through eIDAS might authenticate by methods with any LoA (`high`, `substantial` or `low`). The resource server must verify the `acr` claim if it wishes to exclude authentication methods with lower LoAs (`substantial` or `low`).
 
+### 6.7 Client type verification
+
+**Initiator claim**
+
+The `initiator` claim indicates the type of GovSSO client application.
+A missing claim denotes the default client application type.
+This claim is only present when a non-default type is configured for the given GovSSO client application.
+The only non-default client application type value is `SECURED_APP`.
+
+**`SECURED_APP` client type**
+
+The `SECURED_APP` client type is used in special cases, where the GovSSO client application does not follow the general GovSSO session handling principles
+(does not perform periodic session update requests and has a longer maximum session length).
+The client application must have a prior agreement with the resource server on the usage of Access Tokens with special session handling.
+The resource server must define the maximum allowed authentication period based on its risk assessment.
+
+The resource server must perform the following Access Token validation steps:
+
+* If the `initiator` claim is present, its value must be `SECURED_APP`. Currently, no other client application types are supported.
+* Verify that end-user authentication is in an agreed timeframe: current time - `auth_time` <= agreed acceptable time period for end-user authentication.
+
 ## Change history
 
 | Version, Date    | Description |
 |------------------|-------------|
+| 1.1, 2026-06-16  | Add `initiator` and `auth_time` claims to ID Token when a non-default type has been configured for the client application. |
 | 1.0, 2025-02-10  | First version |
