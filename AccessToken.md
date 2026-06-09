@@ -189,7 +189,7 @@ Other response parameters other than `access_token` are returned exactly the sam
 | birthdate | `"birthdate": "2000-01-01"` | The date of birth of the authenticated user in the ISO_8601 format. Only sent in the case of persons with Estonian personal identification code and in the case of eIDAS authentication. |
 | given_name | `"given_name": "MARY ÄNN"` | The first name of the authenticated user. |
 | family_name | `"family_name": "O’CONNEŽ-ŠUSLIK TESTNUMBER"` | The surname of the authenticated user. |
-| amr | `"amr": [ "mID" ]` | Authentication method reference. The authentication method used for user authentication. A single `amr` value is present in Access Token. Possible values:<br><br> `idcard` - Estonian ID card<br> `mID` - Mobile-ID<br> `smartid` - Smart-ID<br> `eIDAS` - European cross-border authentication |
+| amr | `"amr": [ "mID" ]` | Authentication method reference. The authentication method used for user authentication. A single `amr` value is present in Access Token. Possible values:<br><br> `idcard` - Estonian ID card<br> `mID` - Mobile-ID<br> `smartid` - Smart-ID<br> `eidas` - European cross-border authentication |
 | acr | `"acr": "high"` | Authentication Context Class Reference. Signals the level of assurance of the authentication method that was used. Possible values: `low`, `substantial`, `high`. The element is not used if the level of assurance is not applicable or is unknown. |
 
 Compared to [ID Token claims](TechnicalSpecification#51-id-token):
