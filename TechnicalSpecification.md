@@ -6,7 +6,7 @@ permalink: TechnicalSpecification
 
 # Technical specification
 {: .no_toc}
-v2.7, 2026-06-16
+v2.8, 2026-11-13
 
 - TOC
 {:toc}
@@ -682,17 +682,48 @@ NB! "Hard coding" the key to client application configuration must be avoided. T
 
 When making requests from the client application to GovSSO (to all endpoints, i.e., server discovery endpoint, public signature key endpoint, token endpoint), all necessary checks must be correctly performed during the initiation of the TLS connection. It is recommended not to implement these checks yourself, but to use a library with HTTPS or TLS connection functionality.
 
-The trust anchor for the TLS connection in the client application must be set to the [DigiCert Global Root G2](https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem) root certificate only. It is not advisable to trust certificates from other CAs or the entire operating system's CA certificate store. Web browsers trust many CA certificates, but they use the Certificate Transparency mechanism to mitigate the unauthorized certificate issuance problem. GovSSO authentication flow is a combination of web browser requests and client application requests, therefore the union of checks from both applies for the authentication flow to completely succeed.
+The trust anchor for the TLS connection in the client application must be set to the following root certificates:
+
+* [DigiCert Global Root G2](https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem);
+* [GlobalSign R4](https://pki.goog/repo/certs/gsr4.pem);
+* [GTS Root R1](https://pki.goog/repo/certs/gtsr1.pem);
+* [GTS Root R2](https://pki.goog/repo/certs/gtsr2.pem);
+* [GTS Root R3](https://pki.goog/repo/certs/gtsr3.pem);
+* [GTS Root R4](https://pki.goog/repo/certs/gtsr4.pem);
+
+It is not advisable to trust certificates from other CAs or the entire operating system's CA certificate store. Web browsers trust many CA certificates, but they use the Certificate Transparency mechanism to mitigate the unauthorized certificate issuance problem. GovSSO authentication flow is a combination of web browser requests and client application requests, therefore the union of checks from both applies for the authentication flow to completely succeed.
 
 The HTTPS or TLS connection functionality library must perform the following checks for each connection initiation:
-* check whether a certificate chain with valid signatures is formed, ending with the [DigiCert Global Root G2](https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem) root certificate;
+
+* check whether a certificate chain with valid signatures is formed, ending with any of the root certificates listed above;
 * check whether the hostname in the request (`govsso.ria.ee` or `govsso-demo.ria.ee`) matches the CN field in the server's presented certificate or is included in the SAN field;
 * check the start and end validity values for all certificates in the chain;
 * check the constraints defined in the certificates (basic, name, key usage, critical extensions).
 
 Additionally, revocation of all certificates in the chain must be observed in any of the following ways:
 * RIA notifies contact persons of integrators by e-mail about certificate revocation.
-* Client application may check CA's validity confirmation service (OCSP) or revocation list (CRL), but must take into account that RIA is not responsible for the availability of CA's services as an external party. Currently `govsso.ria.ee` ja `govsso-demo.ria.ee` endpoints don't provide OCSP stapling.
+* Client application may check CA's validity confirmation service (OCSP) or revocation list (CRL), but must take into account that RIA is not responsible for the availability of CA's services as an external party. `govsso.ria.ee` and `govsso-demo.ria.ee` endpoints may, but are not obligated to provide OCSP stapling, or it may change without notice.
+
+#### 7.1.2.1 TLS connection parameters
+
+The client application must support the following for establishing TLS connections:
+
+* TLS protocol version 1.3;
+* Server Name Indication (SNI) extension;
+* RSA and EC type certificates;
+* the following cipher suites for TLS 1.3:
+    * `TLS_AES_128_GCM_SHA256`;
+    * `TLS_AES_256_GCM_SHA384`;
+    * `TLS_CHACHA20_POLY1305_SHA256`.
+
+TLS protocol version 1.2 usage is not recommended by ["Krüptoalgoritmid ning nende tugi teekides ja infosüsteemides" (2026)](https://www.ria.ee/sites/default/files/documents/2026-09/Kruptoalgoritmid-ning-nende-tugi-teekides-infosusteemides-2026.pdf). It is currently still supported with the following cipher suites for TLS 1.2:
+
+* `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`;
+* `TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256`;
+* `TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384`;
+* `TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384`;
+* `TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256`;
+* `TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256`;
 
 #### 7.1.3 Verifying the issuer of tokens
 
@@ -790,15 +821,18 @@ Logging must enable the reconstruction of the course of the communication betwee
 
 ## 9 Environments
 
-| Environment | OpenID Connect Issuer URL | Originating IP address of GovSSO back-channel logout requests (from GovSSO to client application) |
-|-------------|---------------------------|---------------------------------------------------------------------------------------------------|
-| Demo | `https://govsso-demo.ria.ee/` | 195.80.127.38 (govsso-demo.ria.ee) |
-| Production | `https://govsso.ria.ee/` | 195.80.127.3 (govsso.ria.ee) |
+| Environment | OpenID Connect Issuer URL | IP addresses in use | All possible IP addresses to allow outgoing connections from client application | Originating IP address of GovSSO back-channel logout requests (from GovSSO to client application) |
+|-------------|---------------------------|---------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| Demo | `https://govsso-demo.ria.ee/` | client application must resolve via DNS | 195.80.127.38<br>141.101.90.16<br>141.101.90.17<br>2a06:98c1:3200::6<br>2a06:98c1:3200::7 | 195.80.127.38<br>13.49.168.221<br>13.49.24.96<br>13.60.143.44 |
+| Production | `https://govsso.ria.ee/` | client application must resolve via DNS | 195.80.127.3<br>141.101.90.16<br>141.101.90.17<br>2a06:98c1:3200::6<br>2a06:98c1:3200::7 | 195.80.127.3<br>13.49.168.221<br>13.49.24.96<br>13.60.143.44 |
+
+If outgoing connections to GovSSO are restricted by IP addresses on the client application side, the client application must allow outgoing connections to all IP addresses listed in the fourth column. The client application must resolve the connection to any of the IP addresses returned by the DNS record. The DNS record is updated as needed to include the functioning IP addresses serving the GovSSO service (a subset of the IP addresses listed in the fourth column).
 
 ## Change history
 
 | Version, Date    | Description |
 |------------------|-------------|
+| 2.8, 2026-11-13  | Add new TLS root certificates and SNI requirement, new GovSSO service IP addresses, new back-channel logout originating IP addresses. Document existing TLS protocol versions and cipher suites. |
 | 2.7, 2026-06-16  | Add `initiator` claim to ID Token when a non-default type has been configured for the client application. Describe `auth_time` claim in ID Token (has been present since 1.0). |
 | 2.6, 2025-03-11  | Add POST method support for logout request. |
 | 2.5, 2025-02-17  | Add `client_secret_post` support for token request. |
