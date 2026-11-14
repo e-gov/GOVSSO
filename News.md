@@ -6,6 +6,23 @@ permalink: News
 
 # Uudised
 
+**13.11.2026**
+## Detsembris 2026 muutuvad `govsso-demo.ria.ee` ja `govsso.ria.ee` keskkonnas TLS juursertifikaadid ja IP-aadressid.
+Täpsed kuupäevad teatame eraldi.
+
+• Palume klientidel, kes on oma teenuses usaldanud DigiCert juursertifikaati (DigiCert Global Root G2), lisada enne muudatust usaldusankruks kõik peatükis 7.1.2 loetletud juursertifikaadid. DigiCert Global Root G2 jääb loendisse.<br/>
+• Palume klientidel, kes on oma teenuses usaldanud vahesertifikaati või otse TLS lõppolemi sertifikaati (`*.ria.ee`), asendada enne muudatust usaldusankur peatükis 7.1.2 loetletud juursertifikaatidega.<br/>
+• Toetatud TLS protokolli versioonid ja šifrikomplektid on kirjeldatud peatükis 7.1.2.1. Uue nõudena lisandub SNI tugi.<br/>
+• Kui klientrakendusest GovSSO-sse väljuv võrguliiklus on piiratud IP-aadresside järgi, palume lubada ühendused kõigile peatüki 9 tabeli neljandas veerus toodud aadressidele.<br/>
+• Kui taustakanali väljalogimise otspunkt on piiratud IP-aadresside järgi, palume lubada päringud kõigilt peatüki 9 tabeli viiendas veerus toodud aadressidelt.<br/>
+
+Täpsemalt TLS ühenduste usaldamisest: [https://e-gov.github.io/GOVSSO/TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints](TechnicalSpecification#712-verifying-the-tls-connection-to-endpoints)<br/>
+TLS ühenduse parameetritest: [https://e-gov.github.io/GOVSSO/TechnicalSpecification#7121-tls-connection-parameters](TechnicalSpecification#7121-tls-connection-parameters)<br/>
+IP-aadressidest: [https://e-gov.github.io/GOVSSO/TechnicalSpecification#9-environments](TechnicalSpecification#9-environments)
+
+Kui Teil esineb probleeme või küsimusi, siis palun võtke meiega ühendust [klient@ria.ee](mailto:klient@ria.ee).
+
+___
 **12.11.2025**
 ## 12.11.2025 vahetub TLS sertifikaat `govsso-demo.ria.ee` keskkonnas ja `govsso.ria.ee` keskkonnas.
 • Klientidel, kes on oma teenuses usaldanud senist DigiCert juursertifikaati (DigiCert Global Root G2), ei ole vajalik muudatusi teha.<br/>
